@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>勤之助タイムレコーダー</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+ul {
+  width: 140px;
+  list-style-type: none;
+}
+li {
+  display: block;
+  padding: 4px 0;
+  text-align: center;
+  color: #999;
+}
+li.enabled {
+  cursor: pointer;
+  color: #00f;
+}
+li.enabled:hover {
+  background: #cce0ff;
+}
+</style>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/popup.js"></script>
+</head>
+<body>
+<ul>
+  <li id="action1">出社</li>
+  <li id="action2">退社</li>
+  <li id="service" class="enabled">勤之助を開く</li>
+  <li id="options" class="enabled">設定</li>
+</ul>
+</body>
+</html>
