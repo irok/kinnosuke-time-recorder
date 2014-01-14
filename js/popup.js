@@ -14,18 +14,24 @@
       // 出社
       if (status.start) {
         $("#action1").text("出社 " + status.start);
-      } else {
+      }
+      else {
         $("#action1").addClass("enabled").click(function(){
-          KTR.service.stamp(KTR.STAMP.ON);
+          if (confirm("出社ボタンを押しますか？")) {
+            KTR.service.stamp(KTR.STAMP.ON);
+          }
         });
       }
 
       // 退社
       if (status.leave) {
         $("#action2").text("退社 " + status.leave);
-      } else {
+      }
+      else {
         $("#action2").addClass("enabled").click(function(){
-          KTR.service.stamp(KTR.STAMP.OFF);
+          if (confirm("退社ボタンを押しますか？")) {
+            KTR.service.stamp(KTR.STAMP.OFF);
+          }
         });
       }
     }

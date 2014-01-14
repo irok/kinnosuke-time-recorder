@@ -47,6 +47,14 @@ KTR.credential.retrieve();
 /**
  * 通知
  */
+KTR.announce = function(status) {
+  var today = (new Date()).toLocaleDateString();
+  var last = localStorage["LastAnnounce"];
+  if (!status.start && last !== today) {
+    KTR.notify("今日はまだWeb勤怠をつけていません。", {duration:0});
+    localStorage["LastAnnounce"] = today;
+  }
+};
 KTR.error = function(msg) {
   KTR.notify(msg, {title:"エラー", duration:0});
 };
@@ -80,19 +88,20 @@ $.extend(KTR.notify, {
  * 状態管理
  */
 KTR.status = {
-  update: function(callback) {
-    var process = function(html) {
-      var status = KTR.status.cache(KTR.status.extract(html));
-      KTR.view.update(status);
-      if (typeof callback === "function") {
+  update: function(callback, html) {
+    if (typeof html !== "string" && KTR.credential.valid()) {
+      KTR.service.login(KTR.status.update.bind(this, function(status){
+        KTR.announce(status);
         callback(status);
-      }
-    };
+      }));
+      return;
+    }
 
-    if (KTR.credential.valid())
-      KTR.service.login(process);
-    else
-      process();
+    var status = KTR.status.cache(KTR.status.extract(html));
+    KTR.view.update(status);
+    if (typeof callback === "function") {
+      callback(status);
+    }
   },
   extract: function(html) {
     var status = {
@@ -116,7 +125,8 @@ KTR.status = {
       KTR.status.cache.data = $.extend(data, {
         expires: Date.now() + KTR.status.cache.ttl
       });
-    } else {
+    }
+    else {
       data = KTR.status.cache.data;
       if (data === null || data.expires < Date.now()) {
         return KTR.status.cache.data = null;
@@ -136,10 +146,11 @@ $.extend(KTR.status.cache, {
 KTR.view = {
   update: function(status) {
     if (status.code === KTR.STATUS.UNKNOWN) {
-      chrome.browserAction.setBadgeText({text:""})
-    } else {
-      chrome.browserAction.setBadgeText({text:" "})
-      chrome.browserAction.setBadgeBackgroundColor({color:KTR.BADGE[status.code]})
+      chrome.browserAction.setBadgeText({text:""});
+    }
+    else {
+      chrome.browserAction.setBadgeText({text:" "});
+      chrome.browserAction.setBadgeBackgroundColor({color:KTR.BADGE[status.code]});
     }
     chrome.browserAction.setTitle({title:KTR.TITLE[status.code]});
   }

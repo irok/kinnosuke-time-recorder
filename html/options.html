@@ -3,16 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <title>勤之助タイムレコーダー</title>
+<style>
+h1 {
+  font-size: 100%;
+}
+</style>
 </head>
 <body>
 <div>
-  <p>ログイン情報を入力してください。</p>
-  <table>
-    <tr><td>お客様ID</td><td><input type="text" id="cstmid" value="" size="20" /></td></tr>
-    <tr><td>ログインID</td><td><input type="text" id="userid" value="" size="20" /></td></tr>
-    <tr><td>パスワード</td><td><input type="password" id="passwd" value="" size="20" /></td></tr>
-  </table>
-  <button id="saveBtn">保存する</button>
+  <section>
+    <h1>ログイン情報</h1>
+    <table>
+      <tr><td>お客様ID</td><td><input type="text" id="cstmid" value="" size="20" /></td></tr>
+      <tr><td>ログインID</td><td><input type="text" id="userid" value="" size="20" /></td></tr>
+      <tr><td>パスワード</td><td><input type="password" id="passwd" value="" size="20" /></td></tr>
+    </table>
+  </section>
+  <p><button id="saveBtn">保存する</button></p>
 </div>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/options.js"></script>
