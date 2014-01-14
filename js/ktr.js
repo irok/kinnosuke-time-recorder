@@ -47,10 +47,10 @@ KTR.credential.retrieve();
 /**
  * 通知
  */
-KTR.announce = function(status) {
+KTR.firstAnnounce = function(status) {
   var today = (new Date()).toLocaleDateString();
   var last = localStorage["LastAnnounce"];
-  if (!status.start && last !== today) {
+  if (status.code === KTR.STATUS.BEFORE && last !== today) {
     KTR.notify("今日はまだWeb勤怠をつけていません。", {duration:0});
     localStorage["LastAnnounce"] = today;
   }
@@ -88,17 +88,17 @@ $.extend(KTR.notify, {
  * 状態管理
  */
 KTR.status = {
-  update: function(callback, html) {
-    if (typeof html !== "string" && KTR.credential.valid()) {
-      KTR.service.login(KTR.status.update.bind(this, function(status){
-        KTR.announce(status);
-        callback(status);
-      }));
-      return;
+  update: function(callback) {
+    if (KTR.credential.valid()) {
+      KTR.service.login(KTR.status.__update.bind(this, callback));
+    } else {
+      KTR.status.__update();
     }
-
+  },
+  __update: function(callback, html) {
     var status = KTR.status.cache(KTR.status.extract(html));
     KTR.view.update(status);
+    KTR.firstAnnounce(status);
     if (typeof callback === "function") {
       callback(status);
     }
