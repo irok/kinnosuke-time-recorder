@@ -18,7 +18,7 @@
       else {
         $("#action1").addClass("enabled").click(function(){
           if (confirm("出社ボタンを押しますか？")) {
-            KTR.service.stamp(KTR.STAMP.ON);
+            stamp(KTR.STAMP.ON);
           }
         });
       }
@@ -30,7 +30,7 @@
       else {
         $("#action2").addClass("enabled").click(function(){
           if (confirm("退社ボタンを押しますか？")) {
-            KTR.service.stamp(KTR.STAMP.OFF);
+            stamp(KTR.STAMP.OFF);
           }
         });
       }
@@ -46,6 +46,13 @@
     // 設定
     $("#options").click(function(){
       open("/html/options.html", "_blank");
+    });
+  }
+
+  // 打刻
+  function stamp(type) {
+    KTR.service.stamp(type, function(){
+      location.reload(true);
     });
   }
 

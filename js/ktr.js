@@ -163,7 +163,7 @@ KTR.service = {
   url: "https://www.4628.jp/",
 
   // 出社・退社ボタンを押す
-  stamp: function(type) {
+  stamp: function(type, callback) {
     KTR.service.getCsrfToken(function(token){
       var formData = {
         module: "timerecorder",
@@ -184,6 +184,7 @@ KTR.service = {
         }
         KTR.view.update(KTR.status.cache(status));
         KTR.notify(KTR.ACTION[type] + "しました。");
+        callback();
       });
     });
   },
