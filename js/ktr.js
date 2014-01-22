@@ -12,7 +12,11 @@ var KTR = {
   manifest: chrome.runtime.getManifest(),
 
   // NOP
-  NOP: function(){}
+  NOP: function(){},
+
+  // JsonFormatter
+  // https://code.google.com/p/crypto-js/#The_Cipher_Output
+  JsonFormatter: {stringify:function(a){var b={ct:a.ciphertext.toString(CryptoJS.enc.Base64)};a.iv&&(b.iv=a.iv.toString());a.salt&&(b.s=a.salt.toString());return JSON.stringify(b)},parse:function(a){a=JSON.parse(a);var b=CryptoJS.lib.CipherParams.create({ciphertext:CryptoJS.enc.Base64.parse(a.ct)});a.iv&&(b.iv=CryptoJS.enc.Hex.parse(a.iv));a.s&&(b.salt=CryptoJS.enc.Hex.parse(a.s));return b}}
 };
 
 /**
@@ -21,25 +25,41 @@ var KTR = {
 KTR.credential = {
   __data: {},
   get: function(key) {
-    return KTR.credential.__data[key];
+    var t = KTR.credential.__data;
+    if (key === "passwd" && typeof t[key] !== "string") {
+      var secret = KTR.credential.__secret();
+      t[key] = CryptoJS.AES.decrypt(t.encrypted, secret, {format: KTR.JsonFormatter}).toString(CryptoJS.enc.Utf8);
+    }
+    return t[key];
   },
   update: function(cstmid, userid, passwd) {
+    var secret = KTR.credential.__secret();
     KTR.credential.__data = {
       cstmid: cstmid,
       userid: userid,
-      passwd: passwd
+      encrypted: CryptoJS.AES.encrypt(passwd, secret, {format: KTR.JsonFormatter}).toString()
     };
     localStorage["Credential"] = JSON.stringify(KTR.credential.__data);
   },
   valid: function() {
     var t = KTR.credential.__data;
-    return t.cstmid !== "" && t.userid !== "" && t.passwd !== "";
+    return t.cstmid !== "" && t.userid !== "" && KTR.credential.get("passwd") !== "";
   },
   retrieve: function() {
     try {
-      KTR.credential.__data = JSON.parse(localStorage["Credential"]);
+      var t = KTR.credential.__data = JSON.parse(localStorage["Credential"]);
+      if (typeof t.encrypted === "undefined") {
+        KTR.credential.update(t.cstmid, t.userid, t.passwd);
+      }
     }
     catch (e) { KTR.credential.update("", "", "") }
+  },
+  __secret: function() {
+    var pp = localStorage["Secret"];
+    if (!pp) {
+      pp = localStorage["Secret"] = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Base64);
+    }
+    return pp;
   }
 };
 KTR.credential.retrieve();
@@ -88,11 +108,17 @@ $.extend(KTR.notify, {
  * 状態管理
  */
 KTR.status = {
+  forceUpdate: function(callback) {
+    KTR.service.logout(function(){
+      callback();
+      KTR.status.update(KTR.NOP);
+    });
+  },
   update: function(callback) {
     if (KTR.credential.valid()) {
       KTR.service.login(KTR.status.__update.bind(this, callback));
     } else {
-      KTR.status.__update();
+      KTR.status.__update(callback);
     }
   },
   __update: function(callback, html) {
@@ -217,13 +243,30 @@ KTR.service = {
         password:    KTR.credential.get("passwd"),
         login_save:1, Submit:"ログイン", module:"login"
       };
-
       KTR.service.post(formData, function(html){
         if (/value="ログイン"/.test(html)) {
           KTR.error("ログインできませんでした。");
           return;
         }
         callback(html);
+      });
+    });
+  },
+
+  // ログインしていたらログアウトする
+  logout: function(callback) {
+    $.get(KTR.service.url, function(html){
+      // ログインしてなければそのままcallbackを呼ぶ
+      if (!/ログアウト/.test(html)) {
+        callback();
+        return;
+      }
+
+      var formData = {
+        kihon_settei:"#", logout:"ログアウト", module:"logout"
+      };
+      KTR.service.post(formData, function(html){
+        callback();
       });
     });
   },

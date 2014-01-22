@@ -16,7 +16,7 @@
       $("#userid").val(),
       $("#passwd").val()
     );
-    KTR.status.update(function(status){
+    KTR.status.forceUpdate(function(status){
       KTR.notify("保存しました。");
     });
   }

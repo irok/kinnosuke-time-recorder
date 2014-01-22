@@ -2,7 +2,7 @@
   // Required
   "manifest_version": 2,
   "name": "勤之助タイムレコーダー",
-  "version": "1.1.3",
+  "version": "1.1.4",
 
   // Recommended
   "description": "勤之助のタイムレコーダーを押す",
@@ -24,7 +24,8 @@
   "background": {
     // Recommended
     "scripts": [
-      "/js/jquery.min.js",
+      "/js/lib/jquery.min.js",
+      "/js/lib/aes.js",
       "/js/ktr.js",
       "/js/background.js"
     ],

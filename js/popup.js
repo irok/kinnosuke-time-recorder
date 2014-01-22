@@ -1,7 +1,6 @@
 (function(bg)
 {
-  var KTR = bg.KTR;
-  var $m, $d;
+  var KTR = bg.KTR, $m, $d;
 
   // 初期化
   function init() {
