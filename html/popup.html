@@ -8,8 +8,10 @@
   margin: 0;
   padding: 0;
 }
+body {
+  width: 170px;
+}
 ul {
-  width: 140px;
   list-style-type: none;
 }
 li {
@@ -25,16 +27,45 @@ li.enabled {
 li.enabled:hover {
   background: #cce0ff;
 }
+#modal {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: lightgray;
+  opacity: 0.85;
+}
+#dialog {
+  display: none;
+  position: absolute;
+  width: 148px;
+  margin: 0 10px;
+  padding: 10px 0;
+  border: 1px solid gray;
+  border-radius: 3px;
+  background: #fff;
+  text-align: center;
+}
+button {
+  width: 59px;
+}
+button:last-child {
+  margin-left: 10px;
+}
 </style>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/popup.js"></script>
 </head>
 <body>
-<ul>
+<ul id="menu">
   <li id="action1">出社</li>
   <li id="action2">退社</li>
   <li id="service" class="enabled">勤之助を開く</li>
   <li id="options" class="enabled">設定</li>
 </ul>
+<div id="modal"></div>
+<div id="dialog"></div>
 </body>
 </html>
