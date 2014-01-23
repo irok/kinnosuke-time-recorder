@@ -21,7 +21,7 @@
       }
       else {
         $("#action1").addClass("enabled").click(function(){
-          confirmDialog("出社しますか？", function(){
+          confirmDialog("出社しましたか？", function(){
             stamp(KTR.STAMP.ON);
           });
         });
@@ -44,10 +44,17 @@
     $("#service").click(function(){
       KTR.status.update(function(){
         window.open(KTR.service.url, "_blank");
-      })
+      });
     });
 
-    // 設定
+    // 打刻忘れ／訂正
+    $("#rectify").click(function(){
+      KTR.status.update(function(){
+        window.open(KTR.service.url + "?application_form_master_id=4&entry=1&module=application_form&action=editor&status=default&search_acceptation_status=1&application_remarks="+encodeURIComponent("打刻し忘れました。"), "_blank");
+      });
+    });
+
+    // オプション
     $("#options").click(function(){
       window.open("/html/options.html", "_blank");
     });
@@ -58,8 +65,8 @@
     $m.show(100);
     $d.empty()
       .append($("<p/>").text(msg))
-      .append($("<button/>").text("OK")    .click(closeDialog).click(callback))
-      .append($("<button/>").text("Cancel").click(closeDialog))
+      .append($("<button/>").text("はい")  .click(closeDialog).click(callback))
+      .append($("<button/>").text("いいえ").click(closeDialog))
       .show(100, function(){
         $d.css("top", ($m.innerHeight() - $d.innerHeight()) / 2);
       });
