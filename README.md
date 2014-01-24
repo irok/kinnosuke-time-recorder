@@ -1,6 +1,7 @@
 # Kinnosuke Time Recorder
 
 Web版勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome Extensionです。
+巷では開発者に親しみと敬意を表して「色之助」と読んでいます。
 
 ## インストール
 
