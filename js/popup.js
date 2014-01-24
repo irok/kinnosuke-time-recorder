@@ -1,8 +1,10 @@
 (function(bg)
 {
-  var KTR = bg.KTR, $m, $d;
+  var KTR = bg.KTR, $dcon, dialogs = [];
 
-  // 初期化
+  /**
+   * 初期化
+   */
   function init() {
     var status = KTR.status.cache();
     if (status === null) {
@@ -10,35 +12,10 @@
       return;
     }
 
-    // そちこちで使うのでとっておく
-    $m = $("#modal");
-    $d = $("#dialog");
+    $dcon = $("#modalDialogContainer");
 
-    if (status.code !== KTR.STATUS.UNKNOWN) {
-      // 出社
-      if (status.start) {
-        $("#action1").text("出社 " + status.start);
-      }
-      else {
-        $("#action1").addClass("enabled").click(function(){
-          confirmDialog("出社しましたか？", function(){
-            stamp(KTR.STAMP.ON);
-          });
-        });
-      }
-
-      // 退社
-      if (status.leave) {
-        $("#action2").text("退社 " + status.leave);
-      }
-      else {
-        $("#action2").addClass("enabled").click(function(){
-          confirmDialog("退社しますか？", function(){
-            stamp(KTR.STAMP.OFF);
-          });
-        });
-      }
-    }
+    // 出社、退社
+    updateStatus(status);
 
     // 勤之助を開く
     $("#service").click(function(){
@@ -60,29 +37,82 @@
     });
   }
 
-  // 確認ダイアログを開く
-  function confirmDialog(msg, callback) {
-    $m.show(100);
-    $d.empty()
-      .append($("<p/>").text(msg))
-      .append($("<button/>").text("はい")  .click(closeDialog).click(callback))
-      .append($("<button/>").text("いいえ").click(closeDialog))
-      .show(100, function(){
-        $d.css("top", ($m.innerHeight() - $d.innerHeight()) / 2);
-      });
+  /**
+   * 出社、退社の表示
+   */
+  function updateStatus(status) {
+    $("#action1").text("出社").removeClass("enabled").unbind("click", start_work);
+    $("#action2").text("退社").removeClass("enabled").unbind("click", leave_work);
+
+    if (status.code !== KTR.STATUS.UNKNOWN) {
+      if (status.start)
+        $("#action1").text("出社 " + status.start);
+      else
+        $("#action1").addClass("enabled").click(start_work);
+
+      // 退社
+      if (status.leave)
+        $("#action2").text("退社 " + status.leave);
+      else
+        $("#action2").addClass("enabled").click(leave_work);
+    }
   }
 
-  // ダイアログを閉じる
-  function closeDialog() {
-    $m.hide(100);
-    $d.hide(100, function(){ $d.empty() });
-  }
-
-  // 打刻
-  function stamp(type) {
-    KTR.service.stamp(type, function(){
-      location.reload(true);
+  /**
+   * 出社処理
+   */
+  function start_work() {
+    confirmDialog("出社しましたか？", function(){
+      stamp(KTR.STAMP.ON);
     });
+  }
+
+  /**
+   * 退社処理
+   */
+  function leave_work() {
+    confirmDialog("退社しますか？", function(){
+      stamp(KTR.STAMP.OFF);
+    });
+  }
+
+  /**
+   * 確認ダイアログを開く
+   */
+  function confirmDialog(msg, callback) {
+    var dialogId = dialogs.length + 1;
+    var $diag = $('<div id="modalDialog'+dialogId+'"/>').hide();
+    var $m = $("<div/>").addClass("modal");
+    var $d = $("<div/>").addClass("dialog")
+           .append($("<p/>").text(msg))
+           .append($("<button/>").addClass("confirm").text("はい")  .click(closeDialog).click(callback))
+           .append($("<button/>").addClass("confirm").text("いいえ").click(closeDialog));
+    $diag.append($m).append($d).appendTo($dcon);
+    $diag.show(100, function(){
+      $d.css("top", ($m.innerHeight() - $d.innerHeight()) / 2);
+    });
+    dialogs.push($diag);
+  }
+
+  /**
+   * ダイアログを閉じる
+   */
+  function closeDialog(recursive) {
+    var $diag = dialogs.pop();
+    if ($diag) {
+      $diag.hide(100, function(){
+        $diag.empty().remove();
+        if (recursive)
+          closeDialog(true);
+      });
+    }
+  }
+
+  /**
+   * 打刻
+   */
+  function stamp(type) {
+    KTR.service.stamp(type, updateStatus);
   }
 
   $(init);

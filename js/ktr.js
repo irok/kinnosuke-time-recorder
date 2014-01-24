@@ -210,7 +210,7 @@ KTR.service = {
         }
         KTR.view.update(KTR.status.cache(status));
         KTR.notify(KTR.ACTION[type] + "しました。");
-        callback();
+        callback(status);
       });
     });
   },
