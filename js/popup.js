@@ -21,7 +21,7 @@
       }
       else {
         $("#action1").addClass("enabled").click(function(){
-          confirmDialog("出社しましたか？", function(){
+          confirmDialog("出社しますか？", function(){
             stamp(KTR.STAMP.ON);
           });
         });
