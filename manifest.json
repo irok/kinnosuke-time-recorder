@@ -2,7 +2,7 @@
   // Required
   "manifest_version": 2,
   "name": "勤之助タイムレコーダー",
-  "version": "1.1.6",
+  "version": "1.1.7",
 
   // Recommended
   "description": "勤之助のタイムレコーダーを押す",
