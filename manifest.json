@@ -1,10 +1,8 @@
 {
-  // Required
   "manifest_version": 2,
   "name": "勤之助タイムレコーダー",
   "version": "1.1.7",
 
-  // Recommended
   "description": "勤之助のタイムレコーダーを押す",
   "icons": {
     "16":  "/images/icon19.png",
@@ -12,17 +10,14 @@
     "128": "/images/icon128.png"
   },
 
-  // Pick one (or none)
   "browser_action": {
     "default_icon": "/images/icon19.png",
     "default_title": "勤之助",
     "default_popup": "/html/popup.html"
   },
 
-  // Optional
   "author": "irok",
   "background": {
-    // Recommended
     "scripts": [
       "/js/lib/jquery.min.js",
       "/js/lib/aes.js",
@@ -36,6 +31,5 @@
   "options_page": "/html/options.html",
   "permissions": [
     "https://www.4628.jp/*", "notifications"
-  ],
-  "update_url": "https://github.com/irok/KinnosukeTimeRecorder/raw/master/updates.xml"
+  ]
 }
