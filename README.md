@@ -5,7 +5,7 @@
 
 ## インストール
 
-Chrome ウェブストアから「[勤之助タイムレコーダー](https://chrome.google.com/webstore/detail/%E5%8B%A4%E4%B9%8B%E5%8A%A9%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%80%E3%83%BC/onohbjcjcdlmfheogadpfopadlmpicmk/related?hl=ja)」をインストールしてください。
+Chrome ウェブストアから「[勤之助タイムレコーダー](https://chrome.google.com/webstore/detail/%E5%8B%A4%E4%B9%8B%E5%8A%A9%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%80%E3%83%BC/onohbjcjcdlmfheogadpfopadlmpicmk?hl=ja)」をインストールしてください。
 
 
 ## 使い方
