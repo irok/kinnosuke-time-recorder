@@ -3,7 +3,7 @@
   "name": "勤之助タイムレコーダー",
   "version": "1.2.0",
 
-  "description": "勤之助のタイムレコーダーを押す",
+  "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome Extensionです。",
   "icons": {
     "16":  "/images/icon19.png",
     "48":  "/images/icon48.png",

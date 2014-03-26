@@ -1,13 +1,12 @@
 # Kinnosuke Time Recorder
 
-Web版勤怠管理システム「[勤之助](https://www.4628.jp/)」のタイムレコーダーを押すためのChrome Extensionです。
+万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome Extensionです。
 勤之助はログインセッションのTTLがすごく短いのですが、このExtensionを使うといちいちログインする必要なく、勤怠ボタンを押したり、勤之助を開いたりできます。
 
 ## インストール
 
-1. [KinnosukeTimeRecorder.crx](https://github.com/irok/KinnosukeTimeRecorder/raw/master/KinnosukeTimeRecorder.crx) をダウンロードします。（警告が出たり出なかったりします。）
-2. Chromeの拡張機能ページ（chrome://extensions）を開き、先ほどのファイルをドラッグ&ドロップします。
-3. インストールが完了するとツールバーに ![勤](https://github.com/irok/KinnosukeTimeRecorder/raw/master/images/icon19.png) アイコンが表示されます。（クリックするとメニューが開きます。）
+Chrome ウェブストアから「[勤之助タイムレコーダー](https://chrome.google.com/webstore/detail/%E5%8B%A4%E4%B9%8B%E5%8A%A9%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%80%E3%83%BC/onohbjcjcdlmfheogadpfopadlmpicmk/related?hl=ja)」をインストールしてください。
+
 
 ## 使い方
 
