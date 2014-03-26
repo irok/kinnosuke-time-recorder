@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "勤之助タイムレコーダー",
-  "version": "1.1.7",
+  "version": "1.2.0",
 
   "description": "勤之助のタイムレコーダーを押す",
   "icons": {
