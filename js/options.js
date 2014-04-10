@@ -1,29 +1,31 @@
-(function(bg)
-{
-  var KTR = bg.KTR;
+(function(app){
+	var KTR = app.KTR;
 
-  // 設定を読み込んでフォームにセットする
-  function restore() {
-    $("#cstmid").val(KTR.credential.get("cstmid"));
-    $("#userid").val(KTR.credential.get("userid"));
-    $("#passwd").val(KTR.credential.get("passwd"));
-  }
+	// 設定を読み込んでフォームにセットする
+	function restore() {
+		KTR.credential.get(function(cstmid, userid, passwd){
+			$("#cstmid").val(cstmid);
+			$("#userid").val(userid);
+			$("#passwd").val(passwd);
+		});
+	}
 
-  // 設定を保存する
-  function save() {
-    KTR.credential.update(
-      $("#cstmid").val(),
-      $("#userid").val(),
-      $("#passwd").val()
-    );
-    KTR.status.forceUpdate(function(status){
-      KTR.notify("保存しました。");
-    });
-  }
+	// 設定を保存する
+	function save() {
+		KTR.credential.update(
+			$("#cstmid").val(),
+			$("#userid").val(),
+			$("#passwd").val()
+		);
+		KTR.notify("保存しました。");
 
-  $(function(){
-    restore();
-    $("#saveBtn").click(save);
-  });
-}
-)(chrome.extension.getBackgroundPage());
+		KTR.service.logout(function(){
+			KTR.status.update(null, true);
+		});
+	}
+
+	$(function(){
+		restore();
+		$("#saveBtn").click(save);
+	});
+})(chrome.extension.getBackgroundPage());
