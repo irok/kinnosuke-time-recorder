@@ -168,12 +168,12 @@ var KTR = (function(){
 	 * 状態管理
 	 */
 	KTR.status = {
-		update: function(callback, force_flg) {
+		update: function(callback, force_connect) {
+			var status;
 			if (typeof callback !== 'function')
 				callback = NOP;
 
-			var status = status_cache();
-			if (status !== null && !force_flg) {
+			if (!force_connect && (status = status_cache()) !== null) {
 				callback(status);
 				return;
 			}

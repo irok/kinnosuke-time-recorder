@@ -4,15 +4,9 @@
 	/**
 	 * メニュー初期化
 	 */
-	function init(status) {
-		// 出社、退社
-		updateStatus(status);
-
+	function init() {
 		// 勤之助を開く
 		$('#service').click(function(){ openKTR() });
-		if (status.information.recent) {
-			$('#service').text('新しいお知らせ').addClass('attention');
-		}
 
 		// 打刻忘れ／訂正
 		$('#rectify').click(function(){
@@ -30,6 +24,17 @@
 		// オプション
 		$('#options').click(function(){
 			window.open('/html/options.html', '_blank');
+		});
+
+		// 状態による内容の設定
+		KTR.status.update(function(status){
+			// 出社、退社
+			updateStatus(status);
+
+			// お知らせ
+			if (status.information.recent) {
+				$('#service').text('新しいお知らせ').addClass('attention');
+			}
 		});
 	}
 
@@ -116,14 +121,22 @@
 				return encodeURIComponent(key) + '=' + encodeURIComponent(param[key]);
 			}).join('&')
 		}
-		KTR.status.update(function(status){
-			KTR.information.changeStatusToRead(status);
+
+		// ログインエラーなどが発生しても勤之助を開く
+		var error_bak = KTR.error;
+		var _open = function(arg) {
+			KTR.error = error_bak;
+			if (typeof arg === 'object') {
+				KTR.information.changeStatusToRead(arg);
+			}
 			window.open(url, '_blank');
-		});
+		};
+		KTR.error = _open;
+		KTR.status.update(_open, true);
 	}
 
 	$(function(){
 		$dcon = $('#modalDialogContainer');
-		KTR.status.update(init);
+		init();
 	});
 })(chrome.extension.getBackgroundPage());
