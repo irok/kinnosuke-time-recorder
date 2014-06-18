@@ -8,18 +8,8 @@
 		// 勤之助を開く
 		$('#service').click(function(){ openKTR() });
 
-		// 打刻忘れ／訂正
-		$('#rectify').click(function(){
-			openKTR({
-				application_form_master_id: 4,
-				entry: 1,
-				module: 'application_form',
-				action: 'editor',
-				status: 'default',
-				search_acceptation_status: 1,
-				application_remarks: '打刻し忘れました。'
-			})
-		});
+		// 各種申請
+		$('#appform').click(function(){ openApplicationForm() });
 
 		// オプション
 		$('#options').click(function(){
@@ -79,17 +69,36 @@
 		KTR.service.stamp(type, updateStatus);
 	}
 
+	// 各種申請
+	function openApplicationForm() {
+		openKTR({
+			module: 'application_form',
+			action: 'application_form',
+		});
+	}
+
 	/**
 	 * 確認ダイアログを開く
 	 */
 	function confirmDialog(msg, callback) {
+		openDialog(
+			$('<p/>').text(msg),
+			$('<button/>').addClass('confirm').text('はい')  .click(closeDialog).click(callback),
+			$('<button/>').addClass('confirm').text('いいえ').click(closeDialog)
+		);
+	}
+
+	/**
+	 * ダイアログを開く
+	 */
+	function openDialog() {
 		var dialogId = 'modalDialog' + (dialogs.length + 1);
-		var $diag = $('<div id="'+dialogId+'"/>').hide();
+		var $diag = $('<div id="' + dialogId + '"/>').hide();
 		var $m = $('<div/>').addClass('modal');
-		var $d = $('<div/>').addClass('dialog')
-		                    .append( $('<p/>').text(msg) )
-		                    .append( $('<button/>').addClass('confirm').text('はい')  .click(closeDialog).click(callback) )
-		                    .append( $('<button/>').addClass('confirm').text('いいえ').click(closeDialog) );
+		var $d = $('<div/>').addClass('dialog');
+		for (var i = 0, max = arguments.length; i < max; i++) {
+			$d.append(arguments[i]);
+		}
 		$diag.append($m).append($d).appendTo($dcon);
 		$diag.show(100, function(){
 			$d.css('top', ($m.innerHeight() - $d.innerHeight()) / 2);
