@@ -1,13 +1,25 @@
 {
   "manifest_version": 2,
   "name": "勤之助タイムレコーダー",
-  "version": "2.0.2",
-
+  "version": "2.1.0",
   "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
+  "author": "irok",
+  "homepage_url": "https://chrome.google.com/webstore/detail/%E5%8B%A4%E4%B9%8B%E5%8A%A9%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%80%E3%83%BC/onohbjcjcdlmfheogadpfopadlmpicmk",
+
   "icons": {
     "16":  "/images/icon19.png",
     "48":  "/images/icon48.png",
     "128": "/images/icon128.png"
+  },
+
+  "background": {
+    "scripts": [
+      "/js/lib/jquery.min.js",
+      "/js/lib/aes.js",
+      "/js/ktr.js",
+      "/js/background.js"
+    ],
+    "persistent": false
   },
 
   "browser_action": {
@@ -16,20 +28,9 @@
     "default_popup": "/html/popup.html"
   },
 
-  "author": "irok",
-  "background": {
-    "scripts": [
-      "/js/lib/jquery.min.js",
-      "/js/lib/aes.js",
-      "/js/ktr.js",
-      "/js/background.js"
-    ],
-    "persistent": true
-  },
-  "homepage_url": "https://chrome.google.com/webstore/detail/%E5%8B%A4%E4%B9%8B%E5%8A%A9%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%AC%E3%82%B3%E3%83%BC%E3%83%80%E3%83%BC/onohbjcjcdlmfheogadpfopadlmpicmk",
-  "offline_enabled": false,
   "options_page": "/html/options.html",
+
   "permissions": [
-    "https://www.4628.jp/*", "notifications"
+    "https://www.4628.jp/*", "notifications", "tabs"
   ]
 }
