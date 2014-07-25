@@ -14,8 +14,8 @@
 
   "background": {
     "scripts": [
-      "/js/lib/jquery.min.js",
-      "/js/lib/aes.js",
+      "/js/vendor/jquery.min.js",
+      "/js/vendor/aes.js",
       "/js/ktr.js",
       "/js/background.js"
     ],
@@ -28,9 +28,18 @@
     "default_popup": "/html/popup.html"
   },
 
+  "content_scripts": [{
+    "matches": ["https://www.4628.jp/*"],
+    "js": [
+      "/js/ktr.js",
+      "/js/content.js"
+    ],
+    "run_at": "document_end"
+  }],
+
   "options_page": "/html/options.html",
 
   "permissions": [
-    "https://www.4628.jp/*", "notifications", "tabs"
+    "https://www.4628.jp/*", "notifications"
   ]
 }
