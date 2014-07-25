@@ -70,22 +70,21 @@ var KTR = (function(){
                           title: manifest.name,
                           iconUrl: manifest.icons['128'],
                           notifyId: '',
-                          callback: NOP
+                          autoClear: false
                       }, opts);
-        var notifyId = options.notifyId; delete options.notifyId;
-        var callback = options.callback; delete options.callback;
-        chrome.notifications.create(notifyId, options, callback);
+        var notifyId  = options.notifyId;  delete options.notifyId;
+        var autoClear = options.autoClear; delete options.autoClear;
+        chrome.notifications.create(notifyId, options, function(id) {
+            if (autoClear) {
+                setTimeout(function() {
+                    KTR.notify.clear(id);
+                }, 3.5 * 1000);
+            }
+        });
     };
-
-    KTR.notify.autoClear = function(callback) {
-        return function(id) {
-            setTimeout(function(){
-                chrome.notifications.clear(id, NOP);
-                if (typeof callback === 'function') {
-                    callback(id);
-                }
-            }, 3.5 * 1000);
-        };
+    KTR.notify.clear = function(id) {
+        console.log('onAlarm: '+id);
+        chrome.notifications.clear(id, NOP);
     };
 
     /**
@@ -340,10 +339,11 @@ var KTR = (function(){
                         KTR.error('処理に失敗しました。');
                         return;
                     }
+                    KTR.clearAnnounce();
                     KTR.notify({
                         message: KTR.ACTION[type] + 'しました。',
                         contextMessage: ['', status.start, status.leave][type],
-                        callback: KTR.notify.autoClear(KTR.clearAnnounce)
+                        callback: true
                     });
                     callback(status);
                 });

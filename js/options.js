@@ -23,7 +23,7 @@ function save() {
     );
     KTR.notify({
         message: '保存しました。',
-        callback: KTR.notify.autoClear()
+        autoClear: true
     });
 
     KTR.service.logout(function(){
