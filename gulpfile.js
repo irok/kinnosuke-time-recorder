@@ -32,52 +32,28 @@ gulp.task('jshint', function() {
 /**
  * ビルド
  */
-gulp.task('build-local', ['build-html', 'build-js', 'build-copy']);
-
-gulp.task('build-html', function() {
-    return gulp.src('html/*.html')
-        .pipe($.changed('build/html/'))
-        .pipe($.htmlmin({
-            collapseWhitespace: true,
-            minifyCSS: true
-        }))
-        .pipe(gulp.dest('build/html/'));
-});
-
-gulp.task('build-js', function() {
-    return gulp.src('js/*.js')
-        .pipe($.changed('build/js/'))
-        .pipe($.uglify({sourceMap: true}))
-        .pipe(gulp.dest('build/js/'));
-});
-
-gulp.task('build-copy', function() {
-    return merge(
-        gulp.src('images/**')
-            .pipe($.changed('build/images/'))
-            .pipe(gulp.dest('build/images/')),
-        gulp.src('js/vendor/**')
-            .pipe($.changed('build/js/vendor/'))
-            .pipe(gulp.dest('build/js/vendor/')),
+gulp.task('build', function(done) {
+    $.util.log('Copy to tmp dir');
+    merge(
         gulp.src('manifest.json')
-            .pipe($.changed('build/'))
-            .pipe(gulp.dest('build/'))
-    );
-});
-
-/**
- * ZIPファイル生成
- */
-gulp.task('zip', ['build-local'], function() {
-    gulp.src('build/**')
-        .pipe($.zip('KinnosukeTimeRecorder.zip'))
-        .pipe(gulp.dest('./'));
-});
-
-/**
- * クリーンナップ
- */
-gulp.task('cleanup', function() {
-    gulp.src('build/', {read: false})
-        .pipe($.rimraf());
+            .pipe(gulp.dest('tmp/')),
+        gulp.src('html/**')
+            .pipe(gulp.dest('tmp/html/')),
+        gulp.src('images/**')
+            .pipe(gulp.dest('tmp/images/')),
+        gulp.src('js/**')
+            .pipe(gulp.dest('tmp/js/'))
+    )
+    .on('end', function() {
+        $.util.log('Create zip file');
+        gulp.src('tmp/**')
+            .pipe($.zip('KinnosukeTimeRecorder.zip'))
+            .pipe(gulp.dest('./'))
+        .on('end', function() {
+            $.util.log('Remove tmp dir');
+            gulp.src('tmp/', {read: false})
+                .pipe($.rimraf());
+            done();
+        });
+    });
 });

@@ -1,5 +1,5 @@
 .idea/
-build/
+tmp/
 node_modules/
 *.zip
 *.sublime-*

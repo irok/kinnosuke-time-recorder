@@ -1,13 +1,13 @@
 /*global KTR */
 
-$(function(){
+$(function() {
     restore();
     $('#saveBtn').click(save);
 });
 
 // 設定を読み込んでフォームにセットする
 function restore() {
-    KTR.credential.get(function(cstmid, userid, passwd){
+    KTR.credential.get(function(cstmid, userid, passwd) {
         $('#cstmid').val(cstmid);
         $('#userid').val(userid);
         $('#passwd').val(passwd);
@@ -26,7 +26,7 @@ function save() {
         autoClear: true
     });
 
-    KTR.service.logout(function(){
+    KTR.service.logout(function() {
         KTR.status.update(null, true);
     });
 }

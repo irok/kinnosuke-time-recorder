@@ -2,7 +2,7 @@
 
 var dialogs = [], $dcon;
 
-$(function(){
+$(function() {
     $dcon = $('#modalDialogContainer');
     init();
 });
@@ -18,12 +18,12 @@ function init() {
     $('#appform').click(function(){ openApplicationForm() });
 
     // オプション
-    $('#options').click(function(){
+    $('#options').click(function() {
         window.open('/html/options.html', '_blank');
     });
 
     // 状態による内容の設定
-    KTR.status.update(function(status){
+    KTR.status.update(function(status) {
         // 出社、退社
         updateStatus(status);
 
@@ -35,9 +35,11 @@ function init() {
 }
 
 /**
-* 出社、退社、お知らせの表示
-*/
+ * 出社、退社、お知らせの表示
+ */
 function updateStatus(status) {
+console.log('start updateStatus(status)');
+console.log(status);
     if (status.code === KTR.STATUS.UNKNOWN) {
         return;
     }
@@ -73,6 +75,7 @@ function leaveWork() {
  * 打刻
  */
 function stamp(type) {
+console.log('KTR.service.stamp(type, updateStatus)');
     KTR.service.stamp(type, updateStatus);
 }
 
@@ -109,7 +112,7 @@ function openDialog() {
         $d.append(arguments[i]);
     }
     $diag.append($m).append($d).appendTo($dcon);
-    $diag.show(100, function(){
+    $diag.show(100, function() {
         $d.css('top', ($m.innerHeight() - $d.innerHeight()) / 2);
     });
     dialogs.push($diag);
@@ -121,7 +124,7 @@ function openDialog() {
 function closeDialog(recursive) {
     var $diag = dialogs.pop();
     if ($diag) {
-        $diag.hide(100, function(){
+        $diag.hide(100, function() {
             $diag.empty().remove();
             if (recursive) {
                 closeDialog(true);
@@ -136,7 +139,7 @@ function closeDialog(recursive) {
 function openKTR(param) {
     var url = KTR.service.url;
     if (typeof param === 'object') {
-        url += '?' + $.map(Object.keys(param), function(key){
+        url += '?' + $.map(Object.keys(param), function(key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(param[key]);
         }).join('&')
     }
