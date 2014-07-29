@@ -38,8 +38,6 @@ function init() {
  * 出社、退社、お知らせの表示
  */
 function updateStatus(status) {
-console.log('start updateStatus(status)');
-console.log(status);
     if (status.code === KTR.STATUS.UNKNOWN) {
         return;
     }
@@ -75,7 +73,6 @@ function leaveWork() {
  * 打刻
  */
 function stamp(type) {
-console.log('KTR.service.stamp(type, updateStatus)');
     KTR.service.stamp(type, updateStatus);
 }
 

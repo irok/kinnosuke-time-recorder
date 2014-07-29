@@ -320,7 +320,6 @@ var KTR = (function() {
 
         // 出社・退社ボタンを押す
         stamp: function(type, callback) {
-console.log('KTR.service.stamp('+type+', callback)');
             KTR.service.getCsrfToken(function(token) {
                 var formData = {
                     module: 'timerecorder',
@@ -330,10 +329,8 @@ console.log('KTR.service.stamp('+type+', callback)');
                 };
                 formData[token.key] = token.value;
 
-console.log('KTR.service.post(formData, callback)');
                 KTR.service.post(formData, function(html) {
                     var status = KTR.status.apply(html);
-console.log(status);
                     if (
                         type === KTR.STAMP.ON  && !status.start ||
                         type === KTR.STAMP.OFF && !status.leave
@@ -341,15 +338,12 @@ console.log(status);
                         KTR.error('処理に失敗しました。');
                         return;
                     }
-console.log('KTR.notify("'+KTR.ACTION[type] + 'しました。'+'")');
                     KTR.notify({
                         message: KTR.ACTION[type] + 'しました。',
                         contextMessage: ['', status.start, status.leave][type],
                         autoClear: true
                     });
-console.log('KTR.clearAnnounce()');
                     KTR.clearAnnounce();
-console.log('callback(status)');
                     callback(status);
                 });
             });
