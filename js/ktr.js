@@ -121,14 +121,13 @@ var KTR = (function() {
      */
     KTR.credential = {
         get: function(callback) {
+            var t = {cstmid:'', userid:'', passwd:''};
             try {
-                var t = JSON.parse(localStorage.Credential);
+                t = JSON.parse(localStorage.Credential);
                 t.passwd = Crypto.decrypt(t.encrypted);
-                return callback(t.cstmid, t.userid, t.passwd);
             }
-            catch (e) {
-                return callback('', '', '');
-            }
+            catch (e) {}
+            return callback(t.cstmid, t.userid, t.passwd);
         },
         update: function(cstmid, userid, passwd) {
             localStorage.Credential = JSON.stringify({
@@ -280,16 +279,16 @@ var KTR = (function() {
                 return;
             }
 
-            var formData = {
-                login_save:1, module:'login', Submit:'ログイン'
-            };
-            KTR.credential.get(function(cstmid, userid, passwd) {
-                formData.y_companycd = cstmid;
-                formData.y_logincd   = userid;
-                formData.password    = passwd;
+            var formData = KTR.credential.get(function(cstmid, userid, passwd) {
+                return {
+                    module: 'login',
+                    y_companycd: cstmid,
+                    y_logincd: userid,
+                    password: passwd
+                };
             });
             KTR.service.post(formData, function(html) {
-                if (KTR.status.apply(html).authorized) {
+                if (KTR.status.analyze(html).authorized) {
                     callback(html);
                     return;
                 }
@@ -353,17 +352,7 @@ var KTR = (function() {
 
         // POSTリクエストを送信する
         post: function(formData, callback) {
-            return $.ajax({
-                type: 'POST',
-                url: KTR.service.url,
-                data: formData,
-                dataType: 'html',
-                cache: false,
-                success: callback,
-                error: function(jqXHR, textStatus, errorThrown) {
-                    KTR.error(textStatus + ': ' + errorThrown);
-                }
-            })
+            $.post(KTR.service.url, formData, callback, 'html');
         }
     };
 

@@ -25,7 +25,7 @@ function init() {
     // 状態による内容の設定
     KTR.status.update(function(status) {
         // 出社、退社
-        updateStatus(status);
+        updateMenu(status);
 
         // お知らせ
         if (status.information.recent) {
@@ -37,7 +37,7 @@ function init() {
 /**
  * 出社、退社、お知らせの表示
  */
-function updateStatus(status) {
+function updateMenu(status) {
     if (status.code === KTR.STATUS.UNKNOWN) {
         return;
     }
@@ -73,7 +73,7 @@ function leaveWork() {
  * 打刻
  */
 function stamp(type) {
-    KTR.service.stamp(type, updateStatus);
+    KTR.service.stamp(type, updateMenu);
 }
 
 /**

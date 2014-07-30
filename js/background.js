@@ -1,18 +1,9 @@
 /*global KTR */
 
-var updated = false;
-function updateStatus() {
-    if (!updated) {
-        KTR.status.update();
-        updated = true;
-    }
-}
-
 // ブラウザ起動時にステータスを更新
-chrome.runtime.onStartup.addListener(updateStatus);
-
-// 拡張再起動
-window.addEventListener('load', updateStatus);
+chrome.runtime.onStartup.addListener(function() {
+    KTR.status.update();
+});
 
 // コンテントスクリプトからのステータス更新通知
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
