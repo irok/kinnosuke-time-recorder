@@ -1,3 +1,5 @@
+/*global $ */
+
 /**
  * Kinnosuke Time Recorder
  */

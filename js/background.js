@@ -1,7 +1,11 @@
 /*global KTR */
 
+var updated = false;
 function updateStatus() {
-    KTR.status.update();
+    if (!updated) {
+        KTR.status.update();
+        updated = true;
+    }
 }
 
 // ブラウザ起動時にステータスを更新
@@ -18,4 +22,3 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     }
     sendResponse();
 });
-

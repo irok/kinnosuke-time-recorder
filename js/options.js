@@ -1,4 +1,4 @@
-/*global KTR */
+/*global KTR,$ */
 
 $(function() {
     restore();

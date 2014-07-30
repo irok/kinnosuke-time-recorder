@@ -2,7 +2,6 @@
     "bitwise": true,
     "curly": true,
     "eqeqeq": true,
-    "freeze": true,
     "immed": true,
     "latedef": false,
     "newcap": true,
@@ -20,7 +19,6 @@
     "expr": true,
     "browser": true,
     "devel" : true,
-    "jquery": true,
     "nonstandard": true,
-    "predef": ["chrome", "$", "CryptoJS"]
+    "predef": ["chrome", "CryptoJS"]
 }
