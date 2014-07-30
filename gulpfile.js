@@ -1,9 +1,10 @@
 /*global require */
 
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
+var gulp  = require('gulp');
+var $     = require('gulp-load-plugins')();
 var merge = require('event-stream').merge;
-var del = require('del');
+var del   = require('del');
+var bower = require('bower');
 
 var subtask = function(name, fn_task, cb) {
     $.util.log('run "' + name + '"');
@@ -20,12 +21,12 @@ var subtask = function(name, fn_task, cb) {
 };
 
 /**
- * デフォルトタスク
+ * Dafault
  */
 gulp.task('default', ['watch']);
 
 /**
- * 監視
+ * Watch
  */
 gulp.task('watch', function() {
     gulp.watch('html/*', ['htmlhint']);
@@ -57,18 +58,20 @@ gulp.task('lint', function() {
 });
 
 /**
- * ビルド
+ * Build
  */
 function prepare() {
     return merge(
         gulp.src('manifest.json')
             .pipe(gulp.dest('tmp/')),
-        gulp.src('html/**')
+        gulp.src('html/*')
             .pipe(gulp.dest('tmp/html/')),
-        gulp.src('images/**')
+        gulp.src('images/*')
             .pipe(gulp.dest('tmp/images/')),
-        gulp.src('js/**')
-            .pipe(gulp.dest('tmp/js/'))
+        gulp.src('js/*')
+            .pipe(gulp.dest('tmp/js/')),
+        gulp.src('vendor/*')
+            .pipe(gulp.dest('tmp/vendor/'))
     );
 }
 
@@ -79,7 +82,7 @@ function zip() {
 }
 
 function clean(cb) {
-    del(['tmp/', 'KinnosukeTimeRecorder'], cb);
+    del(['tmp/', 'KinnosukeTimeRecorder/'], cb);
 }
 
 gulp.task('prepare', prepare);
@@ -90,6 +93,22 @@ gulp.task('build', ['lint'], function(done) {
     subtask('prepare', prepare, function() {
         subtask('zip', zip, function() {
             subtask('clean', clean, done);
+        });
+    });
+});
+
+/**
+ * Init
+ */
+gulp.task('init', function(done) {
+    bower.commands.install().on('end', function() {
+        del(['vendor/'], function() {
+            gulp.src([
+                'bower_components/crypto-js-evanvosberg/build/rollups/aes.js',
+                'bower_components/jquery/dist/jquery.min.js'
+            ])
+                .pipe(gulp.dest('vendor/'))
+                .on('end', done);
         });
     });
 });
