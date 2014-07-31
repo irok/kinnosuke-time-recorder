@@ -22,6 +22,15 @@ Chrome ウェブストアから「[勤之助タイムレコーダー](https://ch
 - ログイン情報はlocalStorageに保存します。どこかのサーバーに送信したりはしません。（勤之助には送信します。）
 - パスワードは暗号化した状態で保存しますが、暗号キーもlocalStorageに保存するので、マスターキーなしでブラウザにパスワード保存しているのと大して変わりません。（デベロッパーツールでうっかりlocalStorageを開いても生のパスワードは見られずにすむ、程度の効果です。）
 
+## 開発について
+
+```
+git clone git@github.com:irok/KinnosukeTimeRecorder.git
+npm install
+```
+
+chrome://extensions/ の「デベロッパーモード」をチェックして「パッケージ化されていない拡張機能を読み込む」を押し、KinnosukeTimeRecorder ディレクトリを選択してください。
+
 ## 更新履歴
 
 - v2.1.0 (2014-07-31)
