@@ -4,7 +4,8 @@
 chrome.runtime.onStartup.addListener(function() {
     if (!KTR.view.update_from_cache()) {
         KTR.status.update(function() {
-            chrome.runtime.reload();
+            // プロセスが残る問題が解決しないようなら外す（ただしアイコンが1回消える）
+            // chrome.runtime.reload();
         });
     }
 });
