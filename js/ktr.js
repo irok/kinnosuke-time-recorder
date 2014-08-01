@@ -9,7 +9,7 @@ var KTR = (function() {
      */
     var KTR = {
         STATUS: {UNKNOWN:0, BEFORE:1, ON_THE_JOB:2, AFTER:3},
-        BADGE: ['', '#ff7', '#7f7', '#77f'],
+        BADGE: ['#fff', '#ff7', '#7f7', '#77f'],
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON:1, OFF:2},
         ACTION: ['', '出社', '退社']
@@ -52,13 +52,22 @@ var KTR = (function() {
      */
     KTR.view = {
         update: function(status) {
-            if (status.code === KTR.STATUS.UNKNOWN) {
-                chrome.browserAction.setBadgeText({text:''});
+            var ba = chrome.browserAction, enabled;
+            if (status === null || status.code === KTR.STATUS.UNKNOWN) {
+                ba.setBadgeText({text:''});
+                ba.setTitle({title:KTR.TITLE[KTR.STATUS.UNKNOWN]});
+                enabled = false;
             } else {
-                chrome.browserAction.setBadgeText({text:' '});
-                chrome.browserAction.setBadgeBackgroundColor({color:KTR.BADGE[status.code]});
+                ba.setBadgeText({text:' '});
+                ba.setBadgeBackgroundColor({color:KTR.BADGE[status.code]});
+                ba.setTitle({title:KTR.TITLE[status.code]});
+                KTR.firstAnnounce(status);
+                enabled = true;
             }
-            chrome.browserAction.setTitle({title:KTR.TITLE[status.code]});
+            return enabled;
+        },
+        update_from_cache: function() {
+            return KTR.view.update(status_cache());
         }
     };
 
@@ -148,6 +157,11 @@ var KTR = (function() {
      */
     KTR.status = {
         update: function(callback, force_connect) {
+            if (!KTR.credential.valid()) {
+                KTR.status.scan('');
+                return;
+            }
+
             var status;
             if (typeof callback !== 'function') {
                 callback = NOP;
@@ -160,23 +174,18 @@ var KTR = (function() {
             }
 
             KTR.service.mytop(function(html) {
-                callback(KTR.status.apply(html));
+                callback(KTR.status.scan(html));
             });
         },
-        apply: function(html) {
-            return KTR.status.apply_(KTR.status.analyze(html));
+        scan: function(html) {
+            return KTR.status.change(KTR.status.scrape(html));
         },
-        apply_: function(status) {
-            if (status.authorized) {
-                KTR.firstAnnounce(status);
-                status_cache(status);
-            } else {
-                status_cache(null);
-            }
+        change: function(status) {
+            status_cache(status.authorized ? status : null);
             KTR.view.update(status);
             return status;
         },
-        analyze: function(html) {
+        scrape: function(html) {
             var status = {
                 code: KTR.STATUS.UNKNOWN,
                 authorized: /ログアウト/.test(html)
@@ -217,7 +226,7 @@ var KTR = (function() {
         } else {
             localStorage.StatusCache = JSON.stringify({
                 data: arguments[0],
-                expires: Date.now() + 10 * 60 * 1000
+                expires: Date.now() + 60 * 60 * 1000
             });
         }
     }
@@ -265,7 +274,7 @@ var KTR = (function() {
         // マイページトップにアクセスする
         mytop: function(callback) {
             $.get(KTR.service.url, function(html) {
-                if (KTR.status.analyze(html).authorized) {
+                if (KTR.status.scrape(html).authorized) {
                     callback(html);
                     return;
                 }
@@ -288,7 +297,7 @@ var KTR = (function() {
                 };
             });
             KTR.service.post(formData, function(html) {
-                if (KTR.status.analyze(html).authorized) {
+                if (KTR.status.scrape(html).authorized) {
                     callback(html);
                     return;
                 }
@@ -302,7 +311,7 @@ var KTR = (function() {
                 kihon_settei:'#', module:'logout', logout:'ログアウト'
             };
             KTR.service.post(formData, function(html) {
-                KTR.status.apply(html);
+                KTR.status.scan(html);
                 callback();
             });
         },
@@ -331,7 +340,7 @@ var KTR = (function() {
                 formData[token.key] = token.value;
 
                 KTR.service.post(formData, function(html) {
-                    var status = KTR.status.apply(html);
+                    var status = KTR.status.scan(html);
                     if (
                         type === KTR.STAMP.ON  && !status.start ||
                         type === KTR.STAMP.OFF && !status.leave

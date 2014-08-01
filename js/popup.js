@@ -141,6 +141,12 @@ function openKTR(param) {
         }).join('&')
     }
 
+    // 認証情報がなかったらそのまま開く
+    if (!KTR.credential.valid()) {
+        window.open(url, '_blank');
+        return;
+    }
+
     // ログインエラーなどが発生しても勤之助を開く
     var error_bak = KTR.error;
     var _open = function(arg) {
