@@ -24,10 +24,48 @@ var KTR = (function() {
      * 暗号化
      */
     var Crypto = (function() {
+        // https://code.google.com/p/crypto-js/#The_Cipher_Output
         var option = {
-            // https://code.google.com/p/crypto-js/#The_Cipher_Output
-            format: {stringify:function(a){var b={ct:a.ciphertext.toString(CryptoJS.enc.Base64)};a.iv&&(b.iv=a.iv.toString());a.salt&&(b.s=a.salt.toString());return JSON.stringify(b)},parse:function(a){a=JSON.parse(a);var b=CryptoJS.lib.CipherParams.create({ciphertext:CryptoJS.enc.Base64.parse(a.ct)});a.iv&&(b.iv=CryptoJS.enc.Hex.parse(a.iv));a.s&&(b.salt=CryptoJS.enc.Hex.parse(a.s));return b}}
+            format: {
+                stringify: function (cipherParams) {
+                    // create json object with ciphertext
+                    var jsonObj = {
+                        ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
+                    };
+
+                    // optionally add iv and salt
+                    if (cipherParams.iv) {
+                        jsonObj.iv = cipherParams.iv.toString();
+                    }
+                    if (cipherParams.salt) {
+                        jsonObj.s = cipherParams.salt.toString();
+                    }
+
+                    // stringify json object
+                    return JSON.stringify(jsonObj);
+                },
+                parse: function (jsonStr) {
+                    // parse json string
+                    var jsonObj = JSON.parse(jsonStr);
+
+                    // extract ciphertext from json object, and create cipher params object
+                    var cipherParams = CryptoJS.lib.CipherParams.create({
+                        ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+                    });
+
+                    // optionally extract iv and salt
+                    if (jsonObj.iv) {
+                        cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
+                    }
+                    if (jsonObj.s) {
+                        cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
+                    }
+
+                    return cipherParams;
+                }
+            }
         };
+
         var secret = function() {
             var s = localStorage.Secret;
             if (!s) {
@@ -80,22 +118,14 @@ var KTR = (function() {
                           type: 'basic',
                           title: manifest.name,
                           iconUrl: manifest.icons['128'],
-                          notifyId: '',
-                          autoClear: false
+                          notifyId: ''
                       }, opts);
         var notifyId  = options.notifyId;  delete options.notifyId;
-        var autoClear = options.autoClear; delete options.autoClear;
-        chrome.notifications.create(notifyId, options, function(id) {
-            if (autoClear) {
-                setTimeout(function() {
-                    KTR.notify.clear(id);
-                }, 3.5 * 1000);
-            }
-        });
+        chrome.notifications.create(notifyId, options, NOP);
     };
-    KTR.notify.clear = function(id) {
+    chrome.notifications.onClicked.addListener(function(id) {
         chrome.notifications.clear(id, NOP);
-    };
+    });
 
     /**
      * エラー通知
@@ -350,8 +380,7 @@ var KTR = (function() {
                     }
                     KTR.notify({
                         message: KTR.ACTION[type] + 'しました。',
-                        contextMessage: ['', status.start, status.leave][type],
-                        autoClear: true
+                        contextMessage: ['', status.start, status.leave][type]
                     });
                     KTR.clearAnnounce();
                     callback(status);

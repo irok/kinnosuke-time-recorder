@@ -22,8 +22,7 @@ function save() {
         $('#passwd').val()
     );
     KTR.notify({
-        message: '保存しました。',
-        autoClear: true
+        message: '保存しました。'
     });
 
     KTR.service.logout(function() {

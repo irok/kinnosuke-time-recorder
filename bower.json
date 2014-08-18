@@ -1,7 +1,7 @@
 {
   "name": "KinnosukeTimeRecorder",
-  "version": "2.1.1",
-  "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。\r 勤之助はログインセッションのTTLがすごく短いのですが、この拡張を使うといちいちログインする必要なく、勤怠ボタンを押したり、勤之助を開いたりできます。",
+  "version": "2.1.2",
+  "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
   "homepage": "https://github.com/irok/KinnosukeTimeRecorder",
   "authors": [
     "irok"

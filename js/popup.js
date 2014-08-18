@@ -159,4 +159,3 @@ function openKTR(param) {
     KTR.error = _open;
     KTR.status.update(_open, true);
 }
-
