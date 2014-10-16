@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>勤之助タイムレコーダー</title>
 <style>
 * {
@@ -10,6 +10,7 @@
 }
 body {
   width: 180px;
+  font: 100%/1.5 sans-serif;
 }
 ul {
   list-style-type: none;
@@ -48,6 +49,19 @@ li.attention {
   border-radius: 3px;
   background: #fff;
   text-align: center;
+}
+button {
+  min-height: 1.5em;
+  margin-top: 6px;
+  padding: 2px 0 0;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 80%;
+  color: #444;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
 }
 button.confirm {
   width: 64px;

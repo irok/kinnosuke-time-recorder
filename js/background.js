@@ -4,7 +4,7 @@
 chrome.runtime.onStartup.addListener(function() {
     if (!KTR.view.update_from_cache()) {
         KTR.status.update(function() {
-            // プロセスが残る問題が解決しないようなら外す（ただしアイコンが1回消える）
+            // 起動時にAjax通信するとプロセスが残ってしまう問題への対応
             // chrome.runtime.reload();
         });
     }

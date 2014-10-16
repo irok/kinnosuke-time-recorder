@@ -1,11 +1,72 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>勤之助タイムレコーダー</title>
+<link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
 <style>
+body {
+  margin: 0 20px;
+  color: rgb(48, 57, 66);
+}
+h1, h2 {
+  -webkit-user-select: none;
+  font-weight: normal;
+  line-height: 1;
+}
 h1 {
-  font-size: 100%;
+  margin: 0;
+  padding: 21px 0 13px;
+  font-size: 1.5em;
+}
+h1::after {
+  -webkit-margin-end: 20px;
+  background-color: #eee;
+  content: ' ';
+  display: block;
+  height: 1px;
+  position: relative;
+  top: 13px;
+}
+section {
+  -webkit-padding-start: 18px;
+  margin-bottom: 24px;
+  margin-top: 8px;
+  max-width: 600px;
+}
+h2 {
+  -webkit-margin-start: -18px;
+  color: black;
+  font-size: 1.2em;
+  margin-bottom: 0.8em;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-end: 0px;
+}
+.settings {
+  margin: 0.65em 0;
+}
+td {
+  padding: 0 4px 6px 0;
+}
+p {
+  margin: 0.7em 0 1.5em 0;
+}
+input, button {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  color: #444;
+}
+input[type="text"], input[type="password"] {
+  padding: 4px 4px;
+}
+button {
+  min-height: 2em;
+  padding: 1px 10px;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  font: inherit;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
 }
 </style>
 <script src="/vendor/jquery.min.js"></script>
@@ -14,17 +75,20 @@ h1 {
 <script src="/js/options.js"></script>
 </head>
 <body>
-<div>
-  <section>
-    <h1>ログイン情報</h1>
+<header>
+  <h1>勤之助タイムレコーダー</h1>
+</header>
+<section>
+  <h2>ログイン情報</h2>
+  <div class="settings">
     <table>
       <tr><td>お客様ID</td><td><input type="text" id="cstmid" value="" size="20" /></td></tr>
       <tr><td>ログインID</td><td><input type="text" id="userid" value="" size="20" /></td></tr>
       <tr><td>パスワード</td><td><input type="password" id="passwd" value="" size="20" /></td></tr>
     </table>
-    <p>※パスワードは暗号化した上でlocalStorageに保存されます。</p>
-  </section>
-  <p><button id="saveBtn">保存する</button></p>
-</div>
+    <p>パスワードは暗号化した上でlocalStorageに保存します。</p>
+    <button id="saveBtn">保存する</button>
+  </div>
+</section>
 </body>
 </html>
