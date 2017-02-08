@@ -9,7 +9,7 @@ var KTR = (function() {
      */
     var KTR = {
         STATUS: {UNKNOWN:0, BEFORE:1, ON_THE_JOB:2, AFTER:3},
-        BADGE: ['#fff', '#ff7', '#7f7', '#77f'],
+        BADGE: ['#fff', '#ffd864', '#64e880', '#77f'],
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON:1, OFF:2},
         ACTION: ['', '出社', '退社']

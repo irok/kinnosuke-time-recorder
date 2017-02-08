@@ -1,6 +1,6 @@
 {
   "name": "KinnosukeTimeRecorder",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
   "main": "gulpfile.js",
   "scripts": {
