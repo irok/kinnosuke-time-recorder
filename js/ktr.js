@@ -7,10 +7,11 @@
      */
     var KTR = root.KTR = {
         STATUS: {UNKNOWN: 0, BEFORE: 1, ON_THE_JOB: 2, AFTER: 3},
-        BADGE: ['#fff', '#ffd864', '#64e880', '#77f'],
+        BADGE: ['#fff', '#ffc800', '#60d880', '#46d'],
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON: 1, OFF: 2},
-        ACTION: ['', '出社', '退社']
+        ACTION: ['', '出社', '退社'],
+        CACHE_TTL: 4 * 60 * 60 * 1000
     };
 
     /**
@@ -163,9 +164,7 @@
                 t = JSON.parse(localStorage.Credential);
                 t.passwd = Crypto.decrypt(t.encrypted);
             }
-            catch (e) {
-                console.error('localStorage.Credential was broken');
-            }
+            catch (e) {}        // eslint-disable-line no-empty
             return callback(t.cstmid, t.userid, t.passwd);
         },
         update: function(cstmid, userid, passwd) {
@@ -238,7 +237,7 @@
     };
 
     /**
-     * 状態のキャッシュ（TTL=10min）
+     * 状態のキャッシュ
      */
     function status_cache() {
         if (arguments.length === 0) {
@@ -248,9 +247,7 @@
                     return cache.data;
                 }
             }
-            catch(e) {
-                console.error('localStorage.StatusCache was broken');
-            }
+            catch(e) {}         // eslint-disable-line no-empty
             return null;
         }
         if (arguments[0] === null) {
@@ -258,7 +255,7 @@
         } else {
             localStorage.StatusCache = JSON.stringify({
                 data: arguments[0],
-                expires: Date.now() + 60 * 60 * 1000
+                expires: Date.now() + KTR.CACHE_TTL
             });
         }
     }
