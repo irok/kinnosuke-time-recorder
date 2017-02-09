@@ -1,5 +1,3 @@
-/*global KTR */
-
 // ブラウザ起動時にブラウザアクションを更新
 chrome.runtime.onStartup.addListener(function() {
     if (!KTR.view.update_from_cache()) {
@@ -17,11 +15,11 @@ window.addEventListener('load', function() {
 
 // コンテントスクリプトからのステータス更新通知
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-	if (KTR.credential.valid()) {
+    if (KTR.credential.valid()) {
         var status = KTR.status.scrape(message.html);
         if (status.authorized && status.code !== KTR.STATUS.UNKNOWN) {
             KTR.status.change(status);
         }
-	}
+    }
     sendResponse();
 });

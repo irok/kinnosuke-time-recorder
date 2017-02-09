@@ -1,17 +1,15 @@
-/*global $ */
-
 /**
  * Kinnosuke Time Recorder
  */
-var KTR = (function() {
+(function(root) {
     /**
      * Constant
      */
-    var KTR = {
-        STATUS: {UNKNOWN:0, BEFORE:1, ON_THE_JOB:2, AFTER:3},
+    var KTR = root.KTR = {
+        STATUS: {UNKNOWN: 0, BEFORE: 1, ON_THE_JOB: 2, AFTER: 3},
         BADGE: ['#fff', '#ffd864', '#64e880', '#77f'],
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
-        STAMP:  {ON:1, OFF:2},
+        STAMP:  {ON: 1, OFF: 2},
         ACTION: ['', '出社', '退社']
     };
 
@@ -92,13 +90,13 @@ var KTR = (function() {
         update: function(status) {
             var ba = chrome.browserAction, enabled;
             if (status === null || status.code === KTR.STATUS.UNKNOWN) {
-                ba.setBadgeText({text:''});
-                ba.setTitle({title:KTR.TITLE[KTR.STATUS.UNKNOWN]});
+                ba.setBadgeText({text: ''});
+                ba.setTitle({title: KTR.TITLE[KTR.STATUS.UNKNOWN]});
                 enabled = false;
             } else {
-                ba.setBadgeText({text:' '});
-                ba.setBadgeBackgroundColor({color:KTR.BADGE[status.code]});
-                ba.setTitle({title:KTR.TITLE[status.code]});
+                ba.setBadgeText({text: ' '});
+                ba.setBadgeBackgroundColor({color: KTR.BADGE[status.code]});
+                ba.setTitle({title: KTR.TITLE[status.code]});
                 KTR.firstAnnounce(status);
                 enabled = true;
             }
@@ -115,11 +113,11 @@ var KTR = (function() {
     KTR.notify = function(opts) {
         var manifest = chrome.runtime.getManifest();
         var options = $.extend({
-                          type: 'basic',
-                          title: manifest.name,
-                          iconUrl: manifest.icons['128'],
-                          notifyId: ''
-                      }, opts);
+            type: 'basic',
+            title: manifest.name,
+            iconUrl: manifest.icons['128'],
+            notifyId: ''
+        }, opts);
         var notifyId  = options.notifyId;  delete options.notifyId;
         chrome.notifications.create(notifyId, options, NOP);
     };
@@ -160,12 +158,14 @@ var KTR = (function() {
      */
     KTR.credential = {
         get: function(callback) {
-            var t = {cstmid:'', userid:'', passwd:''};
+            var t = {cstmid: '', userid: '', passwd: ''};
             try {
                 t = JSON.parse(localStorage.Credential);
                 t.passwd = Crypto.decrypt(t.encrypted);
             }
-            catch (e) {}
+            catch (e) {
+                console.error('localStorage.Credential was broken');
+            }
             return callback(t.cstmid, t.userid, t.passwd);
         },
         update: function(cstmid, userid, passwd) {
@@ -248,7 +248,9 @@ var KTR = (function() {
                     return cache.data;
                 }
             }
-            catch(e){}
+            catch(e) {
+                console.error('localStorage.StatusCache was broken');
+            }
             return null;
         }
         if (arguments[0] === null) {
@@ -338,7 +340,7 @@ var KTR = (function() {
         // ログアウトする
         logout: function(callback) {
             var formData = {
-                kihon_settei:'#', module:'logout', logout:'ログアウト'
+                kihon_settei: '#', module: 'logout', logout: 'ログアウト'
             };
             KTR.service.post(formData, function(html) {
                 KTR.status.scan(html);
@@ -354,7 +356,7 @@ var KTR = (function() {
                     KTR.error('CSRFトークンを取得できませんでした。');
                     return null;
                 }
-                callback({key:matches[1], value:matches[2]});
+                callback({key: matches[1], value: matches[2]});
             });
         },
 
@@ -393,6 +395,4 @@ var KTR = (function() {
             $.post(KTR.service.url, formData, callback, 'html');
         }
     };
-
-    return KTR;
-})();
+})(this);

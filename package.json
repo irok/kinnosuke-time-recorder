@@ -1,32 +1,36 @@
 {
   "name": "KinnosukeTimeRecorder",
-  "version": "2.1.4",
   "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
-  "main": "gulpfile.js",
-  "scripts": {
-    "postinstall": "gulp init",
-    "test": "gulp lint"
+  "version": "2.1.5",
+  "author": "irok",
+  "bugs": {
+    "url": "https://github.com/irok/KinnosukeTimeRecorder/issues"
   },
+  "dependencies": {
+    "crypto-js": "3.1.9-1",
+    "jquery": "2.2.4"
+  },
+  "devDependencies": {
+    "del": "^2.2.2",
+    "eslint": "^3.15.0",
+    "event-stream": "^3.3.4",
+    "gulp": "^3.9.1",
+    "gulp-zip": "^4.0.0",
+    "run-sequence": "^1.2.2"
+  },
+  "engines": {
+    "node": "^6.9.2",
+    "npm": "^3.10.9"
+  },
+  "homepage": "https://github.com/irok/KinnosukeTimeRecorder",
+  "license": "MIT",
+  "main": "gulpfile.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/irok/KinnosukeTimeRecorder.git"
   },
-  "author": "irok",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/irok/KinnosukeTimeRecorder/issues"
-  },
-  "homepage": "https://github.com/irok/KinnosukeTimeRecorder",
-  "devDependencies": {
-    "bower": "^1.3.8",
-    "del": "^0.1.1",
-    "event-stream": "^3.1.7",
-    "gulp": "^3.8.6",
-    "gulp-htmlhint": "0.0.8",
-    "gulp-jshint": "^1.7.1",
-    "gulp-load-plugins": "^0.5.3",
-    "gulp-util": "^3.0.0",
-    "gulp-zip": "^0.4.0",
-    "jshint-stylish": "^0.4.0"
+  "scripts": {
+    "lint": "eslint --fix js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

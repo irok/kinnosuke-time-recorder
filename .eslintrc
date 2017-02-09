@@ -1,0 +1,24 @@
+{
+  "extends": ["eslint:recommended"],
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "globals": {
+    "chrome": true,
+    "CryptoJS": true,
+    "KTR": true
+  },
+  "rules": {
+    "indent": ["error", 4],
+    "block-scoped-var": "warn",
+    "curly": "warn",
+    "key-spacing": ["error", {
+      "mode": "minimum"
+    }],
+    "max-len": ["error", 120],
+    "no-console": ["error", {
+      "allow": ["warn", "error"]
+    }]
+  }
+}

@@ -1,5 +1,3 @@
-/*global KTR,$ */
-
 $(function() {
     restore();
     $('#saveBtn').click(save);
@@ -29,4 +27,3 @@ function save() {
         KTR.status.update(null, true);
     });
 }
-

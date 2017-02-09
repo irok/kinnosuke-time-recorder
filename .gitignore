@@ -1,7 +1,4 @@
-.idea/
-*.sublime-*
-bower_components/
+.*/
 node_modules/
-
-vendor/
+tmp/
 KinnosukeTimeRecorder.zip

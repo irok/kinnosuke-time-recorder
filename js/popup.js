@@ -1,5 +1,3 @@
-/*global KTR,$ */
-
 var dialogs = [], $dcon;
 
 $(function() {
@@ -82,7 +80,7 @@ function stamp(type) {
 function openApplicationForm() {
     openKTR({
         module: 'application_form',
-        action: 'application_form',
+        action: 'application_form'
     });
 }
 
