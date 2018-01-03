@@ -9,11 +9,10 @@ $(function() {
  * メニュー初期化
  */
 function init() {
-    // 勤之助を開く
-    $('#service').click(openTopPage);
+    var $service = $('#service');
 
-    // 各種申請
-    $('#appform').click(openApplicationForm);
+    // 勤之助を開く
+    $service.click(() => openKTR());
 
     // オプション
     $('#options').click(() => window.open('/html/options.html', '_blank'));
@@ -25,8 +24,27 @@ function init() {
 
         // お知らせ
         if (status.information.recent) {
-            $('#service').text('新しいお知らせ').addClass('attention');
+            $service.text('新しいお知らせ').addClass('attention');
         }
+
+        // メニュー
+        KTR.menuList.get((menus) => {
+            var $menu = $('#menu');
+            menus.forEach((menu) => {
+                $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
+                    .append(`<img src="${KTR.service.url}${menu.icon}"/>`)
+                    .append(menu.title)
+                    .insertBefore($service);
+            });
+        });
+
+        $('.menu').click(function() {
+            var $this = $(this);
+            openKTR({
+                module: $this.data('module'),
+                action: $this.data('action')
+            });
+        });
     });
 }
 
@@ -122,9 +140,7 @@ function closeDialog(recursive) {
 function openKTR(param) {
     var url = KTR.service.url;
     if (typeof param === 'object') {
-        url += '?' + $.map(Object.keys(param), (key) => {
-            return encodeURIComponent(key) + '=' + encodeURIComponent(param[key]);
-        }).join('&')
+        url += `?module=${param.module}&action=${param.action}`;
     }
 
     // 認証情報がなかったらそのまま開く
@@ -144,17 +160,4 @@ function openKTR(param) {
     };
     KTR.error = _open;
     KTR.status.update(_open, true);
-}
-
-// トップページ
-function openTopPage() {
-    openKTR();
-}
-
-// 各種申請
-function openApplicationForm() {
-    openKTR({
-        module: 'application_form',
-        action: 'application_form'
-    });
 }

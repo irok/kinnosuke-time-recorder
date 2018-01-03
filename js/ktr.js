@@ -180,6 +180,23 @@
     };
 
     /**
+     * メニュー管理
+     */
+    KTR.menuList = {
+        get(cb) {
+            let t = [];
+            try {
+                t = JSON.parse(localStorage.MenuList);
+            }
+            catch (e) {}        // eslint-disable-line no-empty
+            return cb(t);
+        },
+        update(menus) {
+            localStorage.MenuList = JSON.stringify(menus);
+        }
+    };
+
+    /**
      * 状態管理
      */
     KTR.status = {
@@ -215,8 +232,11 @@
         scrape(html) {
             const status = {
                 code: KTR.STATUS.UNKNOWN,
-                authorized: /ログアウト/.test(html)
+                authorized: /ログアウト/.test(html),
+                information: KTR.information.getStatus(html)
             };
+
+            // 出退社時刻
             if (/<input type="hidden" name="action" value="timerecorder"/.test(html)) {
                 status.code = KTR.STATUS.BEFORE;
                 if (/>出社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.test(html)) {
@@ -228,7 +248,24 @@
                     status.code = KTR.STATUS.AFTER;
                 }
             }
-            status.information = KTR.information.getStatus(html);
+
+            // メニューリスト
+            const menuPos = html.search(/<td align="center" valign="top" width="72">/);
+            if (menuPos !== -1) {
+                const part = html.substr(menuPos);
+                const menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+                status.menus = [];
+                menus.forEach((menu) => {
+                    if (/href="\.\/\?module=(.+?)&amp;action=(.+?)"/.test(menu)) {
+                        const {$1: module, $2: action} = RegExp;
+                        /src="([^"]+)"/.test(menu);
+                        const {$1: icon} = RegExp;
+                        /alt="([^"]+)"/.test(menu);
+                        const {$1: title} = RegExp;
+                        status.menus.push({title, icon, module, action});
+                    }
+                });
+            }
 
             return status;
         }
@@ -251,10 +288,10 @@
         if (arguments[0] === null) {
             delete localStorage.StatusCache;
         } else {
-            localStorage.StatusCache = JSON.stringify({
-                data: arguments[0],
-                expires: Date.now() + KTR.CACHE_TTL
-            });
+            const expires = Date.now() + KTR.CACHE_TTL;
+            const data = Object.assign({}, arguments[0]);
+            delete data.menus;
+            localStorage.StatusCache = JSON.stringify({data, expires});
         }
     }
 
@@ -262,14 +299,14 @@
      * お知らせ管理
      */
     KTR.information = {
-        stable: { recent: false },
+        stable: {recent: false},
         lastDate() {
             return localStorage.LastInfo;
         },
         latestDate(html) {
             const matches = html.match(/<div class="notice_header">\n[^(]+\((\d{4})年(\d\d)月(\d\d)日&nbsp;(\d\d:\d\d)/);
             if (matches && matches.length === 5) {
-                return matches[1]+'/'+matches[2]+'/'+matches[3]+' '+matches[4];
+                return `${matches[1]}/${matches[2]}/${matches[3]} ${matches[4]}`;
             }
             return null;
         },
@@ -325,7 +362,9 @@
                 };
             });
             KTR.service.post(query, (html) => {
-                if (KTR.status.scrape(html).authorized) {
+                const status = KTR.status.scrape(html);
+                if (status.authorized) {
+                    KTR.menuList.update(status.menus);
                     cb(html);
                     return;
                 }
