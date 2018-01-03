@@ -1,7 +1,7 @@
 {
   "name": "KinnosukeTimeRecorder",
   "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
-  "version": "2.1.7",
+  "version": "3.0.0",
   "author": "irok",
   "bugs": {
     "url": "https://github.com/irok/KinnosukeTimeRecorder/issues"
@@ -30,6 +30,7 @@
     "url": "git://github.com/irok/KinnosukeTimeRecorder.git"
   },
   "scripts": {
+    "build": "gulp build",
     "lint": "eslint --fix js",
     "test": "echo \"Error: no test specified\" && exit 1"
   }

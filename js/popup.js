@@ -9,26 +9,42 @@ $(function() {
  * メニュー初期化
  */
 function init() {
-    // 勤之助を開く
-    $('#service').click(function(){ openKTR() });
+    var $service = $('#service');
 
-    // 各種申請
-    $('#appform').click(function(){ openApplicationForm() });
+    // 勤之助を開く
+    $service.click(() => openKTR());
 
     // オプション
-    $('#options').click(function() {
-        window.open('/html/options.html', '_blank');
-    });
+    $('#options').click(() => window.open('/html/options.html', '_blank'));
 
     // 状態による内容の設定
-    KTR.status.update(function(status) {
+    KTR.status.update((status) => {
         // 出社、退社
         updateMenu(status);
 
         // お知らせ
         if (status.information.recent) {
-            $('#service').text('新しいお知らせ').addClass('attention');
+            $service.text('新しいお知らせ').addClass('attention');
         }
+
+        // メニュー
+        KTR.menuList.get((menus) => {
+            var $menu = $('#menu');
+            menus.forEach((menu) => {
+                $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
+                    .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
+                    .append(menu.title)
+                    .insertBefore($service);
+            });
+        });
+
+        $('.menu').click(function() {
+            var $this = $(this);
+            openKTR({
+                module: $this.data('module'),
+                action: $this.data('action')
+            });
+        });
     });
 }
 
@@ -57,14 +73,14 @@ function updateMenu(status) {
  * 出社処理
  */
 function startWork() {
-    confirmDialog('出社しましたか？', stamp.bind(this, KTR.STAMP.ON));
+    confirmDialog('出社しましたか？', stamp.bind(null, KTR.STAMP.ON));
 }
 
 /**
  * 退社処理
  */
 function leaveWork() {
-    confirmDialog('退社しますか？', stamp.bind(this, KTR.STAMP.OFF));
+    confirmDialog('退社しますか？', stamp.bind(null, KTR.STAMP.OFF));
 }
 
 /**
@@ -72,16 +88,6 @@ function leaveWork() {
  */
 function stamp(type) {
     KTR.service.stamp(type, updateMenu);
-}
-
-/**
- * 各種申請
- */
-function openApplicationForm() {
-    openKTR({
-        module: 'application_form',
-        action: 'application_form'
-    });
 }
 
 /**
@@ -107,7 +113,7 @@ function openDialog() {
         $d.append(arguments[i]);
     }
     $diag.append($m).append($d).appendTo($dcon);
-    $diag.show(100, function() {
+    $diag.show(100, () => {
         $d.css('top', ($m.innerHeight() - $d.innerHeight()) / 2);
     });
     dialogs.push($diag);
@@ -119,7 +125,7 @@ function openDialog() {
 function closeDialog(recursive) {
     var $diag = dialogs.pop();
     if ($diag) {
-        $diag.hide(100, function() {
+        $diag.hide(100, () => {
             $diag.empty().remove();
             if (recursive) {
                 closeDialog(true);
@@ -132,11 +138,9 @@ function closeDialog(recursive) {
  * 勤之助を開く
  */
 function openKTR(param) {
-    var url = KTR.service.url;
+    var url = KTR.service.url();
     if (typeof param === 'object') {
-        url += '?' + $.map(Object.keys(param), function(key) {
-            return encodeURIComponent(key) + '=' + encodeURIComponent(param[key]);
-        }).join('&')
+        url += `?module=${param.module}&action=${param.action}`;
     }
 
     // 認証情報がなかったらそのまま開く
@@ -147,7 +151,7 @@ function openKTR(param) {
 
     // ログインエラーなどが発生しても勤之助を開く
     var error_bak = KTR.error;
-    var _open = function(arg) {
+    var _open = (arg) => {
         KTR.error = error_bak;
         if (typeof arg === 'object') {
             KTR.information.changeStatusToRead(arg);

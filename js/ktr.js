@@ -1,34 +1,38 @@
 /**
  * Kinnosuke Time Recorder
  */
-(function(root) {
+((root) => {
     /**
      * Constant
      */
-    var KTR = root.KTR = {
+    const KTR = root.KTR = {
         STATUS: {UNKNOWN: 0, BEFORE: 1, ON_THE_JOB: 2, AFTER: 3},
         BADGE: ['#fff', '#ffc800', '#60d880', '#46d'],
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON: 1, OFF: 2},
         ACTION: ['', '出社', '退社'],
-        CACHE_TTL: 4 * 60 * 60 * 1000
+        CACHE_TTL: 4 * 60 * 60 * 1000,
+        HOSTS: [
+            'https://www.4628.jp/',
+            'https://www.e4628.jp/'
+        ]
     };
 
     /**
      * No operation
      */
-    var NOP = function(){};
+    const NOP = () => void(0);
 
     /**
      * 暗号化
      */
-    var Crypto = (function() {
+    const Crypto = (() => {
         // https://code.google.com/p/crypto-js/#The_Cipher_Output
-        var option = {
+        const option = {
             format: {
-                stringify: function (cipherParams) {
+                stringify(cipherParams) {
                     // create json object with ciphertext
-                    var jsonObj = {
+                    const jsonObj = {
                         ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
                     };
 
@@ -43,12 +47,12 @@
                     // stringify json object
                     return JSON.stringify(jsonObj);
                 },
-                parse: function (jsonStr) {
+                parse(jsonStr) {
                     // parse json string
-                    var jsonObj = JSON.parse(jsonStr);
+                    const jsonObj = JSON.parse(jsonStr);
 
                     // extract ciphertext from json object, and create cipher params object
-                    var cipherParams = CryptoJS.lib.CipherParams.create({
+                    const cipherParams = CryptoJS.lib.CipherParams.create({
                         ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
                     });
 
@@ -65,8 +69,8 @@
             }
         };
 
-        var secret = function() {
-            var s = localStorage.Secret;
+        const secret = () => {
+            let s = localStorage.Secret;
             if (!s) {
                 s = localStorage.Secret = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Base64);
             }
@@ -75,10 +79,10 @@
 
         // public interface
         return {
-            encrypt: function(plaintext) {
+            encrypt(plaintext) {
                 return CryptoJS.AES.encrypt(plaintext, secret(), option).toString();
             },
-            decrypt: function(encrypted) {
+            decrypt(encrypted) {
                 return CryptoJS.AES.decrypt(encrypted, secret(), option).toString(CryptoJS.enc.Utf8);
             }
         };
@@ -88,8 +92,9 @@
      * View管理
      */
     KTR.view = {
-        update: function(status) {
-            var ba = chrome.browserAction, enabled;
+        update(status) {
+            const ba = chrome.browserAction;
+            let enabled;
             if (status === null || status.code === KTR.STATUS.UNKNOWN) {
                 ba.setBadgeText({text: ''});
                 ba.setTitle({title: KTR.TITLE[KTR.STATUS.UNKNOWN]});
@@ -103,7 +108,7 @@
             }
             return enabled;
         },
-        update_from_cache: function() {
+        update_from_cache() {
             return KTR.view.update(status_cache());
         }
     };
@@ -111,25 +116,23 @@
     /**
      * 通知
      */
-    KTR.notify = function(opts) {
-        var manifest = chrome.runtime.getManifest();
-        var options = $.extend({
+    KTR.notify = (opts) => {
+        const manifest = chrome.runtime.getManifest();
+        const options = Object.assign({
             type: 'basic',
             title: manifest.name,
-            iconUrl: manifest.icons['128'],
-            notifyId: ''
+            iconUrl: manifest.icons['48'],
         }, opts);
-        var notifyId  = options.notifyId;  delete options.notifyId;
-        chrome.notifications.create(notifyId, options, NOP);
+        chrome.notifications.create(options);
     };
-    chrome.notifications.onClicked.addListener(function(id) {
+    chrome.notifications.onClicked.addListener((id) => {
         chrome.notifications.clear(id, NOP);
     });
 
     /**
      * エラー通知
      */
-    KTR.error = function(msg) {
+    KTR.error = (msg) => {
         KTR.notify({
             message: 'エラーが発生しました',
             contextMessage: msg
@@ -139,18 +142,17 @@
     /**
      * 勤怠催促の通知
      */
-    KTR.firstAnnounce = function(status) {
-        var today = (new Date()).toLocaleDateString();
-        var last = localStorage.LastAnnounce;
+    KTR.firstAnnounce = (status) => {
+        const today = (new Date()).toLocaleDateString();
+        const last = localStorage.LastAnnounce;
         if (status.code === KTR.STATUS.BEFORE && last !== today) {
             KTR.notify({
-                notifyId: 'KTR-Announce',
                 message: '今日はまだWeb勤怠をつけていません。'
             });
             localStorage.LastAnnounce = today;
         }
     };
-    KTR.clearAnnounce = function() {
+    KTR.clearAnnounce = () => {
         chrome.notifications.clear('KTR-Announce', NOP);
     };
 
@@ -158,26 +160,59 @@
      * 認証情報管理
      */
     KTR.credential = {
-        get: function(callback) {
-            var t = {cstmid: '', userid: '', passwd: ''};
+        get(cb) {
+            let t = {cstmid: '', userid: '', passwd: ''};
             try {
                 t = JSON.parse(localStorage.Credential);
                 t.passwd = Crypto.decrypt(t.encrypted);
             }
             catch (e) {}        // eslint-disable-line no-empty
-            return callback(t.cstmid, t.userid, t.passwd);
+            return cb(t.cstmid, t.userid, t.passwd);
         },
-        update: function(cstmid, userid, passwd) {
+        update(cstmid, userid, passwd) {
             localStorage.Credential = JSON.stringify({
                 cstmid: cstmid,
                 userid: userid,
                 encrypted: Crypto.encrypt(passwd)
             });
         },
-        valid: function() {
-            return KTR.credential.get(function(cstmid, userid, passwd) {
+        valid() {
+            return KTR.credential.get((cstmid, userid, passwd) => {
                 return cstmid !== '' && userid !== '' && passwd !== '';
             });
+        }
+    };
+
+    /**
+     * サイト情報
+     */
+    KTR.site = {
+        get() {
+            let siteId = localStorage.SiteId;
+            if (typeof siteId === 'undefined') {
+                siteId = localStorage.SiteId = 0;
+            }
+            return siteId;
+        },
+        update(siteId) {
+            localStorage.SiteId = siteId;
+        }
+    };
+
+    /**
+     * メニュー管理
+     */
+    KTR.menuList = {
+        get(cb) {
+            let t = [];
+            try {
+                t = JSON.parse(localStorage.MenuList);
+            }
+            catch (e) {}        // eslint-disable-line no-empty
+            return cb(t);
+        },
+        update(menus) {
+            localStorage.MenuList = JSON.stringify(menus);
         }
     };
 
@@ -185,40 +220,43 @@
      * 状態管理
      */
     KTR.status = {
-        update: function(callback, force_connect) {
+        update(cb, force_connect) {
             if (!KTR.credential.valid()) {
                 KTR.status.scan('');
                 return;
             }
 
-            var status;
-            if (typeof callback !== 'function') {
-                callback = NOP;
+            let status;
+            if (typeof cb !== 'function') {
+                cb = NOP;
             }
 
             if (!force_connect && (status = status_cache()) !== null) {
                 KTR.view.update(status);
-                callback(status);
+                cb(status);
                 return;
             }
 
-            KTR.service.mytop(function(html) {
-                callback(KTR.status.scan(html));
+            KTR.service.mytop((html) => {
+                cb(KTR.status.scan(html));
             });
         },
-        scan: function(html) {
+        scan(html) {
             return KTR.status.change(KTR.status.scrape(html));
         },
-        change: function(status) {
+        change(status) {
             status_cache(status.authorized ? status : null);
             KTR.view.update(status);
             return status;
         },
-        scrape: function(html) {
-            var status = {
+        scrape(html) {
+            const status = {
                 code: KTR.STATUS.UNKNOWN,
-                authorized: /ログアウト/.test(html)
+                authorized: /<div class="user_name">/.test(html),
+                information: KTR.information.getStatus(html)
             };
+
+            // 出退社時刻
             if (/<input type="hidden" name="action" value="timerecorder"/.test(html)) {
                 status.code = KTR.STATUS.BEFORE;
                 if (/>出社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.test(html)) {
@@ -230,7 +268,24 @@
                     status.code = KTR.STATUS.AFTER;
                 }
             }
-            status.information = KTR.information.getStatus(html);
+
+            // メニューリスト
+            const menuPos = html.search(/<td align="center" valign="top" width="72">/);
+            if (menuPos !== -1) {
+                const part = html.substr(menuPos);
+                const menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+                status.menus = [];
+                menus.forEach((menu) => {
+                    if (/href="\.\/\?module=(.+?)&amp;action=(.+?)"/.test(menu)) {
+                        const {$1: module, $2: action} = RegExp;
+                        /src="([^"]+)"/.test(menu);
+                        const {$1: icon} = RegExp;
+                        /alt="([^"]+)"/.test(menu);
+                        const {$1: title} = RegExp;
+                        status.menus.push({title, icon, module, action});
+                    }
+                });
+            }
 
             return status;
         }
@@ -242,7 +297,7 @@
     function status_cache() {
         if (arguments.length === 0) {
             try {
-                var cache = JSON.parse(localStorage.StatusCache);
+                const cache = JSON.parse(localStorage.StatusCache);
                 if (cache.expires >= Date.now()) {
                     return cache.data;
                 }
@@ -253,10 +308,10 @@
         if (arguments[0] === null) {
             delete localStorage.StatusCache;
         } else {
-            localStorage.StatusCache = JSON.stringify({
-                data: arguments[0],
-                expires: Date.now() + KTR.CACHE_TTL
-            });
+            const expires = Date.now() + KTR.CACHE_TTL;
+            const data = Object.assign({}, arguments[0]);
+            delete data.menus;
+            localStorage.StatusCache = JSON.stringify({data, expires});
         }
     }
 
@@ -264,19 +319,19 @@
      * お知らせ管理
      */
     KTR.information = {
-        stable: { recent: false },
-        lastDate: function() {
+        stable: {recent: false},
+        lastDate() {
             return localStorage.LastInfo;
         },
-        latestDate: function(html) {
-            var matches = html.match(/<div class="notice_header">\n[^(]+\((\d{4})年(\d\d)月(\d\d)日&nbsp;(\d\d:\d\d)/);
+        latestDate(html) {
+            const matches = html.match(/<div class="notice_header">\n[^(]+\((\d{4})年(\d\d)月(\d\d)日&nbsp;(\d\d:\d\d)/);
             if (matches && matches.length === 5) {
-                return matches[1]+'/'+matches[2]+'/'+matches[3]+' '+matches[4];
+                return `${matches[1]}/${matches[2]}/${matches[3]} ${matches[4]}`;
             }
             return null;
         },
-        getStatus: function(html) {
-            var last = KTR.information.lastDate(), latest = KTR.information.latestDate(html);
+        getStatus(html) {
+            const last = KTR.information.lastDate(), latest = KTR.information.latestDate(html);
             if (latest && (!last || last < latest)) {
                 return {
                     recent: true,
@@ -285,7 +340,7 @@
             }
             return KTR.information.stable;
         },
-        changeStatusToRead: function(status) {
+        changeStatusToRead(status) {
             if (status.information.recent) {
                 localStorage.LastInfo = status.information.latest;
                 status.information = KTR.information.stable;
@@ -298,26 +353,27 @@
      * 勤之助の操作
      */
     KTR.service = {
-        url: 'https://www.4628.jp/',
+        url: () => KTR.HOSTS[KTR.site.get()],
 
         // マイページトップにアクセスする
-        mytop: function(callback) {
-            $.get(KTR.service.url, function(html) {
-                if (KTR.status.scrape(html).authorized) {
-                    callback(html);
-                    return;
-                }
-                KTR.service.login(callback)
-            });
+        mytop(cb) {
+            fetch(KTR.service.url())
+                .then((res) => res.text())
+                .then((html) => {
+                    if (KTR.status.scrape(html).authorized)
+                        cb(html);
+                    else
+                        KTR.service.login(cb);
+                });
         },
 
         // ログインする
-        login: function(callback) {
+        login(cb) {
             if (!KTR.credential.valid()) {
                 return;
             }
 
-            var formData = KTR.credential.get(function(cstmid, userid, passwd) {
+            const query = KTR.credential.get((cstmid, userid, passwd) => {
                 return {
                     module: 'login',
                     y_companycd: cstmid,
@@ -325,9 +381,11 @@
                     password: passwd
                 };
             });
-            KTR.service.post(formData, function(html) {
-                if (KTR.status.scrape(html).authorized) {
-                    callback(html);
+            KTR.service.post(query, (html) => {
+                const status = KTR.status.scrape(html);
+                if (status.authorized) {
+                    KTR.menuList.update(status.menus);
+                    cb(html);
                     return;
                 }
                 KTR.error('ログインできませんでした。');
@@ -335,41 +393,40 @@
         },
 
         // ログアウトする
-        logout: function(callback) {
-            var formData = {
+        logout(cb) {
+            const query = {
                 kihon_settei: '#', module: 'logout', logout: 'ログアウト'
             };
-            KTR.service.post(formData, function(html) {
+            KTR.service.post(query, (html) => {
                 KTR.status.scan(html);
-                callback();
+                cb();
             });
         },
 
         // CSRFトークンを取得する
-        getCsrfToken: function(callback) {
-            KTR.service.mytop(function(html) {
-                var matches = html.match(/name="(__sectag_[0-9a-f]+)" value="([0-9a-f]+)"/);
+        getCsrfToken(cb) {
+            KTR.service.mytop((html) => {
+                const matches = html.match(/name="(__sectag_[0-9a-f]+)" value="([0-9a-f]+)"/);
                 if (matches && matches.length !== 3) {
                     KTR.error('CSRFトークンを取得できませんでした。');
                     return null;
                 }
-                callback({key: matches[1], value: matches[2]});
+                cb({key: matches[1], value: matches[2]});
             });
         },
 
         // 出社・退社ボタンを押す
-        stamp: function(type, callback) {
-            KTR.service.getCsrfToken(function(token) {
-                var formData = {
+        stamp(type, cb) {
+            KTR.service.getCsrfToken((token) => {
+                const query = {
                     module: 'timerecorder',
                     action: 'timerecorder',
                     scrollbody_tr: 200,
-                    timerecorder_stamping_type: type
+                    timerecorder_stamping_type: type,
+                    [token.key]: token.value
                 };
-                formData[token.key] = token.value;
-
-                KTR.service.post(formData, function(html) {
-                    var status = KTR.status.scan(html);
+                KTR.service.post(query, (html) => {
+                    const status = KTR.status.scan(html);
                     if (
                         type === KTR.STAMP.ON  && !status.start ||
                         type === KTR.STAMP.OFF && !status.leave
@@ -382,14 +439,24 @@
                         contextMessage: ['', status.start, status.leave][type]
                     });
                     KTR.clearAnnounce();
-                    callback(status);
+                    cb(status);
                 });
             });
         },
 
         // POSTリクエストを送信する
-        post: function(formData, callback) {
-            $.post(KTR.service.url, formData, callback, 'html');
+        post(obj, cb) {
+            const init = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&'),
+                credentials: 'include'
+            };
+            fetch(KTR.service.url(), init)
+                .then((res) => res.text())
+                .then(cb);
         }
     };
 })(this);
