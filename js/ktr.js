@@ -11,7 +11,11 @@
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON: 1, OFF: 2},
         ACTION: ['', '出社', '退社'],
-        CACHE_TTL: 4 * 60 * 60 * 1000
+        CACHE_TTL: 4 * 60 * 60 * 1000,
+        HOSTS: [
+            'https://www.4628.jp/',
+            'https://www.e4628.jp/'
+        ]
     };
 
     /**
@@ -180,6 +184,22 @@
     };
 
     /**
+     * サイト情報
+     */
+    KTR.site = {
+        get() {
+            let siteId = localStorage.SiteId;
+            if (typeof siteId === 'undefined') {
+                siteId = localStorage.SiteId = 0;
+            }
+            return siteId;
+        },
+        update(siteId) {
+            localStorage.SiteId = siteId;
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {
@@ -232,7 +252,7 @@
         scrape(html) {
             const status = {
                 code: KTR.STATUS.UNKNOWN,
-                authorized: /ログアウト/.test(html),
+                authorized: /<div class="user_name">/.test(html),
                 information: KTR.information.getStatus(html)
             };
 
@@ -333,11 +353,11 @@
      * 勤之助の操作
      */
     KTR.service = {
-        url: 'https://www.4628.jp/',
+        url: () => KTR.HOSTS[KTR.site.get()],
 
         // マイページトップにアクセスする
         mytop(cb) {
-            fetch(KTR.service.url)
+            fetch(KTR.service.url())
                 .then((res) => res.text())
                 .then((html) => {
                     if (KTR.status.scrape(html).authorized)
@@ -434,7 +454,7 @@
                 body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&'),
                 credentials: 'include'
             };
-            fetch(KTR.service.url, init)
+            fetch(KTR.service.url(), init)
                 .then((res) => res.text())
                 .then(cb);
         }

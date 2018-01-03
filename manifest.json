@@ -29,7 +29,10 @@
   },
 
   "content_scripts": [{
-    "matches": ["https://www.4628.jp/*"],
+    "matches": [
+      "https://www.4628.jp/*",
+      "https://www.e4628.jp/*"
+      ],
     "js": [
       "/js/content.js"
     ],
@@ -39,6 +42,8 @@
   "options_page": "/html/options.html",
 
   "permissions": [
-    "https://www.4628.jp/*", "notifications"
+    "https://www.4628.jp/*",
+    "https://www.e4628.jp/*",
+    "notifications"
   ]
 }

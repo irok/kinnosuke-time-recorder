@@ -32,7 +32,7 @@ function init() {
             var $menu = $('#menu');
             menus.forEach((menu) => {
                 $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
-                    .append(`<img src="${KTR.service.url}${menu.icon}"/>`)
+                    .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
                     .append(menu.title)
                     .insertBefore($service);
             });
@@ -138,7 +138,7 @@ function closeDialog(recursive) {
  * 勤之助を開く
  */
 function openKTR(param) {
-    var url = KTR.service.url;
+    var url = KTR.service.url();
     if (typeof param === 'object') {
         url += `?module=${param.module}&action=${param.action}`;
     }
