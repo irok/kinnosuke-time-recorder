@@ -5,7 +5,7 @@ $(function() {
 
 // 設定を読み込んでフォームにセットする
 function restore() {
-    KTR.credential.get(function(cstmid, userid, passwd) {
+    KTR.credential.get((cstmid, userid, passwd) => {
         $('#cstmid').val(cstmid);
         $('#userid').val(userid);
         $('#passwd').val(passwd);
@@ -23,7 +23,7 @@ function save() {
         message: '保存しました。'
     });
 
-    KTR.service.logout(function() {
+    KTR.service.logout(() => {
         KTR.status.update(null, true);
     });
 }
