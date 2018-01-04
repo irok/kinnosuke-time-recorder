@@ -117,16 +117,24 @@
      * 通知
      */
     KTR.notify = (opts) => {
+        const args = [];
         const manifest = chrome.runtime.getManifest();
-        const options = Object.assign({
+
+        if (opts.id) {
+            args.push(opts.id);
+            delete opts.id;
+        }
+        args.push(Object.assign({
             type: 'basic',
             title: manifest.name,
             iconUrl: manifest.icons['48'],
-        }, opts);
-        chrome.notifications.create(options);
+        }, opts));
+
+        chrome.notifications.create(...args);
     };
+
     chrome.notifications.onClicked.addListener((id) => {
-        chrome.notifications.clear(id, NOP);
+        chrome.notifications.clear(id);
     });
 
     /**
@@ -147,13 +155,14 @@
         const last = localStorage.LastAnnounce;
         if (status.code === KTR.STATUS.BEFORE && last !== today) {
             KTR.notify({
+                id: 'KTR-Announce',
                 message: '今日はまだWeb勤怠をつけていません。'
             });
             localStorage.LastAnnounce = today;
         }
     };
     KTR.clearAnnounce = () => {
-        chrome.notifications.clear('KTR-Announce', NOP);
+        chrome.notifications.clear('KTR-Announce');
     };
 
     /**
@@ -212,7 +221,9 @@
             return cb(t);
         },
         update(menus) {
-            localStorage.MenuList = JSON.stringify(menus);
+            if (Array.isArray(menus) && menus.length > 0) {
+                localStorage.MenuList = JSON.stringify(menus);
+            }
         }
     };
 
