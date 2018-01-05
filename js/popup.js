@@ -9,13 +9,34 @@ $(function() {
  * メニュー初期化
  */
 function init() {
-    var $service = $('#service');
+    const $service = $('#service');
+    const $options = $('#options');
 
-    // 勤之助を開く
+    // 認証情報があれば出社、退社を表示
+    if (KTR.credential.valid()) {
+        $('.inout-block').css('display', 'table');
+    }
+
+    // メニューを追加
+    KTR.menuList.get((menus) => {
+        menus.forEach((menu) => {
+            $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
+                .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
+                .append(menu.title)
+                .insertBefore($service);
+        });
+    });
+
+    // イベント設定
     $service.click(() => openKTR());
-
-    // オプション
-    $('#options').click(() => window.open('/html/options.html', '_blank'));
+    $options.click(() => window.open('/html/options.html', '_blank'));
+    $('.menu').click(function() {
+        var $this = $(this);
+        openKTR({
+            module: $this.data('module'),
+            action: $this.data('action')
+        });
+    });
 
     // 状態による内容の設定
     KTR.status.update((status) => {
@@ -26,25 +47,6 @@ function init() {
         if (status.information.recent) {
             $service.text('新しいお知らせ').addClass('attention');
         }
-
-        // メニュー
-        KTR.menuList.get((menus) => {
-            var $menu = $('#menu');
-            menus.forEach((menu) => {
-                $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
-                    .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
-                    .append(menu.title)
-                    .insertBefore($service);
-            });
-        });
-
-        $('.menu').click(function() {
-            var $this = $(this);
-            openKTR({
-                module: $this.data('module'),
-                action: $this.data('action')
-            });
-        });
     });
 }
 

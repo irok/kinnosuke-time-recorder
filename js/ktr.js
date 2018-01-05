@@ -231,7 +231,7 @@
      * 状態管理
      */
     KTR.status = {
-        update(cb, force_connect) {
+        update(cb, force_connect = false) {
             if (!KTR.credential.valid()) {
                 KTR.status.scan('');
                 return;
@@ -375,7 +375,8 @@
                         cb(html);
                     else
                         KTR.service.login(cb);
-                });
+                })
+                .catch(KTR.service.error);
         },
 
         // ログインする
@@ -467,7 +468,13 @@
             };
             fetch(KTR.service.url(), init)
                 .then((res) => res.text())
-                .then(cb);
+                .then(cb)
+                .catch(KTR.service.error);
+        },
+
+        // ネットワークエラー
+        error({message}) {
+            KTR.error(message);
         }
     };
 })(this);
