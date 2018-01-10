@@ -11,6 +11,10 @@
         TITLE: ['設定をしてください', '未出社', '出社', '退社'],
         STAMP:  {ON: 1, OFF: 2},
         ACTION: ['', '出社', '退社'],
+        MESSAGE: {
+            start: '出社しましたか？',
+            leave: '退社しますか？'
+        },
         CACHE_TTL: 4 * 60 * 60 * 1000,
         HOSTS: [
             'https://www.4628.jp/',
@@ -170,9 +174,9 @@
      */
     KTR.credential = {
         get(cb) {
-            let t = {cstmid: '', userid: '', passwd: ''};
+            const t = {cstmid: '', userid: '', passwd: ''};
             try {
-                t = JSON.parse(localStorage.Credential);
+                Object.assign(t, JSON.parse(localStorage.Credential));
                 t.passwd = Crypto.decrypt(t.encrypted);
             }
             catch (e) {}        // eslint-disable-line no-empty
@@ -205,6 +209,23 @@
         },
         update(siteId) {
             localStorage.SiteId = siteId;
+        }
+    };
+
+    /**
+     * メッセージ情報
+     */
+    KTR.message = {
+        get(key) {
+            const msg = Object.assign({}, KTR.MESSAGE);
+            try {
+                Object.assign(msg, JSON.parse(localStorage.Message));
+            }
+            catch (e) {}        // eslint-disable-line no-empty
+            return typeof key !== 'undefined' ? msg[key] : msg;
+        },
+        update(msg) {
+            localStorage.Message = JSON.stringify(msg);
         }
     };
 

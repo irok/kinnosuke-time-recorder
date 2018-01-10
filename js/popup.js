@@ -75,14 +75,14 @@ function updateMenu(status) {
  * 出社処理
  */
 function startWork() {
-    confirmDialog('出社しましたか？', stamp.bind(null, KTR.STAMP.ON));
+    confirmDialog(KTR.message.get('start'), stamp.bind(null, KTR.STAMP.ON));
 }
 
 /**
  * 退社処理
  */
 function leaveWork() {
-    confirmDialog('退社しますか？', stamp.bind(null, KTR.STAMP.OFF));
+    confirmDialog(KTR.message.get('leave'), stamp.bind(null, KTR.STAMP.OFF));
 }
 
 /**
