@@ -291,9 +291,7 @@
                 cb = NOP;
             }
 
-            KTR.debug.add(`status.update(${force_connect})`);
             if (!force_connect && (status = status_cache()) !== null) {
-                KTR.debug.clear();
                 KTR.view.update(status);
                 cb(status);
                 return;
@@ -419,7 +417,6 @@
 
         // マイページトップにアクセスする
         mytop(cb) {
-            KTR.debug.add(`mytop`);
             KTR.service.get((html) => {
                 if (KTR.status.scrape(html).authorized)
                     cb(html);
@@ -434,7 +431,6 @@
                 return;
             }
 
-            KTR.debug.add(`login`);
             const query = KTR.credential.get((cstmid, userid, passwd) => {
                 return {
                     module: 'login',
@@ -446,21 +442,16 @@
             KTR.service.post(query, (html) => {
                 const status = KTR.status.scrape(html);
                 if (status.authorized) {
-                    if (isRetry) {
-                        KTR.debug.save('login success');
-                    }
                     KTR.menuList.update(status.menus);
                     cb(html);
                     return;
                 }
                 else if (/セッションタイムアウト/.test(html)) {
-                    KTR.debug.add('session timeout');
                     if (!isRetry) {
                         KTR.service.login(cb, true);
                         return;
                     }
                 }
-                KTR.debug.save(html);
                 KTR.error('ログインできませんでした。');
             });
         },
@@ -536,7 +527,6 @@
         },
 
         _request(init, cb) {
-            KTR.debug.add(`${init.method} (${init.body || null})`);
             fetch(KTR.service.url(), Object.assign({
                 cache: 'no-store',
                 credentials: 'include'
