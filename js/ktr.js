@@ -93,6 +93,34 @@
     })();
 
     /**
+     * debug
+     */
+    KTR.debug = {
+        messages: [],
+        add(msg) {
+            KTR.debug.messages.push(msg);
+        },
+        clear() {
+            KTR.debug.messages.length = 0;
+        },
+        save(msg) {
+            let t = [];
+            try {
+                t = JSON.parse(localStorage.debug);
+            }
+            catch (e) {}        // eslint-disable-line no-empty
+
+            KTR.debug.add(msg);
+            t.push({
+                date: Date.now(),
+                messages: KTR.debug.messages
+            });
+            localStorage.debug = JSON.stringify(t);
+            KTR.debug.clear();
+        }
+    };
+
+    /**
      * View管理
      */
     KTR.view = {
@@ -263,7 +291,9 @@
                 cb = NOP;
             }
 
+            KTR.debug.add(`status.update(${force_connect})`);
             if (!force_connect && (status = status_cache()) !== null) {
+                KTR.debug.clear();
                 KTR.view.update(status);
                 cb(status);
                 return;
@@ -389,23 +419,22 @@
 
         // マイページトップにアクセスする
         mytop(cb) {
-            fetch(KTR.service.url())
-                .then((res) => res.text())
-                .then((html) => {
-                    if (KTR.status.scrape(html).authorized)
-                        cb(html);
-                    else
-                        KTR.service.login(cb);
-                })
-                .catch(KTR.service.error);
+            KTR.debug.add(`mytop`);
+            KTR.service.get((html) => {
+                if (KTR.status.scrape(html).authorized)
+                    cb(html);
+                else
+                    KTR.service.login(cb);
+            });
         },
 
         // ログインする
-        login(cb) {
+        login(cb, isRetry = false) {
             if (!KTR.credential.valid()) {
                 return;
             }
 
+            KTR.debug.add(`login`);
             const query = KTR.credential.get((cstmid, userid, passwd) => {
                 return {
                     module: 'login',
@@ -417,10 +446,21 @@
             KTR.service.post(query, (html) => {
                 const status = KTR.status.scrape(html);
                 if (status.authorized) {
+                    if (isRetry) {
+                        KTR.debug.save('login success');
+                    }
                     KTR.menuList.update(status.menus);
                     cb(html);
                     return;
                 }
+                else if (/セッションタイムアウト/.test(html)) {
+                    KTR.debug.add('session timeout');
+                    if (!isRetry) {
+                        KTR.service.login(cb, true);
+                        return;
+                    }
+                }
+                KTR.debug.save(html);
                 KTR.error('ログインできませんでした。');
             });
         },
@@ -477,17 +517,30 @@
             });
         },
 
+        // GETリクエストを送信する
+        get(cb) {
+            KTR.service._request({
+                method: 'GET'
+            }, cb);
+        },
+
         // POSTリクエストを送信する
         post(obj, cb) {
-            const init = {
+            KTR.service._request({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                 },
-                body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&'),
+                body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&')
+            }, cb);
+        },
+
+        _request(init, cb) {
+            KTR.debug.add(`${init.method} (${init.body || null})`);
+            fetch(KTR.service.url(), Object.assign({
+                cache: 'no-store',
                 credentials: 'include'
-            };
-            fetch(KTR.service.url(), init)
+            }, init))
                 .then((res) => res.text())
                 .then(cb)
                 .catch(KTR.service.error);
