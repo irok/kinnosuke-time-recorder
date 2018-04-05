@@ -330,18 +330,23 @@
             }
 
             // メニューリスト
-            const menuPos = html.search(/<td align="center" valign="top" width="72">/);
-            if (menuPos !== -1) {
+            let menuPos, menus;
+            if ((menuPos = html.search(/<td align="center" valign="top" width="72">/)) !== -1) {
                 const part = html.substr(menuPos);
-                const menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+                menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+            }
+            else if ((menuPos = html.search(/<table border="0" cellpadding="0" cellspacing="0" width="120">/)) !== -1) {
+                const part = html.substr(menuPos);
+                menus = part.substr(0, part.search(/<\/table>/)).split(/<\/tr>/);
+            }
+
+            if (menus) {
                 status.menus = [];
                 menus.forEach((menu) => {
-                    if (/href="\.\/\?module=(.+?)&amp;action=(.+?)"/.test(menu)) {
+                    if (/<img src="([^"]+)" alt="([^"]+)"/.test(menu)) {
+                        const {$1: icon, $2: title} = RegExp;
+                        /href="\.\/\?module=(.+?)&(?:amp;)?action=(.+?)"/.test(menu);
                         const {$1: module, $2: action} = RegExp;
-                        /src="([^"]+)"/.test(menu);
-                        const {$1: icon} = RegExp;
-                        /alt="([^"]+)"/.test(menu);
-                        const {$1: title} = RegExp;
                         status.menus.push({title, icon, module, action});
                     }
                 });
@@ -419,9 +424,9 @@
         mytop(cb) {
             KTR.service.get((html) => {
                 if (KTR.status.scrape(html).authorized)
-                    cb(html);
+                    {cb(html);}
                 else
-                    KTR.service.login(cb);
+                    {KTR.service.login(cb);}
             });
         },
 
