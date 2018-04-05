@@ -9,8 +9,8 @@ $(function() {
  * メニュー初期化
  */
 function init() {
-    const $service = $('#service');
-    const $options = $('#options');
+    const $service = $('#service').click(() => openKTR());
+    $('#options').click(() => window.open('/html/options.html', '_blank'));
 
     // 認証情報があれば出社、退社を表示
     if (KTR.credential.valid()) {
@@ -18,30 +18,15 @@ function init() {
     }
 
     // メニューを追加
-    KTR.menuList.get((menus) => {
-        menus.forEach((menu) => {
-            $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
-                .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
-                .append(menu.title)
-                .insertBefore($service);
-        });
-    });
+    addMenus($service);
 
-    // イベント設定
-    $service.click(() => openKTR());
-    $options.click(() => window.open('/html/options.html', '_blank'));
-    $('.menu').click(function() {
-        var $this = $(this);
-        openKTR({
-            module: $this.data('module'),
-            action: $this.data('action')
-        });
-    });
-
-    // 状態による内容の設定
+    // 状態による内容の更新
     KTR.status.update((status) => {
         // 出社、退社
         updateMenu(status);
+
+        // メニュー
+        addMenus($service);
 
         // お知らせ
         if (status.information.recent) {
@@ -51,7 +36,7 @@ function init() {
 }
 
 /**
- * 出社、退社、お知らせの表示
+ * 出社時刻、退社時刻の更新
  */
 function updateMenu(status) {
     if (status.code === KTR.STATUS.UNKNOWN) {
@@ -68,6 +53,31 @@ function updateMenu(status) {
         $('#action2').text('退社 ' + status.leave).removeClass('enabled').unbind('click', leaveWork);
     } else {
         $('#action2').addClass('enabled').click(leaveWork);
+    }
+}
+
+/**
+ * メニューを追加
+ */
+function addMenus($service) {
+    if ($service.parent().find('.menu').length === 0) {
+        KTR.menuList.get((menus) => {
+            menus.forEach((menu) => {
+                $(`<li class="menu enabled" data-module="${menu.module}" data-action="${menu.action}"/>`)
+                    .append(`<img src="${KTR.service.url()}${menu.icon}"/>`)
+                    .append(menu.title)
+                    .insertBefore($service);
+            });
+        });
+
+        // イベント設定
+        $('.menu').click(function() {
+            var $this = $(this);
+            openKTR({
+                module: $this.data('module'),
+                action: $this.data('action')
+            });
+        });
     }
 }
 
