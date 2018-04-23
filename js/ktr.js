@@ -258,6 +258,22 @@
     };
 
     /**
+     * アラーム情報
+     */
+    KTR.alarms = {
+        get() {
+            let alarms = localStorage.Alarms;
+            if (typeof alarms === 'undefined') {
+                alarms = localStorage.Alarms = JSON.stringify({});
+            }
+            return JSON.parse(alarms);
+        },
+        update(alarms) {
+            localStorage.Alarms = JSON.stringify(alarms);
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {
