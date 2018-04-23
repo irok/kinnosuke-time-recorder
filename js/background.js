@@ -27,6 +27,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.alarms.create('alerm', { periodInMinutes: 1 });
 chrome.alarms.onAlarm.addListener(function() {
     const manifest = chrome.runtime.getManifest();
+    const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
 
     const alerms = KTR.alarms.get();
     const format = 'hh:mm'
@@ -45,7 +46,6 @@ chrome.alarms.onAlarm.addListener(function() {
 
         if (now.isBetween(begin, end)) {
             args = Object.assign({message: '出勤しましたか？'}, args)
-            const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
             chrome.notifications.create(`notification_${notificationId}`, args);
         }
     }
@@ -56,7 +56,6 @@ chrome.alarms.onAlarm.addListener(function() {
 
         if (now.isBetween(begin, end)) {
             args = Object.assign({message: '退勤しましたか？'}, args)
-            const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
             chrome.notifications.create(`notification_${notificationId}`, args);
         }
     }
