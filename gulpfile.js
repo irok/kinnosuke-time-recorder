@@ -2,7 +2,8 @@ var gulp = require('gulp');
 
 var libs = [
     'node_modules/crypto-js/crypto-js.js',
-    'node_modules/jquery/dist/jquery.js'
+    'node_modules/jquery/dist/jquery.js',
+    'node_modules/moment/moment.js'
 ];
 
 gulp.task('default', () => {
@@ -35,4 +36,8 @@ gulp.task('prepare', () => {
         gulp.src('js/*').pipe(gulp.dest('tmp/js/')),
         gulp.src(libs).pipe(gulp.dest('tmp/vendor/'))
     );
+});
+
+gulp.task('vendor', () => {
+    return gulp.src(libs).pipe(gulp.dest('vendor/'));
 });
