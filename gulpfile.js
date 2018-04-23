@@ -2,7 +2,8 @@ var gulp = require('gulp');
 
 var libs = [
     'node_modules/crypto-js/crypto-js.js',
-    'node_modules/jquery/dist/jquery.js'
+    'node_modules/jquery/dist/jquery.js',
+    'node_modules/moment/moment.js'
 ];
 
 gulp.task('default', () => {
@@ -34,5 +35,12 @@ gulp.task('prepare', () => {
         gulp.src('images/*').pipe(gulp.dest('tmp/images/')),
         gulp.src('js/*').pipe(gulp.dest('tmp/js/')),
         gulp.src(libs).pipe(gulp.dest('tmp/vendor/'))
+    );
+});
+
+gulp.task('vendor', () => {
+    var merge = require('event-stream').merge;
+    return merge(
+        gulp.src(libs).pipe(gulp.dest('vendor/'))
     );
 });
