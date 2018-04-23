@@ -16,6 +16,7 @@
     "scripts": [
       "/vendor/jquery.js",
       "/vendor/crypto-js.js",
+      "/vendor/moment.js",
       "/js/ktr.js",
       "/js/background.js"
     ],
