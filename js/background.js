@@ -23,3 +23,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     sendResponse();
 });
+
+chrome.alarms.create('alerm', { periodInMinutes: 1 });
+chrome.alarms.onAlarm.addListener(function() {
+    const manifest = chrome.runtime.getManifest();
+
+    const alerms = KTR.alarms.get();
+    const format = 'hh:mm'
+    const now = moment(moment(), format)
+
+    let args = {
+        type: 'basic',
+        title: manifest.name,
+        iconUrl: manifest.icons['48'],
+        priority: 1
+    };
+
+    if (alerms.startAlarmBegin && alerms.startAlarmEnd) {
+        const begin = moment(alerms.startAlarmBegin, format);
+        const end = moment(alerms.startAlarmEnd, format);
+
+        if (now.isBetween(begin, end)) {
+            args = Object.assign({message: '出勤しましたか？'}, args)
+            const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
+            chrome.notifications.create(`notification_${notificationId}`, args);
+        }
+    }
+
+    if (alerms.leaveAlarmBegin && alerms.leaveAlarmEnd) {
+        const begin = moment(alerms.leaveAlarmBegin, format);
+        const end = moment(alerms.leaveAlarmEnd, format);
+
+        if (now.isBetween(begin, end)) {
+            args = Object.assign({message: '退勤しましたか？'}, args)
+            const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
+            chrome.notifications.create(`notification_${notificationId}`, args);
+        }
+    }
+});

@@ -45,6 +45,7 @@
   "permissions": [
     "https://www.4628.jp/*",
     "https://www.e4628.jp/*",
-    "notifications"
+    "notifications",
+    "alarms"
   ]
 }
