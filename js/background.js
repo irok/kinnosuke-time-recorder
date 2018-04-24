@@ -43,23 +43,28 @@ chrome.alarms.onAlarm.addListener(function() {
         priority: 1
     };
 
-    if (alerms.startAlarmBegin && alerms.startAlarmEnd) {
-        const begin = moment(alerms.startAlarmBegin, format);
-        const end = moment(alerms.startAlarmEnd, format);
+    KTR.service.mytop((html) => {
+        const status = KTR.status.scan(html).code
+        // 出勤前かつ出勤アラートの設定がある場合
+        if (status == KTR.STATUS.BEFORE && alerms.startAlarmBegin && alerms.startAlarmEnd) {
+            const begin = moment(alerms.startAlarmBegin, format);
+            const end = moment(alerms.startAlarmEnd, format);
 
-        if (now.isBetween(begin, end)) {
-            args = Object.assign({message: '出勤しましたか？'}, args)
-            chrome.notifications.create(`notification_${notificationId}`, args);
+            if (now.isBetween(begin, end)) {
+                args = Object.assign({message: KTR.MESSAGE.start}, args)
+                chrome.notifications.create(`notification_${notificationId}`, args);
+            }
         }
-    }
 
-    if (alerms.leaveAlarmBegin && alerms.leaveAlarmEnd) {
-        const begin = moment(alerms.leaveAlarmBegin, format);
-        const end = moment(alerms.leaveAlarmEnd, format);
+        // 出勤中かつ退勤アラートの設定がある場合
+        if (status == KTR.STATUS.ON_THE_JOB && alerms.leaveAlarmBegin && alerms.leaveAlarmEnd) {
+            const begin = moment(alerms.leaveAlarmBegin, format);
+            const end = moment(alerms.leaveAlarmEnd, format);
 
-        if (now.isBetween(begin, end)) {
-            args = Object.assign({message: '退勤しましたか？'}, args)
-            chrome.notifications.create(`notification_${notificationId}`, args);
+            if (now.isBetween(begin, end)) {
+                args = Object.assign({message: KTR.MESSAGE.leave}, args)
+                chrome.notifications.create(`notification_${notificationId}`, args);
+            }
         }
-    }
+    });
 });
