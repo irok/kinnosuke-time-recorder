@@ -26,13 +26,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.alarms.create('alerm', { periodInMinutes: 1 });
 chrome.alarms.onAlarm.addListener(function() {
+    if (!KTR.credential.valid()) {
+        return
+    }
+
     const manifest = chrome.runtime.getManifest();
     const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
 
     const alerms = KTR.alarms.get();
     const format = 'hh:mm'
     const now = moment(moment(), format)
-
     let args = {
         type: 'basic',
         title: manifest.name,
