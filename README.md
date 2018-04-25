@@ -27,6 +27,7 @@ Chrome ウェブストアから「[勤之助タイムレコーダー](https://ch
 ```
 git clone git@github.com:irok/KinnosukeTimeRecorder.git
 npm install
+npm run vendor
 ```
 
 chrome://extensions/ の「デベロッパーモード」をチェックして「パッケージ化されていない拡張機能を読み込む」を押し、KinnosukeTimeRecorder ディレクトリを選択してください。
