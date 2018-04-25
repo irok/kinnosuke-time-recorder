@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.alarms.create('alerm', { periodInMinutes: 1 });
+    chrome.alarms.create('alerm', { periodInMinutes: 5 });
 });
 
 chrome.alarms.onAlarm.addListener(function() {
