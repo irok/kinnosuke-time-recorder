@@ -24,7 +24,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse();
 });
 
-chrome.alarms.create('alerm', { periodInMinutes: 1 });
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.alarms.create('alerm', { periodInMinutes: 1 });
+});
+
 chrome.alarms.onAlarm.addListener(function() {
     if (!KTR.credential.valid()) {
         return
