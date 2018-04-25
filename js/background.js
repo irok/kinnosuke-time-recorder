@@ -37,7 +37,7 @@ chrome.alarms.onAlarm.addListener(function() {
     const notificationId = Math.floor(Math.random() * 9007199254740992) + 1;
 
     const alerms = KTR.alarms.get();
-    const format = 'hh:mm'
+    const format = 'hh:mm:ss'
     const now = moment(moment(), format)
     let args = {
         type: 'basic',
@@ -50,8 +50,8 @@ chrome.alarms.onAlarm.addListener(function() {
         const status = KTR.status.scan(html).code
         // 出勤前かつ出勤アラートの設定がある場合
         if (status == KTR.STATUS.BEFORE && alerms.startAlarmBegin && alerms.startAlarmEnd) {
-            const begin = moment(alerms.startAlarmBegin, format);
-            const end = moment(alerms.startAlarmEnd, format);
+            const begin = moment(`${alerms.startAlarmBegin}:00`, format);
+            const end = moment(`${alerms.startAlarmEnd}:59`, format);
 
             if (now.isBetween(begin, end)) {
                 args = Object.assign({message: KTR.MESSAGE.start}, args)
@@ -61,8 +61,8 @@ chrome.alarms.onAlarm.addListener(function() {
 
         // 出勤中かつ退勤アラートの設定がある場合
         if (status == KTR.STATUS.ON_THE_JOB && alerms.leaveAlarmBegin && alerms.leaveAlarmEnd) {
-            const begin = moment(alerms.leaveAlarmBegin, format);
-            const end = moment(alerms.leaveAlarmEnd, format);
+            const begin = moment(`${alerms.leaveAlarmBegin}:00`, format);
+            const end = moment(`${alerms.leaveAlarmEnd}:59`, format);
 
             if (now.isBetween(begin, end)) {
                 args = Object.assign({message: KTR.MESSAGE.leave}, args)
