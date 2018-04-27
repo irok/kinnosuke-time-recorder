@@ -39,8 +39,6 @@ gulp.task('prepare', () => {
 });
 
 gulp.task('vendor', () => {
-    var merge = require('event-stream').merge;
-    return merge(
-        gulp.src(libs).pipe(gulp.dest('vendor/'))
-    );
+    return gulp.src(libs).pipe(gulp.dest('vendor/'));
 });
+

@@ -9,7 +9,7 @@
   "dependencies": {
     "crypto-js": "3.1.9-1",
     "jquery": "3.1.1",
-    "moment": "^2.22.1"
+    "moment": "2.22.1"
   },
   "devDependencies": {
     "del": "^2.2.2",
@@ -31,6 +31,7 @@
     "url": "git://github.com/irok/KinnosukeTimeRecorder.git"
   },
   "scripts": {
+    "postinstall": "gulp vendor",
     "build": "gulp build",
     "vendor": "gulp vendor",
     "lint": "eslint --fix js || exit 0",
