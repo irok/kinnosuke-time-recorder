@@ -88,6 +88,8 @@ button.confirm {
 button.confirm:last-child {
   margin-left: 10px;
 }
+.time-table { width: 100%; display: none; }
+.time-table th, .time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -98,6 +100,46 @@ button.confirm:last-child {
 <div class="inout-block">
   <p id="action1" class="inout">出社</p>
   <p id="action2" class="inout">退社</p>
+</div>
+<div id="diff" class="enabled">
+  <p style="padding: 4px 20px;">🕒 勤務時間</p>
+  <table class="time-table">
+    <tr>
+      <th width="20%"></th>
+      <th width="40%">勤務日数</th>
+      <th width="40%">勤務時間</th>
+    </tr>
+    <tr>
+      <th>所定</th>
+      <td id="fixed-day"></td>
+      <td id="fixed-time"></td>
+    </tr>
+    <tr>
+      <th>現在</th>
+      <td id="actual-day"></td>
+      <td id="actual-time"></td>
+    </tr>
+    <tr>
+      <th>必要</th>
+      <td id="need-day"></td>
+      <td id="need-time"></td>
+    </tr>
+    <tr>
+      <th colspan="2">予定過不足時間</th>
+      <td id="expect-time"></td>
+    </tr>
+    <tr>
+      <th colspan="2">一日あたり勤務時間</th>
+      <td id="time-per-day"></td>
+    </tr>
+    <tr>
+      <th colspan="2">今日の勤務時間 ※</th>
+      <td id="today-time"></td>
+    </tr>
+    <tr>
+      <td colspan="3"><small>※ 休憩時間を含む</small></td>
+    </tr>
+  </table>
 </div>
 <ul>
   <li id="service" class="enabled">勤之助を開く</li>

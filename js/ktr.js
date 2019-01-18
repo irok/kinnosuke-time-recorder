@@ -529,6 +529,19 @@
             });
         },
 
+        // 所定労働時間に対する時間差を取得する
+        getDifference(cb) {
+            KTR.service._requestWithURL({
+                    method: 'GET'
+                },
+                KTR.service.url() + '?module=timesheet&action=browse',
+                (html) => {
+                    const parser = new DOMParser();
+                    const doc    = parser.parseFromString(html, 'text/html');
+                    cb(getWorkingInfo(doc));
+                });
+        },
+
         // GETリクエストを送信する
         get(cb) {
             KTR.service._request({
@@ -557,9 +570,91 @@
                 .catch(KTR.service.error);
         },
 
+        _requestWithURL(init, url, cb) {
+            fetch(url, Object.assign({
+                cache: 'no-store',
+                credentials: 'include'
+            }, init))
+                .then((res) => res.text())
+                .then(cb)
+                .catch(KTR.service.error);
+        },
+
         // ネットワークエラー
         error({message}) {
             KTR.error(message);
         }
     };
 })(this);
+
+function getWorkingInfo(doc){
+    // 所定労働日数、所定労働時間、出勤日数…が入っているtable
+    const table = doc.querySelector('table#total_list0 tr:nth-child(2)');
+
+    // 所定労働日数
+    const normalWorkingDays = Number(table.querySelector('td:nth-child(1)').textContent);
+    // 所定労働時間
+    const normalWorkingHours = table.querySelector('td:nth-child(2)').textContent.split(':').map(Number);
+    // 出勤日数
+    const workingDays = Number(table.querySelector('td:nth-child(3)').textContent);
+    // 有給休暇日数
+    const paidVacation = Number(table.querySelector('td:nth-child(4)').textContent);
+    const specialVacation = Number(table.querySelector('td:nth-child(5)').textContent);
+    // 実働時間
+    const actualWorkingHours = table.querySelector('td:nth-child(19)').textContent.split(':').map(Number);
+
+    // 今日の勤務開始時間
+    var now = new Date();
+    var tr  = doc.querySelector(`#fix_0_${now.getDate()}`);
+
+    // 出社時間
+    var start = tr.querySelector("td:nth-child(7)").textContent.split(':').map(Number);
+    // 実働時間
+    var actual = tr.querySelector("td:nth-child(10)").textContent.split(':').map(Number);
+
+    var th = (actual.length === 2) ? actual[0] : 0;
+    var tm = (actual.length === 2) ? actual[1] : 0;
+
+    if (actual.length !== 2 && start.length === 2) {
+        var t1 = start[0] * 60 + start[1];
+        var t2 = now.getHours() * 60 + now.getMinutes();
+        var df = t2 - t1;
+        th = Math.floor(df / 60);
+        tm = df % 60;
+    }
+
+    var fh = normalWorkingHours[0];
+    var fm = normalWorkingHours[1];
+    var ah = actualWorkingHours[0];
+    var am = actualWorkingHours[1];
+
+    // 実働時間
+    const normalWorkingMinutes = fh * 60 + fm;
+    const actualWorkingMinutes = ah * 60 + am;
+    // 1日あたりの所定労働時間 = 所定労働時間 / 所定労働日数
+    const normalWorkingMinutesPerDay = normalWorkingMinutes / normalWorkingDays;
+    // 実働日数 = 出勤日数 + (有休日数 + 特休日数)
+    const actualWorkingDays = workingDays + paidVacation + specialVacation;
+    // 所定労働時間に対する時間差 = 実働時間 - 実働日数 * 1日あたりの所定労働時間
+    const expectMin = actualWorkingMinutes - actualWorkingDays * normalWorkingMinutesPerDay;
+    // 過不足判定
+    const sign = Math.sign(expectMin) >= 0 ? '+' : '';
+    // その他
+    var needDay   = normalWorkingDays - workingDays - paidVacation - specialVacation;
+    var fixedMin  = /* 時間を分に */ (fh * 60) + fm;
+    var actualMin = (ah * 60) + am;
+    var needMin   = (fixedMin - actualMin) <= 0 ? 0 : (fixedMin - actualMin);
+    var perMin    = Math.floor(needMin / needDay);
+    var response  = {
+        "days"    : { "fixed" : normalWorkingDays , "actual" : workingDays , "need" : needDay },
+        "times"   : {
+            "fixed"  : { "hour": fh, "min": /* ゼロパディング */  (`00${fm}`).slice(-2) },
+            "actual" : { "hour": ah, "min": (`00${am}`).slice(-2) },
+            "need"   : { "hour": Math.floor(needMin / 60), "min": (`00${(needMin % 60)}`).slice(-2) },
+            "today"  : { "hour": th, "min": (`00${tm}`).slice(-2) },
+            "expect" : { "hour": Math.floor(expectMin / 60), "min": (`00${expectMin % 60}`).slice(-2), "sign": sign },
+            "perDay" : { "hour": Math.floor(perMin / 60), "min": (`00${(perMin % 60)}`).slice(-2) },
+        },
+    };
+    return response;
+}

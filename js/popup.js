@@ -12,6 +12,21 @@ function init() {
     const $service = $('#service').click(() => openKTR());
     $('#options').click(() => window.open('/html/options.html', '_blank'));
 
+    const $diff = $('#diff');
+    $diff.click(() => KTR.service.getDifference((diff) => {
+        $('#diff').removeClass('enabled');
+        $('#fixed-day').text(`${diff.days.fixed}日`);
+        $('#actual-day').text(`${diff.days.actual}日`);
+        $('#need-day').text(`${diff.days.need}日`);
+        $('#fixed-time').text(`${diff.times.fixed.hour}:${diff.times.fixed.min}`);
+        $('#actual-time').text(`${diff.times.actual.hour}:${diff.times.actual.min}`);
+        $('#need-time').text(`${diff.times.need.hour}:${diff.times.need.min}`);
+        $('#expect-time').text(`${diff.times.expect.sign}${diff.times.expect.hour}:${diff.times.expect.min}`);
+        $('#time-per-day').text(`${diff.times.perDay.hour}:${diff.times.perDay.min}`);
+        $('#today-time').text(`${diff.times.today.hour}:${diff.times.today.min}`);
+        $('#diff .time-table').fadeIn();
+    }));
+
     // 認証情報があれば出社、退社を表示
     if (KTR.credential.valid()) {
         $('.inout-block').css('display', 'table');
