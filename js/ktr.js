@@ -258,22 +258,6 @@
     };
 
     /**
-     * アラーム情報
-     */
-    KTR.alarms = {
-        get() {
-            let alarms = localStorage.Alarms;
-            if (typeof alarms === 'undefined') {
-                alarms = localStorage.Alarms = JSON.stringify({});
-            }
-            return JSON.parse(alarms);
-        },
-        update(alarms) {
-            localStorage.Alarms = JSON.stringify(alarms);
-        }
-    };
-
-    /**
      * メニュー管理
      */
     KTR.menuList = {
@@ -346,23 +330,18 @@
             }
 
             // メニューリスト
-            let menuPos, menus;
-            if ((menuPos = html.search(/<td align="center" valign="top" width="72">/)) !== -1) {
+            const menuPos = html.search(/<td align="center" valign="top" width="72">/);
+            if (menuPos !== -1) {
                 const part = html.substr(menuPos);
-                menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
-            }
-            else if ((menuPos = html.search(/<table border="0" cellpadding="0" cellspacing="0" width="120">/)) !== -1) {
-                const part = html.substr(menuPos);
-                menus = part.substr(0, part.search(/<\/table>/)).split(/<\/tr>/);
-            }
-
-            if (menus) {
+                const menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
                 status.menus = [];
                 menus.forEach((menu) => {
-                    if (/<img src="([^"]+)" alt="([^"]+)"/.test(menu)) {
-                        const {$1: icon, $2: title} = RegExp;
-                        /href="\.\/\?module=(.+?)&(?:amp;)?action=(.+?)"/.test(menu);
+                    if (/href="\.\/\?module=(.+?)&amp;action=(.+?)"/.test(menu)) {
                         const {$1: module, $2: action} = RegExp;
+                        /src="([^"]+)"/.test(menu);
+                        const {$1: icon} = RegExp;
+                        /alt="([^"]+)"/.test(menu);
+                        const {$1: title} = RegExp;
                         status.menus.push({title, icon, module, action});
                     }
                 });
@@ -440,9 +419,9 @@
         mytop(cb) {
             KTR.service.get((html) => {
                 if (KTR.status.scrape(html).authorized)
-                    {cb(html);}
+                    cb(html);
                 else
-                    {KTR.service.login(cb);}
+                    KTR.service.login(cb);
             });
         },
 
@@ -536,9 +515,38 @@
                 },
                 KTR.service.url() + '?module=timesheet&action=browse',
                 (html) => {
-                    const parser = new DOMParser();
-                    const doc    = parser.parseFromString(html, 'text/html');
-                    cb(getWorkingInfo(doc));
+
+                    var t     = KTR.workInfo.getWorkingInfoFromHtml(html);
+                    var now   = new Date();
+                    var days  = t.day;
+                    var times = t.time;
+
+                    var nowtime   = now.getHours() * 60 + now.getMinutes();
+                    var diffTimes = (times.today.actual.time !== 0) ? times.today.actual : KTR.workInfo.arrayToTime([], nowtime - times.today.start.time);
+                    var needDay   = days.fixed - days.work - days.vacation;
+                    var ntime     = (times.fixed.time - times.actual.time) <= 0 ? 0 : (times.fixed.time - times.actual.time);
+                    var etime     = (needDay * /* worktime per day */ (times.fixed.time / days.fixed)) - ntime;
+
+                    //
+                    var needTimes = KTR.workInfo.arrayToTime([], ntime);
+                    //
+                    var perTimes  = KTR.workInfo.arrayToTime([], Math.floor(ntime / needDay));
+                    //
+                    var expectTimes = KTR.workInfo.arrayToTime([], etime);
+
+                    var response  = {
+                        "days"    : { "fixed" : days.fixed , "actual" : days.work , "need" : needDay },
+                        "times"   : {
+                            "fixed"  : { "hour": times.fixed.hour, "min": times.fixed.min },
+                            "actual" : { "hour": times.actual.hour, "min": times.actual.min },
+                            "need"   : { "hour": needTimes.hour, "min": needTimes.min },
+                            "expect" : { "hour": expectTimes.hour, "min": expectTimes.min, "sign": (etime < 0) ? "-" : "+" },
+                            "today"  : { "hour": diffTimes.hour, "min": diffTimes.min },
+                            "perDay" : { "hour": perTimes.hour, "min": perTimes.min },
+                        },
+                    };
+                    console.log(response)
+                    cb(response);
                 });
         },
 
@@ -585,76 +593,90 @@
             KTR.error(message);
         }
     };
-})(this);
 
-function getWorkingInfo(doc){
-    // 所定労働日数、所定労働時間、出勤日数…が入っているtable
-    const table = doc.querySelector('table#total_list0 tr:nth-child(2)');
+    /**
+     * Private Methods
+     */
+    KTR.workInfo = {
+        getWorkingInfoFromHtml(html){
+            const parser = new DOMParser();
+            const doc    = parser.parseFromString(html, 'text/html');
+            const table  = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
 
-    // 所定労働日数
-    const normalWorkingDays = Number(table.querySelector('td:nth-child(1)').textContent);
-    // 所定労働時間
-    const normalWorkingHours = table.querySelector('td:nth-child(2)').textContent.split(':').map(Number);
-    // 出勤日数
-    const workingDays = Number(table.querySelector('td:nth-child(3)').textContent);
-    // 有給休暇日数
-    const paidVacation = Number(table.querySelector('td:nth-child(4)').textContent);
-    const specialVacation = Number(table.querySelector('td:nth-child(5)').textContent);
-    // 実働時間
-    const actualWorkingHours = table.querySelector('td:nth-child(19)').textContent.split(':').map(Number);
+            /*********
+             * td:nth-child(n)
+             * n = 1  : 所定労働日数
+             * n = 2  : 所定労働時間
+             * n = 3  : 出勤日数
+             * n = 4  : 有給日数
+             * n = 5  : 特休日数
+             * n = 6  : 欠生日数
+             * n = 7  : 欠勤日数
+             * n = 8  : 生理休暇
+             * n = 9  : 休出日数
+             * n = 10 : 振休日数
+             * n = 11 : 休日監視日数
+             * n = 12 : 監視振休日数
+             * n = 13 : 求職日数
+             * n = 14 : 産休日数
+             * n = 15 : 育休日数
+             * n = 16 : 介護休暇日数
+             * n = 17 : 遅番回数
+             * n = 18 : エス回数
+             * n = 19 : 実働時間
+             * n = 20 : 普通残業
+             * n = 21 : 深夜労働
+             * n = 22 : 休出時間
+             * n = 23 : 法定内休出
+             * n = 24 : 法定内深夜
+             * n = 25 : 法定外休出
+             * n = 26 : 法定外深夜
+             * n = 27 : 遅番時間
+             *********/
 
-    // 今日の勤務開始時間
-    var now = new Date();
-    var tr  = doc.querySelector(`#fix_0_${now.getDate()}`);
+                // 日数
+            const fixedDay    = Number(table.querySelector('td:nth-child(1)').textContent);
+            const workDay     = Number(table.querySelector('td:nth-child(3)').textContent);
 
-    // 出社時間
-    var start = tr.querySelector("td:nth-child(7)").textContent.split(':').map(Number);
-    // 実働時間
-    var actual = tr.querySelector("td:nth-child(10)").textContent.split(':').map(Number);
+            // 休暇
+            const paidVacation    = Number(table.querySelector('td:nth-child(4)').textContent);
+            const specialVacation = Number(table.querySelector('td:nth-child(5)').textContent);
 
-    var th = (actual.length === 2) ? actual[0] : 0;
-    var tm = (actual.length === 2) ? actual[1] : 0;
+            // 時間
+            const fixedTimes  = table.querySelector('td:nth-child(2)').textContent.split(':').map(Number);
+            const actualTimes = table.querySelector('td:nth-child(19)').textContent.split(':').map(Number);
 
-    if (actual.length !== 2 && start.length === 2) {
-        var t1 = start[0] * 60 + start[1];
-        var t2 = now.getHours() * 60 + now.getMinutes();
-        var df = t2 - t1;
-        th = Math.floor(df / 60);
-        tm = df % 60;
-    }
+            // 今日の勤務開始時間
+            var now    = new Date();
+            var tr     = doc.querySelector(`#fix_0_${now.getDate()}`);
+            var start  = tr.querySelector("td:nth-child(7)").textContent.split(':').map(Number);
+            var actual = tr.querySelector("td:nth-child(10)").textContent.split(':').map(Number);
+            start      = (start.length != 2) ? [0, 0] : start;
+            actual     = (actual.length != 2) ? [0, 0] : actual;
 
-    var fh = normalWorkingHours[0];
-    var fm = normalWorkingHours[1];
-    var ah = actualWorkingHours[0];
-    var am = actualWorkingHours[1];
-
-    // 実働時間
-    const normalWorkingMinutes = fh * 60 + fm;
-    const actualWorkingMinutes = ah * 60 + am;
-    // 1日あたりの所定労働時間 = 所定労働時間 / 所定労働日数
-    const normalWorkingMinutesPerDay = normalWorkingMinutes / normalWorkingDays;
-    // 実働日数 = 出勤日数 + (有休日数 + 特休日数)
-    const actualWorkingDays = workingDays + paidVacation + specialVacation;
-    // 所定労働時間に対する時間差 = 実働時間 - 実働日数 * 1日あたりの所定労働時間
-    const expectMin = actualWorkingMinutes - actualWorkingDays * normalWorkingMinutesPerDay;
-    // 過不足判定
-    const sign = Math.sign(expectMin) >= 0 ? '+' : '';
-    // その他
-    var needDay   = normalWorkingDays - workingDays - paidVacation - specialVacation;
-    var fixedMin  = /* 時間を分に */ (fh * 60) + fm;
-    var actualMin = (ah * 60) + am;
-    var needMin   = (fixedMin - actualMin) <= 0 ? 0 : (fixedMin - actualMin);
-    var perMin    = Math.floor(needMin / needDay);
-    var response  = {
-        "days"    : { "fixed" : normalWorkingDays , "actual" : workingDays , "need" : needDay },
-        "times"   : {
-            "fixed"  : { "hour": fh, "min": /* ゼロパディング */  (`00${fm}`).slice(-2) },
-            "actual" : { "hour": ah, "min": (`00${am}`).slice(-2) },
-            "need"   : { "hour": Math.floor(needMin / 60), "min": (`00${(needMin % 60)}`).slice(-2) },
-            "today"  : { "hour": th, "min": (`00${tm}`).slice(-2) },
-            "expect" : { "hour": Math.floor(expectMin / 60), "min": (`00${expectMin % 60}`).slice(-2), "sign": sign },
-            "perDay" : { "hour": Math.floor(perMin / 60), "min": (`00${(perMin % 60)}`).slice(-2) },
+            return {
+                "day"  : {
+                    "fixed"    : fixedDay,
+                    "work"     : workDay,
+                    "vacation" : paidVacation + specialVacation,
+                },
+                "time" : {
+                    "fixed"  : KTR.workInfo.arrayToTime(fixedTimes),
+                    "actual" : KTR.workInfo.arrayToTime(actualTimes),
+                    "today"  : {
+                        "start"  : KTR.workInfo.arrayToTime(start),
+                        "actual" : KTR.workInfo.arrayToTime(actual),
+                    },
+                },
+            };
         },
+        arrayToTime(times, timestamp = 0){
+            var time = (times.length != 2) ? timestamp : times[0] * 60 + times[1];
+            return {
+                "time" : time,
+                "hour" : `${Math.floor(time / 60)}`,
+                "min"  : (`00${time % 60}`).slice(-2),
+            };
+        }
     };
-    return response;
-}
+})(this);
