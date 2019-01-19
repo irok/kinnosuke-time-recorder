@@ -559,7 +559,13 @@
                     var times = t.time;
 
                     var nowtime   = now.getHours() * 60 + now.getMinutes();
-                    var diffTimes = (times.today.actual.time !== 0) ? times.today.actual : KTR.workInfo.arrayToTime([], nowtime - times.today.start.time);
+                    var diffTimes = KTR.workInfo.arrayToTime([]);
+
+                    if (times.today.actual.time <= 0)
+                        { diffTimes = times.today.actual; }
+                    else if (times.today.start.time != times.today.actual.time)
+                        { diffTimes = KTR.workInfo.arrayToTime([], nowtime - times.today.start.time); }
+
                     var needDay   = days.fixed - days.work - days.vacation;
                     var ntime     = (times.fixed.time - times.actual.time) <= 0 ? 0 : (times.fixed.time - times.actual.time);
                     var etime     = (needDay * /* worktime per day */ (times.fixed.time / days.fixed)) - ntime;
