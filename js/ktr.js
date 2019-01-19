@@ -258,6 +258,22 @@
     };
 
     /**
+     * アラーム情報
+     */
+    KTR.alarms = {
+        get() {
+            let alarms = localStorage.Alarms;
+            if (typeof alarms === 'undefined') {
+                alarms = localStorage.Alarms = JSON.stringify({});
+            }
+            return JSON.parse(alarms);
+        },
+        update(alarms) {
+            localStorage.Alarms = JSON.stringify(alarms);
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {
@@ -330,18 +346,23 @@
             }
 
             // メニューリスト
-            const menuPos = html.search(/<td align="center" valign="top" width="72">/);
-            if (menuPos !== -1) {
+            let menuPos, menus;
+            if ((menuPos = html.search(/<td align="center" valign="top" width="72">/)) !== -1) {
                 const part = html.substr(menuPos);
-                const menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+                menus = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+            }
+            else if ((menuPos = html.search(/<table border="0" cellpadding="0" cellspacing="0" width="120">/)) !== -1) {
+                const part = html.substr(menuPos);
+                menus = part.substr(0, part.search(/<\/table>/)).split(/<\/tr>/);
+            }
+
+            if (menus) {
                 status.menus = [];
                 menus.forEach((menu) => {
-                    if (/href="\.\/\?module=(.+?)&amp;action=(.+?)"/.test(menu)) {
+                    if (/<img src="([^"]+)" alt="([^"]+)"/.test(menu)) {
+                        const {$1: icon, $2: title} = RegExp;
+                        /href="\.\/\?module=(.+?)&(?:amp;)?action=(.+?)"/.test(menu);
                         const {$1: module, $2: action} = RegExp;
-                        /src="([^"]+)"/.test(menu);
-                        const {$1: icon} = RegExp;
-                        /alt="([^"]+)"/.test(menu);
-                        const {$1: title} = RegExp;
                         status.menus.push({title, icon, module, action});
                     }
                 });
@@ -527,11 +548,11 @@
                     var ntime     = (times.fixed.time - times.actual.time) <= 0 ? 0 : (times.fixed.time - times.actual.time);
                     var etime     = (needDay * /* worktime per day */ (times.fixed.time / days.fixed)) - ntime;
 
-                    //
+                    // 月末までに必要な勤務時間累計
                     var needTimes = KTR.workInfo.arrayToTime([], ntime);
-                    //
+                    // 月末までに必要な勤務時間日別
                     var perTimes  = KTR.workInfo.arrayToTime([], Math.floor(ntime / needDay));
-                    //
+                    // 月末まで所定の時間働いた場合の過不足
                     var expectTimes = KTR.workInfo.arrayToTime([], etime);
 
                     var response  = {
@@ -595,7 +616,7 @@
     };
 
     /**
-     * Private Methods
+     * 勤務時間の詳細を取得
      */
     KTR.workInfo = {
         getWorkingInfoFromHtml(html){
@@ -634,7 +655,7 @@
              * n = 27 : 遅番時間
              *********/
 
-                // 日数
+            // 日数
             const fixedDay    = Number(table.querySelector('td:nth-child(1)').textContent);
             const workDay     = Number(table.querySelector('td:nth-child(3)').textContent);
 
