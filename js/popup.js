@@ -19,6 +19,7 @@ function init() {
         $('#fixed-day').text(`${diff.days.fixed}日`);
         $('#actual-day').text(`${diff.days.actual}日`);
         $('#need-day').text(`${diff.days.need}日`);
+        $('#holiday').text(`${diff.days.holiday}日`);
         $('#fixed-time').text(`${diff.times.fixed.hour}:${diff.times.fixed.min}`);
         $('#actual-time').text(`${diff.times.actual.hour}:${diff.times.actual.min}`);
         $('#need-time').text(`${diff.times.need.hour}:${diff.times.need.min}`);

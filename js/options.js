@@ -12,6 +12,7 @@ function restore() {
     });
 
     $(`[name="site"]:eq(${KTR.site.get()})`).prop('checked', true);
+    $(`[name="worktype"]:eq(${KTR.worktype.get()})`).prop('checked', true);
 
     const msg = KTR.message.get();
     $('#start').val(msg.start).prop('placeholder', KTR.MESSAGE.start);

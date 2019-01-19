@@ -578,7 +578,7 @@
                     var expectTimes = KTR.workInfo.arrayToTime([], etime);
 
                     var response  = {
-                        "days"    : { "fixed" : days.fixed , "actual" : days.work , "need" : needDay },
+                        "days"    : { "fixed" : days.fixed , "actual" : days.work , "need" : needDay, "holiday" : days.vacation },
                         "times"   : {
                             "fixed"  : { "hour": times.fixed.hour, "min": times.fixed.min },
                             "actual" : { "hour": times.actual.hour, "min": times.actual.min },
