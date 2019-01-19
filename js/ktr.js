@@ -274,6 +274,22 @@
     };
 
     /**
+     * 勤務形態情報
+     */
+    KTR.worktype = {
+        get() {
+            let worktype = localStorage.Worktype;
+            if (typeof worktype === 'undefined') {
+                worktype = localStorage.Worktype = 0;
+            }
+            return worktype;
+        },
+        update(worktype) {
+            localStorage.Worktype = worktype;
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {

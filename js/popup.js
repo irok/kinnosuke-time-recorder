@@ -14,6 +14,7 @@ function init() {
 
     const $diff = $('#diff');
     $diff.click(() => KTR.service.getDifference((diff) => {
+        if (KTR.worktype.get() == 1 /* フレックスの場合 */) { $('.worktype').show(); }
         $('#diff').removeClass('enabled');
         $('#fixed-day').text(`${diff.days.fixed}日`);
         $('#actual-day').text(`${diff.days.actual}日`);

@@ -42,6 +42,7 @@ function save() {
         leaveAlarmBegin: $('#leave-alarm-begin').val(),
         leaveAlarmEnd: $('#leave-alarm-end').val()
     });
+    KTR.worktype.update($('[name="worktype"]:checked').val());
 
     KTR.notify({
         message: '保存しました。'
