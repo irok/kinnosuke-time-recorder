@@ -440,9 +440,9 @@
         mytop(cb) {
             KTR.service.get((html) => {
                 if (KTR.status.scrape(html).authorized)
-                    cb(html);
+                    {cb(html);}
                 else
-                    KTR.service.login(cb);
+                    {KTR.service.login(cb);}
             });
         },
 
