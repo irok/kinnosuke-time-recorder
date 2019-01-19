@@ -566,7 +566,6 @@
                             "perDay" : { "hour": perTimes.hour, "min": perTimes.min },
                         },
                     };
-                    console.log(response)
                     cb(response);
                 });
         },
