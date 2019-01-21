@@ -70,6 +70,9 @@ button {
   font: inherit;
   text-shadow: 0 1px 0 rgb(240, 240, 240);
 }
+  .text-danger { color: #da6272; }
+  .table-center * { text-align: center; }
+  img { width: 100%; }
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -120,11 +123,11 @@ button {
   </div>
   <h2>勤務テーブル設定</h2>
   <div class="settings">
-    <table>
+    <table class="table-center">
       <tr>
         <td></td>
-        <td>所定*</td>
-        <td>出勤*</td>
+        <td class="text-danger">所定*</td>
+        <td class="text-danger">出勤*</td>
       </tr>
       <tr>
         <th>労働日数</th>
@@ -159,8 +162,8 @@ button {
 
       <tr>
         <td></td>
-        <td>所定*</td>
-        <td>実働*</td>
+        <td class="text-danger">所定*</td>
+        <td class="text-danger">実働*</td>
       </tr>
       <tr>
         <th>勤務時間</th>
@@ -170,8 +173,8 @@ button {
 
       <tr>
         <td></td>
-        <td>出社*</td>
-        <td>実働*</td>
+        <td class="text-danger">出社*</td>
+        <td class="text-danger">実働*</td>
       </tr>
       <tr>
         <th>当日勤務時間</th>
@@ -180,6 +183,11 @@ button {
       </tr>
 
     </table>
+    <p>*がついている部分は必ず入力してください。<button id="explain-btn">詳しい説明</button></p>
+
+    <div style="display: none;" class="explain">
+      <img src="/images/explain.png">
+    </div>
   </div>
   <button id="saveBtn">保存する</button>
 </section>

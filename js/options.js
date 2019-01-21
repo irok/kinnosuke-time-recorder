@@ -1,6 +1,9 @@
 $(function() {
     restore();
     $('#saveBtn').click(save);
+    $('#explain-btn').click(() => {
+        $('.explain').fadeIn();
+    });
 });
 
 // 設定を読み込んでフォームにセットする
