@@ -15,7 +15,10 @@ function restore() {
     });
 
     $(`[name="site"]:eq(${KTR.site.get()})`).prop('checked', true);
-    $(`[name="worktype"]:eq(${KTR.worktype.get()})`).prop('checked', true);
+
+    const worktype = KTR.worktype.get();
+    $(`[name="work['show']"]:eq(${worktype.show})`).prop('checked', true);
+    $(`[name="work['type']"]:eq(${worktype.type})`).prop('checked', true);
 
     const msg = KTR.message.get();
     $('#start').val(msg.start).prop('placeholder', KTR.MESSAGE.start);
@@ -51,24 +54,29 @@ function save() {
         leaveAlarmBegin: $('#leave-alarm-begin').val(),
         leaveAlarmEnd: $('#leave-alarm-end').val()
     });
-    KTR.worktype.update($('[name="worktype"]:checked').val());
 
-    var   flug     = false;
-    const setting  = {};
-    const required = ['fixed_day', 'actual_day', 'fixed_time', 'actual_time', 'today_start_time', 'today_actual_time'];
-    var s = $('[name^="setting"]');
-    s.each((index, elm) => {
-        const name    = $(elm).attr("name").replace("setting['", "").replace("']", "");
-        setting[name] = Math.abs($(elm).val());
-        if (required.includes(name) && $(elm).val() == 0) { flug = true; }
-    });
+    const worktype = {
+        "show": Math.abs($(`[name="work['show']"]:checked`).val()),
+        "type": Math.abs($(`[name="work['type']"]:checked`).val()),
+    };
+    console.log(worktype);
+    KTR.worktype.update(worktype);
+    // KTR.worktype.update($('[name="worktype"]:checked').val());
 
-    if (flug) {
-        KTR.notify({ message: '必須項目を入力してください。' });
-        return;
+
+    if (worktype.show === 1) {
+        var   flug     = false;
+        const setting  = {};
+        const required = ['fixed_day', 'actual_day', 'fixed_time', 'actual_time', 'today_start_time', 'today_actual_time'];
+        $('[name^="setting"]').each((index, elm) => {
+            const name    = $(elm).attr("name").replace("setting['", "").replace("']", "");
+            setting[name] = Math.abs($(elm).val());
+            if (required.includes(name) && $(elm).val() == 0) { flug = true; }
+        });
+        if (flug) { KTR.notify({ message: '必須項目を入力してください。' }); return; }
+        KTR.tablesetting.update(setting);
     }
 
-    KTR.tablesetting.update(setting);
 
     KTR.notify({
         message: '保存しました。'

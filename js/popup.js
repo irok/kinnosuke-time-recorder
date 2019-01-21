@@ -12,22 +12,26 @@ function init() {
     const $service = $('#service').click(() => openKTR());
     $('#options').click(() => window.open('/html/options.html', '_blank'));
 
-    const $diff = $('#diff');
-    $diff.click(() => KTR.service.getDifference((diff) => {
-        if (KTR.worktype.get() == 1 /* フレックスの場合 */) { $('.worktype').show(); }
-        $('#diff').removeClass('enabled');
-        $('#fixed-day').text(`${diff.days.fixed}日`);
-        $('#actual-day').text(`${diff.days.actual}日`);
-        $('#need-day').text(`${diff.days.need}日`);
-        $('#holiday').text(`${diff.days.holiday}日`);
-        $('#fixed-time').text(`${diff.times.fixed.hour}:${diff.times.fixed.min}`);
-        $('#actual-time').text(`${diff.times.actual.hour}:${diff.times.actual.min}`);
-        $('#need-time').text(`${diff.times.need.hour}:${diff.times.need.min}`);
-        $('#expect-time').text(`${diff.times.expect.sign}${diff.times.expect.hour}:${diff.times.expect.min}`);
-        $('#time-per-day').text(`${diff.times.perDay.hour}:${diff.times.perDay.min}`);
-        $('#today-time').text(`${diff.times.today.hour}:${diff.times.today.min}`);
-        $('#diff .time-table').fadeIn();
-    }));
+    // const $diff    = $('#diff');
+    const worktype = KTR.worktype.get();
+    // $diff.click(() => KTR.service.getDifference((diff) => {
+    //     if (worktype.type == 1 /* フレックスの場合 */) {
+    //         $('.worktype').show();
+    //     }
+    //     $('#diff').removeClass('enabled');
+    //     $('#fixed-day').text(`${diff.days.fixed}日`);
+    //     $('#actual-day').text(`${diff.days.actual}日`);
+    //     $('#need-day').text(`${diff.days.need}日`);
+    //     $('#holiday').text(`${diff.days.holiday}日`);
+    //     $('#fixed-time').text(`${diff.times.fixed.hour}:${diff.times.fixed.min}`);
+    //     $('#actual-time').text(`${diff.times.actual.hour}:${diff.times.actual.min}`);
+    //     $('#need-time').text(`${diff.times.need.hour}:${diff.times.need.min}`);
+    //     $('#expect-time').text(`${diff.times.expect.sign}${diff.times.expect.hour}:${diff.times.expect.min}`);
+    //     $('#time-per-day').text(`${diff.times.perDay.hour}:${diff.times.perDay.min}`);
+    //     $('#today-time').text(`${diff.times.today.hour}:${diff.times.today.min}`);
+    //     $('#diff .time-table').fadeIn();
+    // }));
+
 
     // 認証情報があれば出社、退社を表示
     if (KTR.credential.valid()) {
@@ -49,6 +53,22 @@ function init() {
         if (status.information.recent) {
             $service.text('新しいお知らせ').addClass('attention');
         }
+
+        if (worktype.show !== 1 /* = hidden */) { $('#diff').hide(); return; }
+        if (worktype.type === 1 /* フレックスの場合 */) { $('.worktype').show(); }
+        KTR.service.getDifference((diff) => {
+            $('#fixed-day').text(`${diff.days.fixed}日`);
+            $('#actual-day').text(`${diff.days.actual}日`);
+            $('#need-day').text(`${diff.days.need}日`);
+            $('#holiday').text(`${diff.days.holiday}日`);
+            $('#fixed-time').text(`${diff.times.fixed.hour}:${diff.times.fixed.min}`);
+            $('#actual-time').text(`${diff.times.actual.hour}:${diff.times.actual.min}`);
+            $('#need-time').text(`${diff.times.need.hour}:${diff.times.need.min}`);
+            $('#expect-time').text(`${diff.times.expect.sign}${diff.times.expect.hour}:${diff.times.expect.min}`);
+            $('#time-per-day').text(`${diff.times.perDay.hour}:${diff.times.perDay.min}`);
+            $('#today-time').text(`${diff.times.today.hour}:${diff.times.today.min}`);
+            $('#diff .time-table').fadeIn();
+        })
     });
 }
 

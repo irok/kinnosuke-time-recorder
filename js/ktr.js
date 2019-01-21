@@ -280,12 +280,12 @@
         get() {
             let worktype = localStorage.Worktype;
             if (typeof worktype === 'undefined') {
-                worktype = localStorage.Worktype = 0;
+                worktype = localStorage.Worktype = JSON.stringify({});
             }
-            return worktype;
+            return JSON.parse(worktype);
         },
         update(worktype) {
-            localStorage.Worktype = worktype;
+            localStorage.Worktype = JSON.stringify(worktype);
         }
     };
 
@@ -662,39 +662,7 @@
             const table   = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
             const setting = KTR.tablesetting.get();
 
-            /*********
-             * td:nth-child(n)
-             * n = 1  : 所定労働日数
-             * n = 2  : 所定労働時間
-             * n = 3  : 出勤日数
-             * n = 4  : 有給日数
-             * n = 5  : 特休日数
-             * n = 6  : 欠生日数
-             * n = 7  : 欠勤日数
-             * n = 8  : 生理休暇
-             * n = 9  : 休出日数
-             * n = 10 : 振休日数
-             * n = 11 : 休日監視日数
-             * n = 12 : 監視振休日数
-             * n = 13 : 求職日数
-             * n = 14 : 産休日数
-             * n = 15 : 育休日数
-             * n = 16 : 介護休暇日数
-             * n = 17 : 遅番回数
-             * n = 18 : エス回数
-             * n = 19 : 実働時間
-             * n = 20 : 普通残業
-             * n = 21 : 深夜労働
-             * n = 22 : 休出時間
-             * n = 23 : 法定内休出
-             * n = 24 : 法定内深夜
-             * n = 25 : 法定外休出
-             * n = 26 : 法定外深夜
-             * n = 27 : 遅番時間
-             *********/
-
-
-                // 日数
+            // 日数
             const fixedDay = Number(table.querySelector(`td:nth-child(${setting['fixed_day']})`).textContent);
             const workDay  = Number(table.querySelector(`td:nth-child(${setting['actual_day']})`).textContent);
 

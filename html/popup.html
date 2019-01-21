@@ -88,9 +88,10 @@ button.confirm {
 button.confirm:last-child {
   margin-left: 10px;
 }
-.time-table { width: 100%; display: none; }
+.time-table { width: 100%; }
 .time-table th, .time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
 .worktype { display: none; }
+/*#diff { display: none; }*/
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -102,9 +103,9 @@ button.confirm:last-child {
   <p id="action1" class="inout">出社</p>
   <p id="action2" class="inout">退社</p>
 </div>
-<div id="diff" class="enabled">
-  <p style="padding: 4px 20px;">🕒 勤務時間</p>
+<div id="diff">
   <table class="time-table">
+    <tr><th colspan="3" style="text-align: center;">勤務情報</th></tr>
     <tr>
       <th width="20%"></th>
       <th width="40%">勤務日数</th>
@@ -112,36 +113,36 @@ button.confirm:last-child {
     </tr>
     <tr>
       <th>所定</th>
-      <td id="fixed-day"></td>
-      <td id="fixed-time"></td>
+      <td id="fixed-day">-</td>
+      <td id="fixed-time">--:--</td>
     </tr>
     <tr>
       <th>現在</th>
-      <td id="actual-day"></td>
-      <td id="actual-time"></td>
+      <td id="actual-day">-</td>
+      <td id="actual-time">--:--</td>
     </tr>
     <tr>
       <th>休暇</th>
-      <td id="holiday"></td>
+      <td id="holiday">-</td>
       <td>-</td>
     </tr>
     <tr>
       <th>必要</th>
-      <td id="need-day"></td>
-      <td id="need-time"></td>
+      <td id="need-day">-</td>
+      <td id="need-time">--:--</td>
     </tr>
     <tr class="worktype">
       <th colspan="2">予定過不足時間 <small>※</small></th>
-      <td id="expect-time"></td>
+      <td id="expect-time">--:--</td>
     </tr>
     <tr class="worktype"><td colspan="3"><small>※ 所定時間働いた場合の過不足</small></td></tr>
     <tr class="worktype">
       <th colspan="2">一日あたり必要時間</th>
-      <td id="time-per-day"></td>
+      <td id="time-per-day">--:--</td>
     </tr>
     <tr>
       <th colspan="2">今日の勤務時間 <small>※</small></th>
-      <td id="today-time"></td>
+      <td id="today-time">--:--</td>
     </tr>
     <tr><td colspan="3"><small>※ 休憩時間を含む</small></td></tr>
   </table>
