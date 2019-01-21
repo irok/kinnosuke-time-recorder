@@ -561,7 +561,7 @@
                     var nowtime   = now.getHours() * 60 + now.getMinutes();
                     var diffTimes = KTR.workInfo.arrayToTime([]);
 
-                    if (times.today.actual.time <= 0)
+                    if (times.today.actual.time != 0)
                         { diffTimes = times.today.actual; }
                     else if (times.today.start.time != times.today.actual.time)
                         { diffTimes = KTR.workInfo.arrayToTime([], nowtime - times.today.start.time); }
