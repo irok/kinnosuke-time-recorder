@@ -23,6 +23,11 @@ function restore() {
     $('#start-alarm-end').val(alarms.startAlarmEnd);
     $('#leave-alarm-begin').val(alarms.leaveAlarmBegin);
     $('#leave-alarm-end').val(alarms.leaveAlarmEnd);
+
+    const setting = KTR.tablesetting.get();
+    for (key in setting) { $(`input[name="setting['${key}']"]`).val(setting[key]); }
+
+
 }
 
 // 設定を保存する
@@ -44,6 +49,15 @@ function save() {
         leaveAlarmEnd: $('#leave-alarm-end').val()
     });
     KTR.worktype.update($('[name="worktype"]:checked').val());
+
+    const setting = {};
+    var s = $('[name^="setting"]');
+    s.each((index, elm) => {
+        const name = $(elm).attr("name").replace("setting['", "").replace("']", "");
+        setting[name] = Math.abs($(elm).val());
+    });
+
+    KTR.tablesetting.update(setting);
 
     KTR.notify({
         message: '保存しました。'

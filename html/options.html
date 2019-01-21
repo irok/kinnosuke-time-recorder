@@ -118,6 +118,61 @@ button {
       <tr><td><label><input type="radio" name="worktype" value="1" />フレックス</label></td></tr>
     </table>
   </div>
+  <h2>勤務テーブル設定</h2>
+  <div class="settings">
+    <table>
+      <tr>
+        <td></td>
+        <td>所定*</td>
+        <td>出勤*</td>
+      </tr>
+      <tr>
+        <th>労働日数</th>
+        <td><input type="text" name="setting['fixed_day']" value="" size="8" /></td>
+        <td><input type="text" name="setting['actual_day']" value="" size="8" /></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>休暇1</td>
+        <td>休暇2</td>
+        <td>休暇3</td>
+        <td>休暇4</td>
+        <td>休暇5</td>
+      </tr>
+      <tr>
+        <th>休暇日数</th>
+        <td><input type="text" name="setting['vacations_1']" value="" size="8" /></td>
+        <td><input type="text" name="setting['vacations_2']" value="" size="8" /></td>
+        <td><input type="text" name="setting['vacations_3']" value="" size="8" /></td>
+        <td><input type="text" name="setting['vacations_4']" value="" size="8" /></td>
+        <td><input type="text" name="setting['vacations_5']" value="" size="8" /></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>所定*</td>
+        <td>実働*</td>
+      </tr>
+      <tr>
+        <th>勤務時間</th>
+        <td><input type="text" name="setting['fixed_time']" value="" size="8" /></td>
+        <td><input type="text" name="setting['actual_time']" value="" size="8" /></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>出社*</td>
+        <td>実働*</td>
+      </tr>
+      <tr>
+        <th>当日勤務時間</th>
+        <td><input type="text" name="setting['today_start_time']" value="" size="8" /></td>
+        <td><input type="text" name="setting['today_actual_time']" value="" size="8" /></td>
+      </tr>
+
+    </table>
+  </div>
   <button id="saveBtn">保存する</button>
 </section>
 </body>

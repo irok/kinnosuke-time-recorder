@@ -290,6 +290,22 @@
     };
 
     /**
+     * 勤務テーブル設定
+     */
+    KTR.tablesetting = {
+        get() {
+            let tablesetting = localStorage.Tablesetting;
+            if (typeof tablesetting === 'undefined') {
+                tablesetting = localStorage.Tablesetting = JSON.stringify({});
+            }
+            return JSON.parse(tablesetting);
+        },
+        update(tablesetting) {
+            localStorage.Tablesetting = JSON.stringify(tablesetting);
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {
