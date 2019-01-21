@@ -50,12 +50,20 @@ function save() {
     });
     KTR.worktype.update($('[name="worktype"]:checked').val());
 
-    const setting = {};
+    var   flug     = false;
+    const setting  = {};
+    const required = ['fixed_day', 'actual_day', 'fixed_time', 'actual_time', 'today_start_time', 'today_actual_time'];
     var s = $('[name^="setting"]');
     s.each((index, elm) => {
-        const name = $(elm).attr("name").replace("setting['", "").replace("']", "");
+        const name    = $(elm).attr("name").replace("setting['", "").replace("']", "");
         setting[name] = Math.abs($(elm).val());
+        if (required.includes(name) && $(elm).val() == 0) { flug = true; }
     });
+
+    if (flug) {
+        KTR.notify({ message: '必須項目を入力してください。' });
+        return;
+    }
 
     KTR.tablesetting.update(setting);
 

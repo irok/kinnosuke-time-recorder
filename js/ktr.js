@@ -657,9 +657,10 @@
      */
     KTR.workInfo = {
         getWorkingInfoFromHtml(html){
-            const parser = new DOMParser();
-            const doc    = parser.parseFromString(html, 'text/html');
-            const table  = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
+            const parser  = new DOMParser();
+            const doc     = parser.parseFromString(html, 'text/html');
+            const table   = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
+            const setting = KTR.tablesetting.get();
 
             /*********
              * td:nth-child(n)
@@ -692,23 +693,28 @@
              * n = 27 : 遅番時間
              *********/
 
-            // 日数
-            const fixedDay    = Number(table.querySelector('td:nth-child(1)').textContent);
-            const workDay     = Number(table.querySelector('td:nth-child(3)').textContent);
+
+                // 日数
+            const fixedDay = Number(table.querySelector(`td:nth-child(${setting['fixed_day']})`).textContent);
+            const workDay  = Number(table.querySelector(`td:nth-child(${setting['actual_day']})`).textContent);
 
             // 休暇
-            const paidVacation    = Number(table.querySelector('td:nth-child(4)').textContent);
-            const specialVacation = Number(table.querySelector('td:nth-child(5)').textContent);
+            var vacations = 0;
+            for (key in setting) {
+                if (key.match(/vacations/) && setting[key] !== 0) {
+                    vacations += Number(table.querySelector(`td:nth-child(${setting[key]})`).textContent);
+                }
+            }
 
             // 時間
-            const fixedTimes  = table.querySelector('td:nth-child(2)').textContent.split(':').map(Number);
-            const actualTimes = table.querySelector('td:nth-child(19)').textContent.split(':').map(Number);
+            const fixedTimes  = table.querySelector(`td:nth-child(${setting['fixed_time']})`).textContent.split(':').map(Number);
+            const actualTimes = table.querySelector(`td:nth-child(${setting['actual_time']})`).textContent.split(':').map(Number);
 
             // 今日の勤務開始時間
             var now    = new Date();
             var tr     = doc.querySelector(`#fix_0_${now.getDate()}`);
-            var start  = tr.querySelector("td:nth-child(7)").textContent.split(':').map(Number);
-            var actual = tr.querySelector("td:nth-child(10)").textContent.split(':').map(Number);
+            var start  = tr.querySelector(`td:nth-child(${setting['today_start_time']})`).textContent.split(':').map(Number);
+            var actual = tr.querySelector(`td:nth-child(${setting['today_actual_time']})`).textContent.split(':').map(Number);
             start      = (start.length != 2) ? [0, 0] : start;
             actual     = (actual.length != 2) ? [0, 0] : actual;
 
@@ -716,7 +722,7 @@
                 "day"  : {
                     "fixed"    : fixedDay,
                     "work"     : workDay,
-                    "vacation" : paidVacation + specialVacation,
+                    "vacation" : vacations,
                 },
                 "time" : {
                     "fixed"  : KTR.workInfo.arrayToTime(fixedTimes),
