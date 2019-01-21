@@ -59,10 +59,7 @@ function save() {
         "show": Math.abs($(`[name="work['show']"]:checked`).val()),
         "type": Math.abs($(`[name="work['type']"]:checked`).val()),
     };
-    console.log(worktype);
     KTR.worktype.update(worktype);
-    // KTR.worktype.update($('[name="worktype"]:checked').val());
-
 
     if (worktype.show === 1) {
         var   flug     = false;
