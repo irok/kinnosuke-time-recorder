@@ -28,8 +28,21 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.alarms.create('alerm', { periodInMinutes: 5 });
 });
 
-chrome.alarms.onAlarm.addListener(function() {
+chrome.alarms.onAlarm.addListener(async () => {
     if (!KTR.credential.valid()) {
+        return
+    }
+
+    // 接続できない場合は何もしない
+    const connectable = await fetch(KTR.service.url(), {
+        method: 'GET',
+        cache: 'no-store',
+        credentials: 'include'
+    })
+        .then(() => true)
+        .catch(() => false);
+
+    if (!connectable) {
         return
     }
 
