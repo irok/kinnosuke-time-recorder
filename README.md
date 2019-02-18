@@ -33,8 +33,11 @@ chrome://extensions/ の「デベロッパーモード」をチェックして�
 
 ## 更新履歴
 
+- v3.2.1 (2019-02-18)
+    - オフラインの状態だとエラーが出続ける問題に対応しました [#7](https://github.com/irok/KinnosukeTimeRecorder/pull/7)
+
 - v3.2.0 (2018-04-27)
-    - 出退勤の定期通知ができるようになりました [#4](https://github.com/irok/KinnosukeTimeRecorder/pull/4)
+    - 出退勤の定期通知ができるようになりました [#4](https://github.com/irok/KinnosukeTimeRecorder/pull/4)
 
 - v3.1.0 (2018-01-10)
     - 出社、退社時の確認メッセージを編集できるよう修正
