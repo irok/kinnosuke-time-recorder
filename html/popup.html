@@ -88,8 +88,8 @@ button.confirm {
 button.confirm:last-child {
   margin-left: 10px;
 }
-.time-table { width: 100%; }
-.time-table th, .time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
+#time-table { width: 100%; display: none; }
+#time-table th, #time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
 
 </style>
 <script src="/vendor/jquery.js"></script>
@@ -106,8 +106,7 @@ button.confirm:last-child {
   <li id="service" class="enabled">勤之助を開く</li>
   <li id="options" class="enabled">オプション</li>
 </ul>
-<div id="diff">
-  <table class="time-table">
+  <table id="time-table">
     <tr><th colspan="3" style="text-align: center;">勤務情報</th></tr>
     <tr>
       <th width="20%"></th>
@@ -149,7 +148,6 @@ button.confirm:last-child {
     </tr>
     <tr><td colspan="3"><small>※ 休憩時間を含む</small></td></tr>
   </table>
-</div>
 <div id="modalDialogContainer"></div>
 </body>
 </html>
