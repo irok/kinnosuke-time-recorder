@@ -209,6 +209,8 @@ function workInfoTableColumns (html) {
                 .replace(/<\/b>/g, '');
             if (column !== '') { columns.push(column); }
         });
+    } else {
+        KTR.error('項目特定エラー：Issueに連絡ください。');
     }
     return columns;
 }
