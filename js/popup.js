@@ -44,8 +44,8 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(workTableColumns(html, '<td align="center" nowrap="nowrap" class="txt_10">', '<b>所定労働<br/>日数</b>'));
-                console.log(workTableColumns(html, '<td align="center" nowrap="nowrap" class="txt_10">', '<b>日</b>'));
+                console.log(workTableColumns(html, '<b>所定労働<br/>日数</b>'));
+                console.log(workTableColumns(html, '<b>日</b>'));
             }
         );
     }
@@ -193,17 +193,17 @@ function openKTR(param) {
 /**
  * 勤怠状況集計テーブルのカラム名を取得する
  */
-function workTableColumns (html, tag, selector) {
+function workTableColumns (html, selector) {
     let colPos, part, columnTags;
     const columns = [];
-    if ((colPos = html.search(tag + selector)) !== -1) {
+    if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
         part = html.substring(colPos);
         columnTags = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
     }
     if (columnTags) {
         status.menus = [];
         columnTags.forEach((columnTag) => {
-            let column = columnTag.replace(tag, '')
+            let column = columnTag.replace(/<td align="center" nowrap="nowrap" class="txt_10">/g, '')
                 .replace(/\s+/g, '')
                 .replace(/<br\/>/g, '')
                 .replace(/<b>/g, '')
