@@ -533,7 +533,7 @@
         get(cb) {
             KTR.service._request({
                 method: 'GET'
-            }, cb);
+            }, '', cb);
         },
 
         // POSTリクエストを送信する
@@ -544,11 +544,11 @@
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                 },
                 body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&')
-            }, cb);
+            }, '', cb);
         },
 
-        _request(init, cb) {
-            fetch(KTR.service.url(), Object.assign({
+        _request(init, queryString, cb) {
+            fetch(KTR.service.url() + queryString, Object.assign({
                 cache: 'no-store',
                 credentials: 'include'
             }, init))
