@@ -39,6 +39,14 @@ function init() {
      */
     if (KTR.credential.valid()) {
         document.querySelector('#time-table').style.display = 'block';
+        // TODO: @tosite0345 リファクタリング
+        KTR.service._request(
+            {method: 'GET'},
+            '?module=timesheet&action=browse',
+            (html) => {
+                console.log(html);
+            }
+        );
     }
 }
 
