@@ -33,6 +33,13 @@ function init() {
             $service.text('新しいお知らせ').addClass('attention');
         }
     });
+
+    /**
+     * ログインしていたら勤務テーブルを表示する
+     */
+    if (KTR.credential.valid()) {
+        document.querySelector('#time-table').style.display = 'block';
+    }
 }
 
 /**
