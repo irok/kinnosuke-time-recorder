@@ -44,7 +44,7 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(html);
+                console.log(workInfoTableColumns(html));
             }
         );
     }
@@ -187,4 +187,28 @@ function openKTR(param) {
     };
     KTR.error = _open;
     KTR.status.update(_open, true);
+}
+
+/**
+ * 勤怠状況テーブルのカラム名を取得する
+ */
+function workInfoTableColumns (html) {
+    let colPos, part, columnTags;
+    const columns = [];
+    if ((colPos = html.search(/<td align="center" nowrap="nowrap" class="txt_10"><b>所定労働<br\/>日数<\/b><\/td>/)) !== -1) {
+        part = html.substring(colPos);
+        columnTags = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+    }
+    if (columnTags) {
+        status.menus = [];
+        columnTags.forEach((columnTag) => {
+            let column = columnTag.replace(/<td align="center" nowrap="nowrap" class="txt_10">/g, '')
+                .replace(/\s+/g, '')
+                .replace(/<br\/>/g, '')
+                .replace(/<b>/g, '')
+                .replace(/<\/b>/g, '');
+            if (column !== '') { columns.push(column); }
+        });
+    }
+    return columns;
 }
