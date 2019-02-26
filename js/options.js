@@ -22,6 +22,24 @@ function restore() {
     $('#start-alarm-end').val(alarms.startAlarmEnd);
     $('#leave-alarm-begin').val(alarms.leaveAlarmBegin);
     $('#leave-alarm-end').val(alarms.leaveAlarmEnd);
+
+    /**
+     * ログイン後
+     */
+    if (KTR.credential.valid()) {
+        KTR.service._request(
+            {method: 'GET'},
+            '?module=timesheet&action=browse',
+            (html) => {
+                const summaryCols = KTR.workInfo.workTableColumns(html, 'summary');
+                const dayCols     = Object.keys(summaryCols).filter( (key) => { return key.match('日'); });
+                dayCols.forEach((val) => {
+                    $('#holiday-check').append(`<div><label><input type="checkbox">${val}</label></div>`);
+                });
+                document.querySelector('#after-logged-in').style.display = 'block';
+            }
+        );
+    }
 }
 
 // 設定を保存する
