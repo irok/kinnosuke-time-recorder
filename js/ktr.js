@@ -273,6 +273,36 @@
         }
     };
 
+    // PENDING: @tosite0345 勤務状況非表示機能
+
+    /**
+     * 勤務形態
+     */
+    KTR.worktype = {
+        get() {
+            let worktype = localStorage.Worktype;
+            if (typeof worktype == 'undefined') { worktype = localStorage.Worktype = 'fix'; }
+            return worktype;
+        },
+        update(worktype) { localStorage.Worktype = worktype; }
+    };
+
+    /**
+     * 休暇
+     */
+    KTR.holidays = {
+        get() {
+            let holidays = localStorage.Holidays;
+            if (typeof holidays === 'undefined') {
+                holidays = localStorage.Holidays = JSON.stringify({});
+            }
+            return JSON.parse(holidays);
+        },
+        update(holidays) {
+            localStorage.Holidays = JSON.stringify(holidays);
+        }
+    };
+
     /**
      * メニュー管理
      */
