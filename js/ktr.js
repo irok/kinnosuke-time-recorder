@@ -571,8 +571,8 @@
             const doc     = parser.parseFromString(html, 'text/html');
             const table   = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
 
-            const summaryCols  = KTR.workInfo.workTableColumns(html, '<b>所定労働<br/>日数</b>');
-            const calendarCols = KTR.workInfo.workTableColumns(html, '<b>日</b>');
+            const summaryCols  = KTR.workInfo.workTableColumns(html, 'summary');
+            const calendarCols = KTR.workInfo.workTableColumns(html, 'calendar');
 
             // 日数
             const fixedDay = Number(table.querySelector(`td:nth-child(${summaryCols['所定労働日数']})`).textContent);
@@ -604,8 +604,9 @@
         /**
          * 勤怠状況集計テーブルのカラム名を取得する
          */
-        workTableColumns (html, selector) {
+        workTableColumns (html, type) {
             let colPos, part, columnTags;
+            let selector = (type === 'summary') ? '<b>所定労働<br/>日数</b>' : '<b>日</b>';
             const columns = {};
             if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
                 part = html.substring(colPos);
