@@ -566,6 +566,41 @@
      * 勤務時間の詳細を取得
      */
     KTR.workInfo = {
+        fetchWorkingInfoFromHtml(html){
+            const parser  = new DOMParser();
+            const doc     = parser.parseFromString(html, 'text/html');
+            const table   = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
+
+            const summaryCols  = KTR.workInfo.workTableColumns(html, '<b>所定労働<br/>日数</b>');
+            const calendarCols = KTR.workInfo.workTableColumns(html, '<b>日</b>');
+
+            // 日数
+            const fixedDay = Number(table.querySelector(`td:nth-child(${summaryCols['所定労働日数']})`).textContent);
+            const workDay  = Number(table.querySelector(`td:nth-child(${summaryCols['出勤日数']})`).textContent);
+
+            // 時間
+            const fixedTimes  = table.querySelector(`td:nth-child(${summaryCols['所定労働時間']})`).textContent.split(':').map(Number);
+            const actualTimes = table.querySelector(`td:nth-child(${summaryCols['実働時間']})`).textContent.split(':').map(Number);
+
+            // 今日の勤務開始時間
+            var now    = new Date();
+            var tr     = doc.querySelector(`#fix_0_${now.getDate()}`);
+            var start  = tr.querySelector(`td:nth-child(${calendarCols['出社']})`).textContent.split(':').map(Number);
+            var actual = tr.querySelector(`td:nth-child(${calendarCols['実働時間']})`).textContent.split(':').map(Number);
+
+            // 時間が取得できていなければ00:00をセットする
+            start      = (start.length != 2)  ? [0, 0] : start;
+            actual     = (actual.length != 2) ? [0, 0] : actual;
+
+            return {
+                fixedDay:         fixedDay,
+                workDay:          workDay,
+                fixedTimes:       fixedTimes,
+                actualTimes:      actualTimes,
+                todayStartTimes:  start,
+                todayActualTimes: actual
+            };
+        },
         /**
          * 勤怠状況集計テーブルのカラム名を取得する
          */

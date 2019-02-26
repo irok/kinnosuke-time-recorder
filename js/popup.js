@@ -44,8 +44,7 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(KTR.workInfo.workTableColumns(html, '<b>所定労働<br/>日数</b>'));
-                console.log(KTR.workInfo.workTableColumns(html, '<b>日</b>'));
+                console.log(KTR.workInfo.fetchWorkingInfoFromHtml(html));
             }
         );
     }
