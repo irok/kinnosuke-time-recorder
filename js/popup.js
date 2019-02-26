@@ -195,20 +195,19 @@ function openKTR(param) {
  */
 function workTableColumns (html, selector) {
     let colPos, part, columnTags;
-    const columns = [];
+    const columns = {};
     if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
         part = html.substring(colPos);
         columnTags = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
     }
     if (columnTags) {
-        status.menus = [];
-        columnTags.forEach((columnTag) => {
+        columnTags.forEach((columnTag, index) => {
             let column = columnTag.replace(/<td align="center" nowrap="nowrap" class="txt_10">/g, '')
                 .replace(/\s+/g, '')
                 .replace(/<br\/>/g, '')
                 .replace(/<b>/g, '')
                 .replace(/<\/b>/g, '');
-            if (column !== '') { columns.push(column); }
+            if (column !== '') { columns[column] = index; }
         });
     } else {
         KTR.error('項目特定エラー：Issueに連絡ください。');
