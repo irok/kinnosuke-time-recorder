@@ -44,8 +44,8 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(workTableColumns(html, '<b>所定労働<br/>日数</b>'));
-                console.log(workTableColumns(html, '<b>日</b>'));
+                console.log(KTR.workInfo.workTableColumns(html, '<b>所定労働<br/>日数</b>'));
+                console.log(KTR.workInfo.workTableColumns(html, '<b>日</b>'));
             }
         );
     }
@@ -188,29 +188,4 @@ function openKTR(param) {
     };
     KTR.error = _open;
     KTR.status.update(_open, true);
-}
-
-/**
- * 勤怠状況集計テーブルのカラム名を取得する
- */
-function workTableColumns (html, selector) {
-    let colPos, part, columnTags;
-    const columns = {};
-    if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
-        part = html.substring(colPos);
-        columnTags = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
-    }
-    if (columnTags) {
-        columnTags.forEach((columnTag, index) => {
-            let column = columnTag.replace(/<td align="center" nowrap="nowrap" class="txt_10">/g, '')
-                .replace(/\s+/g, '')
-                .replace(/<br\/>/g, '')
-                .replace(/<b>/g, '')
-                .replace(/<\/b>/g, '');
-            if (column !== '') { columns[column] = index; }
-        });
-    } else {
-        KTR.error('項目特定エラー：Issueに連絡ください。');
-    }
-    return columns;
 }
