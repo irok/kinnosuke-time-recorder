@@ -44,7 +44,9 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(KTR.workInfo.fetchWorkingInfoFromHtml(html));
+                const workInfo  = KTR.workInfo.fetchWorkingInfoFromHtml(html);
+                const workTimes = KTR.workInfo.calcWorkTimes(workInfo);
+                console.log(workTimes);
             }
         );
     }
