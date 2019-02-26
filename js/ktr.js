@@ -678,12 +678,12 @@
             return {
                 days:  { fixed: workInfo.fixedDay , actual: workInfo.workDay, need: needDay, holiday: workInfo.holiday },
                 times: {
-                    fixed:       workInfo.fixedTimes,
-                    actual:      workInfo.actualTimes,
-                    need:        needTimes,
-                    expect:      expectTimes,
-                    today:       diffTimes,
-                    perDay:      perTimes,
+                    fixed:  workInfo.fixedTimes,
+                    actual: workInfo.actualTimes,
+                    need:   needTimes,
+                    expect: expectTimes,
+                    today:  diffTimes,
+                    perDay: perTimes,
                 },
             };
         },
@@ -692,7 +692,7 @@
          * example:
          * KTR.workInfo.toTime([12, 20])
          *   {
-         *       time:    {{ timestamp }}
+         *       time:    time(minutes)
          *       hour:    '12'
          *       min:     '20'
          *       display: '12:20'
