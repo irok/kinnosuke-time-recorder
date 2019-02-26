@@ -34,7 +34,7 @@ function restore() {
                 const summaryCols = KTR.workInfo.workTableColumns(html, 'summary');
                 const dayCols     = Object.keys(summaryCols).filter( (key) => { return key.match('日'); });
                 dayCols.forEach((val) => {
-                    $('#holiday-check').append(`<div><label><input type="checkbox">${val}</label></div>`);
+                    $('#holiday-check').append(`<div><label><input type="checkbox" value="${val}">${val}</label></div>`);
                 });
                 document.querySelector('#after-logged-in').style.display = 'block';
             }
