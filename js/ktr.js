@@ -625,10 +625,32 @@
             return {
                 fixedDay:         fixedDay,
                 workDay:          workDay,
-                fixedTimes:       fixedTimes,
-                actualTimes:      actualTimes,
-                todayStartTimes:  start,
-                todayActualTimes: actual
+                fixedTimes:       KTR.workInfo.toTime(fixedTimes),
+                actualTimes:      KTR.workInfo.toTime(actualTimes),
+                todayStartTimes:  KTR.workInfo.toTime(start),
+                todayActualTimes: KTR.workInfo.toTime(actual)
+            };
+        },
+        /**
+         * 時間の配列またはタイムスタンプを整形する
+         * example:
+         * KTR.workInfo.toTime([12, 20])
+         *   {
+         *       time:    {{ timestamp }}
+         *       hour:    '12'
+         *       min:     '20'
+         *       display: '12:20'
+         *   }
+         */
+        toTime(times){
+            const time = (times.length != 2) ? times : times[0] * 60 + times[1];
+            const hour = `${Math.floor(time / 60)}`;
+            const min  = (`00${time % 60}`).slice(-2);
+            return {
+                time:    time,
+                hour:    hour,
+                min:     min,
+                display: `${hour}:${min}`,
             };
         },
         /**
