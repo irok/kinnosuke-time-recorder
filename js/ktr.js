@@ -569,8 +569,9 @@
         /**
          * 勤怠状況集計テーブルのカラム名を取得する
          */
-        workTableColumns (html, selector) {
+        workTableColumns (html, type) {
             let colPos, part, columnTags;
+            let selector = (type === 'summary') ? '<b>所定労働<br/>日数</b>' : '<b>日</b>';
             const columns = {};
             if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
                 part = html.substring(colPos);
