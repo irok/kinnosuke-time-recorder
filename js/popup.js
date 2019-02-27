@@ -46,7 +46,7 @@ function init() {
             (html) => {
                 const workInfo  = KTR.workInfo.fetchWorkingInfoFromHtml(html);
                 const workTimes = KTR.workInfo.calcWorkTimes(workInfo);
-                console.log(workTimes);
+                KTR.workInfo.setTimesToTable(workTimes.days, workTimes.times);
             }
         );
     }
