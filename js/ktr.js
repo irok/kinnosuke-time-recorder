@@ -664,7 +664,7 @@
             let expectPerdayTimes; // 一日あたりの予想必要勤務時間
             // 残り必要日数が0以下だと計算できないため条件分岐
             if (needDay > 0) {
-                expectTimes       = KTR.workInfo.toTime((needDay * perdayTimes.time) - needTimes.time);
+                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : (needDay * perdayTimes.time) - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(Math.floor(needTimes.time / needDay));
             } else {
                 expectTimes       = KTR.workInfo.toTime(perdayTimes.time - needTimes.time);
