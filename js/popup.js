@@ -35,11 +35,10 @@ function init() {
     });
 
     /**
-     * ログインしていたら勤務テーブルを表示する
+     * ログインしており、かつ勤務状況機能を利用する場合に勤務テーブルを表示する
      */
-    if (KTR.credential.valid()) {
+    if (KTR.credential.valid() && KTR.enableWorkInfo.get() === 'enable') {
         document.querySelector('#time-table').style.display = 'block';
-        // TODO: @tosite0345 リファクタリング
         KTR.service._request(
             {method: 'GET'},
             '?module=timesheet&action=browse',
