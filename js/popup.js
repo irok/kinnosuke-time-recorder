@@ -47,6 +47,7 @@ function init() {
                 const workInfo  = KTR.workInfo.fetchWorkingInfoFromHtml(html);
                 const workTimes = KTR.workInfo.calcWorkTimes(workInfo);
                 KTR.workInfo.setTimesToTable(workTimes.days, workTimes.times);
+                if (KTR.worktype.get() === 'flex') { $('.is-flex').show(); }
             }
         );
     }
