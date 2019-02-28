@@ -27,6 +27,8 @@ function restore() {
      * ログイン後
      */
     if (KTR.credential.valid()) {
+        $(`[name="work-type"][value="${KTR.worktype.get()}"]`).prop('checked', true);
+        const holidays = KTR.holidays.get();
         KTR.service._request(
             {method: 'GET'},
             '?module=timesheet&action=browse',
@@ -34,9 +36,11 @@ function restore() {
                 const summaryCols = KTR.workInfo.workTableColumns(html, 'summary');
                 const dayCols     = Object.keys(summaryCols).filter( (key) => { return key.match('日'); });
                 dayCols.forEach((val) => {
-                    $('#holiday-check').append(`<div><label><input type="checkbox" name="holidays[]" value="${val}">${val}</label></div>`);
+                    let checked = (holidays.indexOf(val) >= 0) ? 'checked' : '';
+                    $('#holiday-check').append(`<div><label><input type="checkbox" name="holidays[]" value="${val}" ${checked}>${val}</label></div>`);
                 });
                 document.querySelector('#after-logged-in').style.display = 'block';
+
             }
         );
     }
@@ -60,6 +64,13 @@ function save() {
         leaveAlarmBegin: $('#leave-alarm-begin').val(),
         leaveAlarmEnd: $('#leave-alarm-end').val()
     });
+
+    if (KTR.credential.valid()) {
+        const holidays = [];
+        KTR.worktype.update($(`[name="work-type"]:checked`).val());
+        $(`[name="holidays[]"]:checked`).each((index, elm) => { holidays.push($(elm).val()); })
+        KTR.holidays.update(holidays);
+    }
 
     KTR.notify({
         message: '保存しました。'
