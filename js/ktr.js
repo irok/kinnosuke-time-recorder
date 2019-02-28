@@ -278,7 +278,7 @@
      */
     KTR.enableWorkInfo = {
         get() {
-            let enableWorkInfo = localStorage.ShowWorkInfo;
+            let enableWorkInfo = localStorage.EnableWorkInfo;
             if (typeof enableWorkInfo == 'undefined') { enableWorkInfo = localStorage.EnableWorkInfo = 'disable'; }
             return enableWorkInfo;
         },

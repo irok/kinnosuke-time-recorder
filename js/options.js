@@ -1,7 +1,7 @@
 $(function() {
     restore();
     $('#saveBtn').click(save);
-    $(`[name="enable-work-info"]`).change(switchTableDisplay());
+    $(`[name="enable-work-info"]`).change(switchTableDisplay);
 });
 
 function switchTableDisplay(){
