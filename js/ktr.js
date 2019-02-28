@@ -667,7 +667,7 @@
                 expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : (needDay * perdayTimes.time) - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(Math.floor(needTimes.time / needDay));
             } else {
-                expectTimes       = KTR.workInfo.toTime(perdayTimes.time - needTimes.time);
+                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : perdayTimes.time - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(needTimes.time );
             }
             expectTimes.sign = (expectTimes.time < 0) ? "-" : "+";
