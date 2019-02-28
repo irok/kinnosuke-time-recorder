@@ -70,6 +70,7 @@ button {
   font: inherit;
   text-shadow: 0 1px 0 rgb(240, 240, 240);
 }
+#after-logged-in { display: none; }
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -110,6 +111,21 @@ button {
       <tr><td>出社時</td><td><input type="time" id="start-alarm-begin"/> - <input type="time" id="start-alarm-end"/></td></tr>
       <tr><td>退社時</td><td><input type="time" id="leave-alarm-begin"/> - <input type="time" id="leave-alarm-end"/></td></tr>
     </table>
+  </div>
+  <div id="after-logged-in">
+    <h2>勤務状況</h2>
+    <div class="settings">
+      <label><input type="radio" name="table-enable" value="enale">勤務状況機能を利用する</label>
+      <label><input type="radio" name="table-enable" value="disable">勤務状況機能を利用しない</label>
+    </div>
+    <h2>勤務形態</h2>
+    <div class="settings">
+      <label><input type="radio" name="work-type" value="fix">固定時間制</label>
+      <label><input type="radio" name="work-type" value="flex">フレックス制</label>
+    </div>
+    <h2>休暇情報</h2>
+    <div id="holiday-check" class="settings"></div>
+    <p>休日に該当するチェックボックスにチェックを入れてください。</p>
   </div>
   <button id="saveBtn">保存する</button>
 </section>
