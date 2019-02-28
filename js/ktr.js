@@ -701,6 +701,7 @@
             $('#fixed-time'        ).text(`${times.fixed.display}`);
             $('#actual-time'       ).text(`${times.actual.display}`);
             $('#need-time'         ).text(`${times.need.display}`);
+            $('#perday-time'       ).text(`${times.perday.display}`);
             $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
             $('#expect-perday-time').text(`${times.expectPerday.display}`);
             $('#today-time'        ).text(`${times.today.display}`);
