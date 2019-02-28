@@ -44,8 +44,7 @@ function init() {
             {method: 'GET'},
             '?module=timesheet&action=browse',
             (html) => {
-                console.log(KTR.workInfo.workTableColumns(html, 'summary'));
-                console.log(KTR.workInfo.workTableColumns(html, 'calendar'));
+                console.log(KTR.workInfo.fetchWorkingInfoFromHtml(html));
             }
         );
     }
