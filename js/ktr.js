@@ -691,6 +691,21 @@
             };
         },
         /**
+         * 時間をテーブルにセットする
+         */
+        setTimesToTable (days, times) {
+            $('#fixed-day'         ).text(`${days.fixed}日`);
+            $('#actual-day'        ).text(`${days.actual}日`);
+            $('#need-day'          ).text(`${days.need}日`);
+            $('#holiday'           ).text(`${days.holiday}日`);
+            $('#fixed-time'        ).text(`${times.fixed.display}`);
+            $('#actual-time'       ).text(`${times.actual.display}`);
+            $('#need-time'         ).text(`${times.need.display}`);
+            $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
+            $('#expect-perday-time').text(`${times.expectPerday.display}`);
+            $('#today-time'        ).text(`${times.today.display}`);
+        },
+        /**
          * 時間の配列またはタイムスタンプを整形する
          * example:
          * KTR.workInfo.toTime([12, 20])
