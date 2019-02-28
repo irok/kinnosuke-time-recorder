@@ -1,7 +1,16 @@
 $(function() {
     restore();
     $('#saveBtn').click(save);
+    $(`[name="enable-work-info"]`).change(switchTableDisplay());
 });
+
+function switchTableDisplay(){
+    if($(`[name="enable-work-info"]:checked`).val() == 'enable') {
+        $('#enable-work-info-settings').fadeIn();
+    } else {
+        $('#enable-work-info-settings').fadeOut();
+    }
+}
 
 // 設定を読み込んでフォームにセットする
 function restore() {
