@@ -28,6 +28,7 @@ function restore() {
      */
     if (KTR.credential.valid()) {
         $(`[name="work-type"][value="${KTR.worktype.get()}"]`).prop('checked', true);
+        $(`[name="enable-work-info"][value="${KTR.enableWorkInfo.get()}"]`).prop('checked', true);
         const holidays = KTR.holidays.get();
         KTR.service._request(
             {method: 'GET'},
@@ -68,6 +69,7 @@ function save() {
     if (KTR.credential.valid()) {
         const holidays = [];
         KTR.worktype.update($(`[name="work-type"]:checked`).val());
+        KTR.enableWorkInfo.update($(`[name="enable-work-info"]:checked`).val());
         $(`[name="holidays[]"]:checked`).each((index, elm) => { holidays.push($(elm).val()); })
         KTR.holidays.update(holidays);
     }

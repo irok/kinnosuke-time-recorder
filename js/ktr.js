@@ -273,7 +273,17 @@
         }
     };
 
-    // PENDING: @tosite0345 勤務状況非表示機能
+    /**
+     * 勤務状況表示
+     */
+    KTR.enableWorkInfo = {
+        get() {
+            let enableWorkInfo = localStorage.ShowWorkInfo;
+            if (typeof enableWorkInfo == 'undefined') { enableWorkInfo = localStorage.EnableWorkInfo = 'disable'; }
+            return enableWorkInfo;
+        },
+        update(enableWorkInfo) { localStorage.EnableWorkInfo = enableWorkInfo; }
+    };
 
     /**
      * 勤務形態
