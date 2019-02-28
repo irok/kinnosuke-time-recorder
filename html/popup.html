@@ -88,6 +88,9 @@ button.confirm {
 button.confirm:last-child {
   margin-left: 10px;
 }
+#time-table { width: 100%; display: none; }
+#time-table th, #time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
+
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -101,6 +104,50 @@ button.confirm:last-child {
 </div>
 <ul>
   <li id="service" class="enabled">勤之助を開く</li>
+</ul>
+<table id="time-table">
+    <tr><th colspan="3" style="text-align: center;">勤務情報</th></tr>
+    <tr>
+      <th width="20%"></th>
+      <th width="40%">勤務日数</th>
+      <th width="40%">勤務時間</th>
+    </tr>
+    <tr>
+      <th>所定</th>
+      <td id="fixed-day">-</td>
+      <td id="fixed-time">--:--</td>
+    </tr>
+    <tr>
+      <th>現在</th>
+      <td id="actual-day">-</td>
+      <td id="actual-time">--:--</td>
+    </tr>
+    <tr>
+      <th>休暇</th>
+      <td id="holiday">-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <th>必要</th>
+      <td id="need-day">-</td>
+      <td id="need-time">--:--</td>
+    </tr>
+    <tr>
+      <th colspan="2">予定過不足時間 <small>※</small></th>
+      <td id="expect-time">--:--</td>
+    </tr>
+    <tr><td colspan="3"><small>※ 所定時間働いた場合の過不足</small></td></tr>
+    <tr>
+      <th colspan="2">一日あたり必要時間</th>
+      <td id="time-per-day">--:--</td>
+    </tr>
+    <tr>
+      <th colspan="2">今日の勤務時間 <small>※</small></th>
+      <td id="today-time">--:--</td>
+    </tr>
+    <tr><td colspan="3"><small>※ 休憩時間を含む</small></td></tr>
+  </table>
+<ul>
   <li id="options" class="enabled">オプション</li>
 </ul>
 <div id="modalDialogContainer"></div>
