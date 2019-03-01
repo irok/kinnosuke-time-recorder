@@ -10,11 +10,6 @@ gulp.task('default', () => {
     console.log('run `gulp --tasks`');
 });
 
-gulp.task('build', cb => {
-    var runSequence = require('run-sequence');
-    runSequence('zip', 'clean', cb);
-});
-
 gulp.task('clean', () => {
     var del = require('del');
     return del(['tmp/', 'KinnosukeTimeRecorder/']);
@@ -37,6 +32,8 @@ gulp.task('zip', gulp.series('prepare'), () => {
         .pipe(zip('KinnosukeTimeRecorder.zip'))
         .pipe(gulp.dest('./'));
 });
+
+gulp.task('build', gulp.series('zip', 'clean'));
 
 gulp.task('vendor', () => {
     return gulp.src(libs).pipe(gulp.dest('vendor/'));
