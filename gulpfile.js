@@ -20,7 +20,7 @@ gulp.task('clean', () => {
     return del(['tmp/', 'KinnosukeTimeRecorder/']);
 });
 
-gulp.task('zip', ['prepare'], () => {
+gulp.task('zip', gulp.series('prepare'), () => {
     var zip = require('gulp-zip');
     return gulp.src('tmp/**')
         .pipe(zip('KinnosukeTimeRecorder.zip'))
