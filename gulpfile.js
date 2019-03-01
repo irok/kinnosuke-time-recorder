@@ -16,8 +16,7 @@ gulp.task('clean', () => {
 });
 
 gulp.task('prepare', () => {
-    var merge = require('event-stream').merge;
-    return merge(
+    return (
         gulp.src('manifest.json').pipe(gulp.dest('tmp/')),
         gulp.src('html/*').pipe(gulp.dest('tmp/html/')),
         gulp.src('images/*').pipe(gulp.dest('tmp/images/')),
@@ -33,7 +32,7 @@ gulp.task('zip', gulp.series('prepare'), () => {
         .pipe(gulp.dest('./'));
 });
 
-gulp.task('build', gulp.series('zip', 'clean'));
+gulp.task('build', gulp.series('clean', 'zip'));
 
 gulp.task('vendor', () => {
     return gulp.src(libs).pipe(gulp.dest('vendor/'));

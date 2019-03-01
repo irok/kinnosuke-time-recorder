@@ -14,7 +14,6 @@
   "devDependencies": {
     "del": "^2.2.2",
     "eslint": "^3.15.0",
-    "event-stream": "^3.3.4",
     "gulp": "^4.0.0",
     "gulp-zip": "^4.0.0"
   },
