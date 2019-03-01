@@ -25,12 +25,12 @@ gulp.task('prepare', () => {
     );
 });
 
-gulp.task('zip', gulp.series('prepare'), () => {
+gulp.task('zip', gulp.series('prepare', () => {
     var zip = require('gulp-zip');
     return gulp.src('tmp/**')
         .pipe(zip('KinnosukeTimeRecorder.zip'))
         .pipe(gulp.dest('./'));
-});
+}));
 
 gulp.task('build', gulp.series('clean', 'zip'));
 
