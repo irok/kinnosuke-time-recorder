@@ -12,7 +12,7 @@ gulp.task('default', () => {
 
 gulp.task('clean', () => {
     var del = require('del');
-    return del(['tmp/', 'KinnosukeTimeRecorder/']);
+    return del(['tmp/', 'KinnosukeTimeRecorder.zip']);
 });
 
 gulp.task('prepare', () => {
