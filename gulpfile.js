@@ -10,26 +10,13 @@ gulp.task('default', () => {
     console.log('run `gulp --tasks`');
 });
 
-gulp.task('build', cb => {
-    var runSequence = require('run-sequence');
-    runSequence('zip', 'clean', cb);
-});
-
 gulp.task('clean', () => {
     var del = require('del');
-    return del(['tmp/', 'KinnosukeTimeRecorder/']);
-});
-
-gulp.task('zip', ['prepare'], () => {
-    var zip = require('gulp-zip');
-    return gulp.src('tmp/**')
-        .pipe(zip('KinnosukeTimeRecorder.zip'))
-        .pipe(gulp.dest('./'));
+    return del(['tmp/', 'KinnosukeTimeRecorder.zip']);
 });
 
 gulp.task('prepare', () => {
-    var merge = require('event-stream').merge;
-    return merge(
+    return (
         gulp.src('manifest.json').pipe(gulp.dest('tmp/')),
         gulp.src('html/*').pipe(gulp.dest('tmp/html/')),
         gulp.src('images/*').pipe(gulp.dest('tmp/images/')),
@@ -37,6 +24,15 @@ gulp.task('prepare', () => {
         gulp.src(libs).pipe(gulp.dest('tmp/vendor/'))
     );
 });
+
+gulp.task('zip', gulp.series('prepare', () => {
+    var zip = require('gulp-zip');
+    return gulp.src('tmp/**')
+        .pipe(zip('KinnosukeTimeRecorder.zip'))
+        .pipe(gulp.dest('./'));
+}));
+
+gulp.task('build', gulp.series('clean', 'zip'));
 
 gulp.task('vendor', () => {
     return gulp.src(libs).pipe(gulp.dest('vendor/'));
