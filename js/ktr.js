@@ -667,7 +667,7 @@
                 expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : (needDay * perdayTimes.time) - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(Math.floor(needTimes.time / needDay));
             } else {
-                expectTimes       = KTR.workInfo.toTime(perdayTimes.time - needTimes.time);
+                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : perdayTimes.time - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(needTimes.time );
             }
             expectTimes.sign = (expectTimes.time < 0) ? "-" : "+";
@@ -689,6 +689,22 @@
                     expectPerday: expectPerdayTimes,
                 },
             };
+        },
+        /**
+         * 時間をテーブルにセットする
+         */
+        setTimesToTable (days, times) {
+            $('#fixed-day'         ).text(`${days.fixed}日`);
+            $('#actual-day'        ).text(`${days.actual}日`);
+            $('#need-day'          ).text(`${days.need}日`);
+            $('#holiday'           ).text(`${days.holiday}日`);
+            $('#fixed-time'        ).text(`${times.fixed.display}`);
+            $('#actual-time'       ).text(`${times.actual.display}`);
+            $('#need-time'         ).text(`${times.need.display}`);
+            $('#perday-time'       ).text(`${times.perday.display}`);
+            $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
+            $('#expect-perday-time').text(`${times.expectPerday.display}`);
+            $('#today-time'        ).text(`${times.today.display}`);
         },
         /**
          * 時間の配列またはタイムスタンプを整形する

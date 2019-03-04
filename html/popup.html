@@ -90,7 +90,7 @@ button.confirm:last-child {
 }
 #time-table { width: 100%; display: none; }
 #time-table th, #time-table td { font-size: 70%; text-align: right; border-bottom: 1px solid #dedede; border-collapse: collapse; }
-
+#time-table .is-flex { display: none; }
 </style>
 <script src="/vendor/jquery.js"></script>
 <script src="/vendor/crypto-js.js"></script>
@@ -132,18 +132,18 @@ button.confirm:last-child {
       <td id="need-day">-</td>
       <td id="need-time">--:--</td>
     </tr>
-    <tr>
+    <tr class="is-flex">
       <th colspan="2">予定過不足時間 <small>※</small></th>
       <td id="expect-time">--:--</td>
     </tr>
-    <tr><td colspan="3"><small>※ 所定時間働いた場合の過不足</small></td></tr>
-    <tr>
+    <tr class="is-flex"><td colspan="3"><small>※ 一日<span id="perday-time">-:--</span>働いた場合の過不足</small></td></tr>
+    <tr class="is-flex">
       <th colspan="2">一日あたり必要時間</th>
       <td id="time-per-day">--:--</td>
     </tr>
     <tr>
       <th colspan="2">今日の勤務時間 <small>※</small></th>
-      <td id="today-time">--:--</td>
+      <td id="expect-perday-time">--:--</td>
     </tr>
     <tr><td colspan="3"><small>※ 休憩時間を含む</small></td></tr>
   </table>
