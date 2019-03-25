@@ -731,7 +731,8 @@
          */
         toTime(times){
             const time = (times.length != 2) ? times : times[0] * 60 + times[1];
-            const hour = `${Math.abs(Math.floor(time / 60))}`;
+            const h    = (time > 0) ? Math.floor(time / 60) : Math.ceil(time / 60);
+            const hour = `${Math.abs(h)}`;
             const min  = (`00${time % 60}`).slice(-2);
             return {
                 time:    time,
