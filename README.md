@@ -33,6 +33,9 @@ chrome://extensions/ の「デベロッパーモード」をチェックして�
 
 ## 更新履歴
 
+- v3.3.1 (2019-03-25)
+    - 不具合を修正
+
 - v3.3.0 (2019-03-25)
     - 当月の出勤状況が確認できるようになりました [#6](https://github.com/irok/KinnosukeTimeRecorder/pull/6)
 
