@@ -33,6 +33,24 @@ function init() {
             $service.text('新しいお知らせ').addClass('attention');
         }
     });
+
+    /**
+     * ログインしており、かつ勤務状況機能を利用する場合に勤務テーブルを表示する
+     */
+    if (KTR.credential.valid() && KTR.enableWorkInfo.get() === 'enable') {
+        document.querySelector('#time-table').style.display = 'block';
+        // TODO: @tosite0345 リファクタリング
+        KTR.service._request(
+            {method: 'GET'},
+            '?module=timesheet&action=browse',
+            (html) => {
+                const workInfo  = KTR.workInfo.fetchWorkingInfoFromHtml(html);
+                const workTimes = KTR.workInfo.calcWorkTimes(workInfo);
+                KTR.workInfo.setTimesToTable(workTimes.days, workTimes.times);
+                if (KTR.worktype.get() === 'flex') { $('.is-flex').show(); }
+            }
+        );
+    }
 }
 
 /**

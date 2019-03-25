@@ -274,6 +274,46 @@
     };
 
     /**
+     * 勤務状況表示
+     */
+    KTR.enableWorkInfo = {
+        get() {
+            let enableWorkInfo = localStorage.EnableWorkInfo;
+            if (typeof enableWorkInfo == 'undefined') { enableWorkInfo = localStorage.EnableWorkInfo = 'disable'; }
+            return enableWorkInfo;
+        },
+        update(enableWorkInfo) { localStorage.EnableWorkInfo = enableWorkInfo; }
+    };
+
+    /**
+     * 勤務形態
+     */
+    KTR.worktype = {
+        get() {
+            let worktype = localStorage.Worktype;
+            if (typeof worktype == 'undefined') { worktype = localStorage.Worktype = 'fix'; }
+            return worktype;
+        },
+        update(worktype) { localStorage.Worktype = worktype; }
+    };
+
+    /**
+     * 休暇
+     */
+    KTR.holidays = {
+        get() {
+            let holidays = localStorage.Holidays;
+            if (typeof holidays === 'undefined') {
+                holidays = localStorage.Holidays = JSON.stringify({});
+            }
+            return JSON.parse(holidays);
+        },
+        update(holidays) {
+            localStorage.Holidays = JSON.stringify(holidays);
+        }
+    };
+
+    /**
      * メニュー管理
      */
     KTR.menuList = {
@@ -533,7 +573,7 @@
         get(cb) {
             KTR.service._request({
                 method: 'GET'
-            }, cb);
+            }, '', cb);
         },
 
         // POSTリクエストを送信する
@@ -544,11 +584,11 @@
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
                 },
                 body: Object.keys(obj).map((key) => `${key}=${encodeURIComponent(obj[key])}`).join('&')
-            }, cb);
+            }, '', cb);
         },
 
-        _request(init, cb) {
-            fetch(KTR.service.url(), Object.assign({
+        _request(init, queryString, cb) {
+            fetch(KTR.service.url() + queryString, Object.assign({
                 cache: 'no-store',
                 credentials: 'include'
             }, init))
@@ -560,6 +600,168 @@
         // ネットワークエラー
         error({message}) {
             KTR.error(message);
+        }
+    };
+    /**
+     * 勤務時間の詳細を取得
+     */
+    KTR.workInfo = {
+        fetchWorkingInfoFromHtml(html){
+            const parser  = new DOMParser();
+            const doc     = parser.parseFromString(html, 'text/html');
+            const table   = doc.querySelector(/* Working info summary table = */ 'table#total_list0 tr:nth-child(2)');
+
+            const summaryCols  = KTR.workInfo.workTableColumns(html, 'summary');
+            const calendarCols = KTR.workInfo.workTableColumns(html, 'calendar');
+            const holidayCols  = KTR.holidays.get();
+
+            // 日数
+            const fixedDay  = Number(table.querySelector(`td:nth-child(${summaryCols['所定労働日数']})`).textContent);
+            const actualDay = Number(table.querySelector(`td:nth-child(${summaryCols['出勤日数']})`).textContent);
+
+            // 時間
+            const fixedTimes  = table.querySelector(`td:nth-child(${summaryCols['所定労働時間']})`).textContent.split(':').map(Number);
+            const actualTimes = table.querySelector(`td:nth-child(${summaryCols['実働時間']})`).textContent.split(':').map(Number);
+
+            // 休暇
+            let holiday = 0;
+            holidayCols.forEach((val) => {
+                holiday += Number(table.querySelector(`td:nth-child(${summaryCols[val]})`).textContent);
+            });
+
+            // 今日の勤務開始時間
+            var now    = new Date();
+            var tr     = doc.querySelector(`#fix_0_${now.getDate()}`);
+            var start  = tr.querySelector(`td:nth-child(${calendarCols['出社']})`).textContent.split(':').map(Number);
+            var actual = tr.querySelector(`td:nth-child(${calendarCols['実働時間']})`).textContent.split(':').map(Number);
+
+            // 時間が取得できていなければ00:00をセットする
+            start      = (start.length != 2)  ? [0, 0] : start;
+            actual     = (actual.length != 2) ? [0, 0] : actual;
+
+            return {
+                fixedDay:         fixedDay,
+                actualDay:        actualDay,
+                holiday:          holiday,
+                fixedTimes:       KTR.workInfo.toTime(fixedTimes),
+                actualTimes:      KTR.workInfo.toTime(actualTimes),
+                todayStartTimes:  KTR.workInfo.toTime(start),
+                todayActualTimes: KTR.workInfo.toTime(actual)
+            };
+        },
+        /**
+         * 勤務時間の計算を行う
+         * ref: https://github.com/irok/KinnosukeTimeRecorder/pull/17#issuecomment-467862567
+         */
+        calcWorkTimes (workInfo) {
+            const now      = new Date();
+            const nowtime  = now.getHours() * 60 + now.getMinutes();
+            let todayTimes = KTR.workInfo.toTime(0);
+
+            // 当日勤務時間 … 退勤しているかどうかで取得方法を条件分岐
+            if (workInfo.todayActualTimes.time !== 0) {
+                todayTimes = workInfo.todayActualTimes;
+            } else if (workInfo.todayStartTimes.time !== workInfo.todayActualTimes.time) {
+                todayTimes = KTR.workInfo.toTime(nowtime - workInfo.todayStartTimes.time);
+            }
+
+            const needDay     = workInfo.fixedDay - workInfo.actualDay - workInfo.holiday; // 残り必要日数
+            const perdayTimes = KTR.workInfo.toTime(workInfo.fixedTimes.time / workInfo.fixedDay); // 一日あたり労働時間
+            const needtime    = workInfo.fixedTimes.time - workInfo.actualTimes.time - todayTimes.time;
+            const needTimes   = KTR.workInfo.toTime((needtime <= 0) ? 0 : needtime); // 月末までに必要な勤務時間
+
+            let expectTimes; // 毎日所定時間働いた場合の過不足勤務時間
+            let expectPerdayTimes; // 一日あたりの予想必要勤務時間
+            // 残り必要日数が0以下だと計算できないため条件分岐
+            if (needDay > 0) {
+                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : (needDay * perdayTimes.time) - needTimes.time);
+                expectPerdayTimes = KTR.workInfo.toTime(Math.floor(needTimes.time / needDay));
+            } else {
+                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : perdayTimes.time - needTimes.time);
+                expectPerdayTimes = KTR.workInfo.toTime(needTimes.time );
+            }
+            expectTimes.sign = (expectTimes.time < 0) ? "-" : "+";
+
+            return {
+                days:  {
+                    fixed:   workInfo.fixedDay,
+                    actual:  workInfo.actualDay,
+                    need:    needDay,
+                    holiday: workInfo.holiday
+                },
+                times: {
+                    fixed:        workInfo.fixedTimes,
+                    actual:       workInfo.actualTimes,
+                    today:        todayTimes,
+                    perday:       perdayTimes,
+                    need:         needTimes,
+                    expect:       expectTimes,
+                    expectPerday: expectPerdayTimes,
+                },
+            };
+        },
+        /**
+         * 時間をテーブルにセットする
+         */
+        setTimesToTable (days, times) {
+            $('#fixed-day'         ).text(`${days.fixed}日`);
+            $('#actual-day'        ).text(`${days.actual}日`);
+            $('#need-day'          ).text(`${days.need}日`);
+            $('#holiday'           ).text(`${days.holiday}日`);
+            $('#fixed-time'        ).text(`${times.fixed.display}`);
+            $('#actual-time'       ).text(`${times.actual.display}`);
+            $('#need-time'         ).text(`${times.need.display}`);
+            $('#perday-time'       ).text(`${times.perday.display}`);
+            $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
+            $('#expect-perday-time').text(`${times.expectPerday.display}`);
+            $('#today-time'        ).text(`${times.today.display}`);
+        },
+        /**
+         * 時間の配列またはタイムスタンプを整形する
+         * example:
+         * KTR.workInfo.toTime([12, 20])
+         *   {
+         *       time:    time(minutes)
+         *       hour:    '12'
+         *       min:     '20'
+         *       display: '12:20'
+         *   }
+         */
+        toTime(times){
+            const time = (times.length != 2) ? times : times[0] * 60 + times[1];
+            const hour = `${Math.abs(Math.floor(time / 60))}`;
+            const min  = (`00${time % 60}`).slice(-2);
+            return {
+                time:    time,
+                hour:    hour,
+                min:     min,
+                display: `${hour}:${min}`,
+            };
+        },
+        /**
+         * 勤怠状況集計テーブルのカラム名を取得する
+         */
+        workTableColumns (html, type) {
+            let colPos, part, columnTags;
+            let selector = (type === 'summary') ? '<b>所定労働<br/>日数</b>' : '<b>日</b>';
+            const columns = {};
+            if ((colPos = html.search('<td align="center" nowrap="nowrap" class="txt_10">' + selector)) !== -1) {
+                part = html.substring(colPos);
+                columnTags = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
+            }
+            if (columnTags) {
+                columnTags.forEach((columnTag, index) => {
+                    let column = columnTag.replace(/<td align="center" nowrap="nowrap" class="txt_10">/g, '')
+                        .replace(/\s+/g, '')
+                        .replace(/<br\/>/g, '')
+                        .replace(/<b>/g, '')
+                        .replace(/<\/b>/g, '');
+                    if (column !== '') { columns[column] = index + 1; }
+                });
+            } else {
+                KTR.error('項目特定エラー：Issueに連絡ください。');
+            }
+            return columns;
         }
     };
 })(this);
