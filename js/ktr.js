@@ -657,27 +657,29 @@
             const now      = new Date();
             const nowtime  = now.getHours() * 60 + now.getMinutes();
             let todayTimes = KTR.workInfo.toTime(0);
+            let subtime    = 0;
 
             // 当日勤務時間 … 退勤しているかどうかで取得方法を条件分岐
             if (workInfo.todayActualTimes.time !== 0) {
                 todayTimes = workInfo.todayActualTimes;
             } else if (workInfo.todayStartTimes.time !== workInfo.todayActualTimes.time) {
                 todayTimes = KTR.workInfo.toTime(nowtime - workInfo.todayStartTimes.time);
+                subtime = todayTimes.time;
             }
 
             const needDay     = workInfo.fixedDay - workInfo.actualDay - workInfo.holiday; // 残り必要日数
             const perdayTimes = KTR.workInfo.toTime(workInfo.fixedTimes.time / workInfo.fixedDay); // 一日あたり労働時間
-            const needtime    = workInfo.fixedTimes.time - workInfo.actualTimes.time - todayTimes.time;
+
+            const needtime    = workInfo.fixedTimes.time - workInfo.actualTimes.time - subtime;
             const needTimes   = KTR.workInfo.toTime((needtime <= 0) ? 0 : needtime); // 月末までに必要な勤務時間
 
-            let expectTimes; // 毎日所定時間働いた場合の過不足勤務時間
+            const expectTimes = KTR.workInfo.toTime(needtime - perdayTimes.time * needDay); // 毎日所定時間働いた場合の過不足勤務時間
+
             let expectPerdayTimes; // 一日あたりの予想必要勤務時間
             // 残り必要日数が0以下だと計算できないため条件分岐
             if (needDay > 0) {
-                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : (needDay * perdayTimes.time) - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(Math.floor(needTimes.time / needDay));
             } else {
-                expectTimes       = KTR.workInfo.toTime(needTimes.time === 0 ? 0 : perdayTimes.time - needTimes.time);
                 expectPerdayTimes = KTR.workInfo.toTime(needTimes.time );
             }
             expectTimes.sign = (expectTimes.time < 0) ? "-" : "+";
@@ -713,7 +715,7 @@
             $('#need-time'         ).text(`${times.need.display}`);
             $('#perday-time'       ).text(`${times.perday.display}`);
             $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
-            $('#expect-perday-time').text(`${times.expectPerday.display}`);
+            $('#time-per-day'      ).text(`${times.expectPerday.display}`);
             $('#today-time'        ).text(`${times.today.display}`);
         },
         /**
