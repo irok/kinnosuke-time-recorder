@@ -2,6 +2,9 @@ $(function() {
     restore();
     $('#saveBtn').click(save);
     $(`[name="enable-work-info"]`).change(switchTableDisplay);
+    if (KTR.enableWorkInfo.get() == 'enable') {
+        $('#enable-work-info-settings').fadeIn();
+    }
 });
 
 function switchTableDisplay(){
