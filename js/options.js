@@ -1,7 +1,16 @@
 $(function() {
     restore();
     $('#saveBtn').click(save);
+    $(`[name="enable-work-info"]`).change(switchTableDisplay);
 });
+
+function switchTableDisplay(){
+    if($(`[name="enable-work-info"]:checked`).val() == 'enable') {
+        $('#enable-work-info-settings').fadeIn();
+    } else {
+        $('#enable-work-info-settings').fadeOut();
+    }
+}
 
 // 設定を読み込んでフォームにセットする
 function restore() {
@@ -28,6 +37,7 @@ function restore() {
      */
     if (KTR.credential.valid()) {
         $(`[name="work-type"][value="${KTR.worktype.get()}"]`).prop('checked', true);
+        $(`[name="enable-work-info"][value="${KTR.enableWorkInfo.get()}"]`).prop('checked', true);
         const holidays = KTR.holidays.get();
         KTR.service._request(
             {method: 'GET'},
@@ -68,6 +78,7 @@ function save() {
     if (KTR.credential.valid()) {
         const holidays = [];
         KTR.worktype.update($(`[name="work-type"]:checked`).val());
+        KTR.enableWorkInfo.update($(`[name="enable-work-info"]:checked`).val());
         $(`[name="holidays[]"]:checked`).each((index, elm) => { holidays.push($(elm).val()); })
         KTR.holidays.update(holidays);
     }
