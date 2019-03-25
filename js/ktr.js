@@ -303,8 +303,8 @@
     KTR.holidays = {
         get() {
             let holidays = localStorage.Holidays;
-            if (typeof holidays === 'undefined') {
-                holidays = localStorage.Holidays = JSON.stringify({});
+            if (typeof holidays === 'undefined' || holidays === '{}') {
+                holidays = localStorage.Holidays = JSON.stringify([]);
             }
             return JSON.parse(holidays);
         },
