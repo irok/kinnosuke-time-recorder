@@ -682,7 +682,7 @@
             } else {
                 expectPerdayTimes = KTR.workInfo.toTime(needTimes.time );
             }
-            expectTimes.sign = (expectTimes.time < 0) ? "-" : "+";
+            expectTimes.sign = (expectTimes.time < 0) ? "超過" : "不足";
 
             return {
                 days:  {
@@ -714,7 +714,7 @@
             $('#actual-time'       ).text(`${times.actual.display}`);
             $('#need-time'         ).text(`${times.need.display}`);
             $('#perday-time'       ).text(`${times.perday.display}`);
-            $('#expect-time'       ).text(`${times.expect.sign}${times.expect.display}`);
+            $('#expect-time'       ).text(`${times.expect.display} ${times.expect.sign}`);
             $('#time-per-day'      ).text(`${times.expectPerday.display}`);
             $('#today-time'        ).text(`${times.today.display}`);
         },
@@ -732,8 +732,9 @@
         toTime(times){
             const time = (times.length != 2) ? times : times[0] * 60 + times[1];
             const h    = (time > 0) ? Math.floor(time / 60) : Math.ceil(time / 60);
+            const m    = Math.abs(time % 60);
             const hour = `${Math.abs(h)}`;
-            const min  = (`00${time % 60}`).slice(-2);
+            const min  = (`00${m}`).slice(-2);
             return {
                 time:    time,
                 hour:    hour,
