@@ -5,10 +5,14 @@
     "browser": true,
     "jquery": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
   "globals": {
     "chrome": true,
     "CryptoJS": true,
-    "KTR": true
+    "KTR": true,
+    "moment": true
   },
   "rules": {
     "indent": ["error", 4],

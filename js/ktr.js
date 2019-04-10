@@ -479,10 +479,11 @@
         // マイページトップにアクセスする
         mytop(cb) {
             KTR.service.get((html) => {
-                if (KTR.status.scrape(html).authorized)
-                    {cb(html);}
-                else
-                    {KTR.service.login(cb);}
+                if (KTR.status.scrape(html).authorized) {
+                    cb(html);
+                } else {
+                    KTR.service.login(cb);
+                }
             });
         },
 
