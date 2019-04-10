@@ -39,7 +39,9 @@ npm install
 
 chrome://extensions/ の「デベロッパーモード」をチェックし、「パッケージ化されていない拡張機能を読み込む」で KinnosukeTimeRecorder ディレクトリを選択してください。
 
-コードを書き換えたら chrome://extensions/ の画面で開発中の拡張を再読み込みしてください。
+コードを書き換えたら chrome://extensions/ の画面で再読み込みしてください。
+
+PRを送って頂く場合は、`npm run lint` を実行してエラーを解消してください。
 
 ## 更新履歴
 - v3.3.2 (2019-04-10)
