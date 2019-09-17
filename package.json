@@ -14,7 +14,7 @@
   "devDependencies": {
     "del": "^2.2.2",
     "eslint": "^5.16.0",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-zip": "^4.2.0"
   },
   "homepage": "https://github.com/irok/KinnosukeTimeRecorder",
