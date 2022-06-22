@@ -7,7 +7,7 @@
     "url": "https://github.com/irok/KinnosukeTimeRecorder/issues"
   },
   "dependencies": {
-    "crypto-js": "3.1.9-1",
+    "crypto-js": "3.3.0",
     "jquery": "3.5.0",
     "moment": "2.29.2"
   },
