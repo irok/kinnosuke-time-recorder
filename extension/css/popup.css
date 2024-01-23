@@ -1,0 +1,94 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 200px;
+  padding: 10px;
+  font: 100%/1.5 sans-serif;
+}
+
+.stamp-block {
+  display: none;
+  width: 100%;
+  padding: 5px 0 10px;
+}
+
+.stamp {
+  display: table-cell;
+  width: 50%;
+  padding: 4px 0;
+  text-align: center;
+  color: #999;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  display: block;
+  padding: 4px 20px;
+  text-align: left;
+  color: #999;
+}
+
+.enabled {
+  cursor: pointer;
+  color: #00f;
+}
+
+.enabled:hover {
+  background: #cce0ff;
+}
+
+.menu img {
+  height: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: lightgray;
+  opacity: 0.8;
+}
+
+.dialog {
+  position: absolute;
+  width: 158px;
+  margin: 0 10px;
+  padding: 10px 0;
+  border: 1px solid gray;
+  border-radius: 3px;
+  background: #fff;
+  text-align: center;
+}
+
+button {
+  min-height: 1.5em;
+  margin-top: 6px;
+  padding: 2px 0 0;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 80%;
+  color: #444;
+  text-shadow: 0 1px 0 rgb(240, 240, 240);
+}
+
+button.confirm {
+  width: 64px;
+}
+
+button.confirm:last-child {
+  margin-left: 10px;
+}

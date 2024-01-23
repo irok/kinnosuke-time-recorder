@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "勤之助タイムレコーダー",
+  "version": "4.0.0",
+  "description": "万屋一家シリーズのクラウド型勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome拡張です。",
+  "icons": {
+    "48":  "/images/icon48.png",
+    "128": "/images/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "48":  "/images/icon48.png"
+    },
+    "default_title": "勤之助",
+    "default_popup": "/popup.html"
+  },
+  "background": {
+    "service_worker": "/js/worker.js",
+    "type": "module"
+  },
+  "options_page": "/options.html",
+  "permissions": [
+    "alarms",
+    "notifications",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.e4628.jp/*"
+  ]
+}

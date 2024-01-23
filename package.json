@@ -1,34 +1,28 @@
 {
-  "name": "KinnosukeTimeRecorder",
-  "description": "万屋一家シリーズ web版勤怠管理システム「勤之助 ver.2」のタイムレコーダーを押すためのChrome拡張です。",
-  "version": "3.3.3",
+  "name": "kinnosuke-time-recorder",
+  "description": "万屋一家シリーズのクラウド型勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome拡張です。",
+  "version": "4.0.0",
   "author": "irok",
   "bugs": {
-    "url": "https://github.com/irok/KinnosukeTimeRecorder/issues"
+    "url": "https://github.com/irok/kinnosuke-time-recorder/issues"
   },
   "dependencies": {
     "crypto-js": "3.1.9-1",
-    "jquery": "3.5.0",
-    "moment": "2.29.4"
+    "jquery": "3.5.0"
   },
   "devDependencies": {
-    "del": "^2.2.2",
-    "eslint": "^5.16.0",
-    "gulp": "^4.0.2",
-    "gulp-zip": "^4.2.0"
+    "cross-zip-cli": "1.0.0"
   },
-  "homepage": "https://github.com/irok/KinnosukeTimeRecorder",
+  "homepage": "https://github.com/irok/kinnosuke-time-recorder",
+  "keywords": [],
   "license": "MIT",
-  "main": "gulpfile.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/irok/KinnosukeTimeRecorder.git"
+    "url": "git://github.com/irok/kinnosuke-time-recorder.git"
   },
   "scripts": {
-    "postinstall": "gulp vendor",
-    "build": "gulp build",
-    "vendor": "gulp vendor",
-    "lint": "eslint --fix js || exit 0",
+    "build": "cross-zip extension extension.zip",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
