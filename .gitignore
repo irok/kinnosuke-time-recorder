@@ -1,5 +1,2 @@
-.*/
 node_modules/
-tmp/
-KinnosukeTimeRecorder.zip
-vendor/
+*.zip

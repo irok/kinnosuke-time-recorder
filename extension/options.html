@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>勤之助タイムレコーダー</title>
+<link href="/css/options.css" rel="stylesheet" />
+</head>
+<body>
+<header>
+  <h1>勤之助タイムレコーダー</h1>
+</header>
+<section>
+  <h2>ログイン情報</h2>
+  <div class="settings">
+    <table>
+      <tr><td>お客様ID</td><td><input type="text" id="companycd" value="" size="20" /></td></tr>
+      <tr><td>ログインID</td><td><input type="text" id="logincd" value="" size="20" /></td></tr>
+      <tr><td>パスワード</td><td><input type="password" id="password" value="" size="20" /></td></tr>
+    </table>
+    <p>
+      パスワードは暗号化した上でローカルに保存します。<br/>
+      （Chromeアカウントの同期がオンの場合、ログインしているすべてのChromeに同期されます。）
+    </p>
+  </div>
+  <button id="save">保存する</button>
+</section>
+<script src="/js/options.js" type="module"></script>
+</body>
+</html>
