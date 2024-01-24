@@ -80,8 +80,11 @@ export default class Kinnosuke {
 
   // ログアウト
   async logout() {
-    await this.client.logout();
+    if (this.state.authorized()) {
+      await this.client.logout();
+    }
     await this.state.reset().save();
+    await this.menus.reset().save();
   }
 
   // セッションを維持する (alarmで定期実行される)

@@ -11,9 +11,11 @@ const saveOptions = async () => {
   await credential.save();
   await Notifier.saveCredential();
 
+  const app = await Kinnosuke.create();
   if (credential.valid()) {
-    const app = await Kinnosuke.create();
     await app.login();
+  } else {
+    await app.logout();
   }
 };
 
