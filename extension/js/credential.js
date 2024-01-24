@@ -17,7 +17,8 @@ export default class Credential {
   constructor(companycd = '', logincd = '', password = '', secret = null) {
     this.data = { companycd, logincd, encrypted: password, secret };
 
-    if (secret === null) {
+    // パスワードが設定されたら暗号化する (ただし空っぽの場合はencryptedも空にしておく)
+    if (secret === null && password !== '') {
       this.data.secret = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Base64);
       this.data.encrypted = CryptoJS.AES.encrypt(password, this.data.secret).toString();
     }
@@ -33,6 +34,8 @@ export default class Credential {
 
   password() {
     const { encrypted, secret } = this.data;
+    if (encrypted === '' || secret === null)
+      return '';
     return CryptoJS.AES.decrypt(encrypted, secret).toString(CryptoJS.enc.Utf8);
   }
 
@@ -42,6 +45,6 @@ export default class Credential {
   }
 
   valid() {
-    return this.companycd !== '' && this.logincd !== '' && this.password !== '';
+    return this.data.companycd !== '' && this.data.logincd !== '' && this.data.encrypted !== '';
   }
 }
