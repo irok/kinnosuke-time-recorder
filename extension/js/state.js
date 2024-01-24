@@ -28,7 +28,7 @@ export default class State {
   }
 
   authorized() {
-    return Date.now() < this.data.authorizedTime + this.constructor.TTL;
+    return Date.now() < this.data.authorizedTime + State.TTL;
   }
 
   startTime() {
@@ -57,9 +57,7 @@ export default class State {
       const startTime = response.startTime();
       const leaveTime = response.leaveTime();
       this.data = {
-        code: this.constructor.Code[
-          leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE'
-        ],
+        code: State.Code[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
         authorizedTime: Date.now(),
         startTime, leaveTime,
         lastRemindDate: this.data.lastRemindDate,
@@ -73,7 +71,7 @@ export default class State {
 
   reset() {
     this.data = {
-      code: this.constructor.Code.UNKNOWN,
+      code: State.Code.UNKNOWN,
       authorizedTime: 0,
       lastRemindDate: this.data.lastRemindDate,
     };
@@ -102,9 +100,9 @@ class Badge {
 
   static update(code) {
     return Promise.all([
-      chrome.action.setBadgeBackgroundColor({ color: this.Color[code] }),
+      chrome.action.setBadgeBackgroundColor({ color: Badge.Color[code] }),
       chrome.action.setBadgeText({ text: code === State.Code.UNKNOWN ? '' : ' ' }),
-      chrome.action.setTitle({ title: this.Title[code] }),
+      chrome.action.setTitle({ title: Badge.Title[code] }),
     ]);
   }
 }
