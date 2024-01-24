@@ -197,9 +197,9 @@ class KinnosukeClient {
   login(credential) {
     return this.post({
       module: 'login',
-      y_companycd: credential.companycd,
-      y_logincd: credential.logincd,
-      password: credential.password,
+      y_companycd: credential.companycd(),
+      y_logincd: credential.logincd(),
+      password: credential.password(),
       trycnt: 1,
     });
   }

@@ -1,3 +1,7 @@
+/**
+ * importできるようにビルドする方法が分からなかったので、
+ * コードを直接書き換えてexportしちゃってます。。。
+ */
 const CryptoJS = (() => {
   /**
    * CryptoJS core components.
