@@ -41,16 +41,6 @@ export default class Kinnosuke {
     return instance;
   }
 
-  // menusを返す
-  getMenus() {
-    return this.menus.items();
-  }
-
-  // stateを返す
-  getState() {
-    return this.state;
-  }
-
   // まだ出社してなければリマインドする
   async remindStamp() {
     const today = this.constructor.today();
@@ -80,8 +70,11 @@ export default class Kinnosuke {
 
   // ログアウト
   async logout() {
-    await this.client.logout();
+    if (this.state.authorized()) {
+      await this.client.logout();
+    }
     await this.state.reset().save();
+    await this.menus.reset().save();
   }
 
   // セッションを維持する (alarmで定期実行される)
