@@ -24,7 +24,7 @@ export default class Kinnosuke {
 
   // 勤之助を開く
   static open({ module, action } = {}) {
-    let url = this.SiteUrl;
+    let url = Kinnosuke.SiteUrl;
     if (module && action) {
       url += `?module=${ module }&action=${ action }`;
     }
@@ -43,7 +43,7 @@ export default class Kinnosuke {
 
   // まだ出社してなければリマインドする
   async remindStamp() {
-    const today = this.constructor.today();
+    const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
       await this.state.setLastRemindDate(today).save();
       if (this.state.code() == State.Code.BEFORE) {
@@ -98,7 +98,7 @@ export default class Kinnosuke {
 
   // 出社
   async startWork() {
-    const response = await this.stamp(this.constructor.StampingType.ON);
+    const response = await this.stamp(Kinnosuke.StampingType.ON);
     if (response) {
       const time = response.startTime();
       if (time) {
@@ -112,7 +112,7 @@ export default class Kinnosuke {
 
   // 退社
   async leaveWork() {
-    const response = await this.stamp(this.constructor.StampingType.OFF);
+    const response = await this.stamp(Kinnosuke.StampingType.OFF);
     if (response) {
       const time = response.leaveTime();
       if (time) {
@@ -259,7 +259,7 @@ class KinnosukeResponse {
     }
 
     if (parts) {
-      return parts.map((menu) => this.constructor.reMenu.exec(menu)?.groups ?? null)
+      return parts.map((menu) => KinnosukeResponse.reMenu.exec(menu)?.groups ?? null)
         .filter((menu) => menu !== null);
     }
     return null;
