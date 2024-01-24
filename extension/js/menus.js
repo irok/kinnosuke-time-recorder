@@ -15,15 +15,21 @@ export default class Menus {
     this.menus = menus;
   }
 
+  // @returns array
   items() {
     return this.menus ?? [];
   }
 
+  // KinnosukeResponseを元にメニュー情報を設定する
+  // 勤之助にログインした際に反映する
+  // @returns this
   update(response) {
     this.menus = response.authorized() ? response.menuList() : null;
     return this;
   }
 
+  // メニュー情報を削除する
+  // @returns this
   reset() {
     this.menus = [];
     return this;

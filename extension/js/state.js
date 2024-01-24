@@ -8,7 +8,9 @@ export default class State {
     ON_THE_JOB: 2,
     AFTER: 3,
   };
-  static TTL = 10 * 60 * 1000;   // セッション確認の有効時間
+
+  // セッション確認の有効時間
+  static TTL = 10 * 60 * 1000;
 
   static async retrieve() {
     try {
@@ -23,35 +25,46 @@ export default class State {
     this.data = { code, authorizedTime, ...rest };
   }
 
+  // @returns enum
   code() {
     return this.data.code;
   }
 
+  // @returns boolean
   authorized() {
     return Date.now() < this.data.authorizedTime + State.TTL;
   }
 
+  // @returns string or undefined
   startTime() {
-    return this.data.startTime ?? null;
+    return this.data.startTime;
   }
 
+  // @returns string or undefined
   leaveTime() {
-    return this.data.leaveTime ?? null;
+    return this.data.leaveTime;
   }
 
+  // @returns string or undefined
+  csrfToken() {
+    return this.data.csrfToken;
+  }
+
+  // @returns string
   lastRemindDate() {
     return this.data.lastRemindDate ?? '';
   }
 
+  // @returns this
   setLastRemindDate(date) {
     this.data.lastRemindDate = date;
     return this;
   }
 
-  csrfToken() {
-    return this.data.csrfToken ?? null;
-  }
-
+  // KinnosukeResponseを元に状態を設定する
+  // 勤之助にアクセスする度に反映する
+  // lastRemindDateだけは維持
+  // @returns this
   update(response) {
     if (response.authorized()) {
       const startTime = response.startTime();
@@ -60,8 +73,8 @@ export default class State {
         code: State.Code[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
         authorizedTime: Date.now(),
         startTime, leaveTime,
-        lastRemindDate: this.data.lastRemindDate,
         csrfToken: response.csrfToken(),
+        lastRemindDate: this.data.lastRemindDate,
       };
     } else {
       this.reset();
@@ -69,6 +82,9 @@ export default class State {
     return this;
   }
 
+  // 状態を初期化する
+  // lastRemindDateだけは維持
+  // @returns this
   reset() {
     this.data = {
       code: State.Code.UNKNOWN,
@@ -79,6 +95,7 @@ export default class State {
   }
 
   async save() {
+    // Note: JSON.stringifyは値がundefinedなキーを出力しない
     const state = JSON.stringify(this.data);
     await chrome.storage.local.set({ state });
 

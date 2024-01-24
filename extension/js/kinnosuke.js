@@ -92,7 +92,7 @@ export default class Kinnosuke {
       }
     }
 
-    //認証されていなければログインする
+    // 認証されていなければログインする
     await this.login();
   }
 
@@ -153,7 +153,7 @@ export default class Kinnosuke {
 
 /**
  * 勤之助との通信を行うクラス
- * 全てのメソッドがPromiseを返す
+ * 全てのメソッドがPromiseを通じてKinnosukeResponseを返す
  */
 class KinnosukeClient {
   async request(option) {
@@ -223,27 +223,33 @@ class KinnosukeResponse {
     this.html = html;
   }
 
+  // @returns boolean
   authorized() {
     return /<div class="user_name">/.test(this.html);
   }
 
+  // @returns string or undefined
   startTime() {
-    return />出社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.exec(this.html)?.[1] ?? null;
+    return />出社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.exec(this.html)?.[1];
   }
 
+  // @returns string or undefined
   leaveTime() {
-    return />退社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.exec(this.html)?.[1] ?? null;
+    return />退社<br(?:\s*\/)?>\((\d\d:\d\d)\)/.exec(this.html)?.[1];
   }
 
+  // @returns object or undefined
   csrfToken() {
-    return /name="(?<key>__sectag_[0-9a-f]+)" value="(?<value>[0-9a-f]+)"/.exec(this.html)?.groups ?? null;
+    return /name="(?<key>__sectag_[0-9a-f]+)" value="(?<value>[0-9a-f]+)"/.exec(this.html)?.groups;
   }
 
+  // 正規表現が長すぎるので分割しておいてくっつける
   static reMenu = new RegExp([
     /href="\.\/\?module=(?<module>[^&]+)&(?:amp;)?action=(?<action>[^"]+)">/,
     /.+?src="(?<icon>[^"]+)" alt="(?<title>[^"]+)"/
   ].map(_ => _.source).join(''), 's');
 
+  // @returns object or undefined
   menuList() {
     let pos, parts;
 
@@ -258,10 +264,8 @@ class KinnosukeResponse {
       parts = part.substr(0, part.search(/<\/tr>/)).split(/<\/td>/);
     }
 
-    if (parts) {
-      return parts.map((menu) => KinnosukeResponse.reMenu.exec(menu)?.groups ?? null)
-        .filter((menu) => menu !== null);
-    }
-    return null;
+    if (!parts) return;
+    return parts.map((menu) => KinnosukeResponse.reMenu.exec(menu)?.groups)
+      .filter((menu) => menu != null);
   }
 }
