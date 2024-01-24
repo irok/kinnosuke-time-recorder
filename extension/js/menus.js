@@ -24,6 +24,11 @@ export default class Menus {
     return this;
   }
 
+  reset() {
+    this.menus = [];
+    return this;
+  }
+
   async save() {
     const menus = JSON.stringify(this.menus);
     await chrome.storage.local.set({ menus });
