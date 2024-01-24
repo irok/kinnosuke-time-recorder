@@ -22,10 +22,8 @@ $(async () => {
 
 // 出社・退社の表示
 const renderStamp = (app) => {
-  const state = app.getState();
-
-  if (state.startTime()) {
-    $('#start-work').text(`出社 ${ state.startTime() }`).removeClass('enabled').off();
+  if (app.state.startTime()) {
+    $('#start-work').text(`出社 ${ app.state.startTime() }`).removeClass('enabled').off();
   } else {
     $('#start-work').text('出社').addClass('enabled').off().on('click', async () => {
       if (await confirmDialog('出社しましたか？')) {
@@ -34,8 +32,8 @@ const renderStamp = (app) => {
     });
   }
 
-  if (state.leaveTime()) {
-    $('#leave-work').text(`退社 ${ state.leaveTime() }`).removeClass('enabled').off();
+  if (app.state.leaveTime()) {
+    $('#leave-work').text(`退社 ${ app.state.leaveTime() }`).removeClass('enabled').off();
   } else {
     $('#leave-work').text('退社').addClass('enabled').off().on('click', async () => {
       if (await confirmDialog('退社しますか？')) {
@@ -50,7 +48,7 @@ const renderMenu = (app) => {
   const linkTop = $('#link-top');
 
   if (linkTop.parent().find('.menu').length === 0) {
-    for (const { title, module, action, icon } of app.getMenus()) {
+    for (const { title, module, action, icon } of app.menus.items()) {
       $(`<li class="menu enabled" data-module="${ module }" data-action="${ action }"/>`)
         .append($(`<img src="${ Kinnosuke.SiteUrl }${ icon }"/>`))
         .append($(`<span>${ title }</span>`))

@@ -41,16 +41,6 @@ export default class Kinnosuke {
     return instance;
   }
 
-  // menusを返す
-  getMenus() {
-    return this.menus.items();
-  }
-
-  // stateを返す
-  getState() {
-    return this.state;
-  }
-
   // まだ出社してなければリマインドする
   async remindStamp() {
     const today = this.constructor.today();
