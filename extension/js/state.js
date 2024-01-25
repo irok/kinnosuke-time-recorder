@@ -1,3 +1,5 @@
+import { KeepAliveAlarm } from './alarm.js';
+
 /**
  * 状態を記憶しておくクラス
  */
@@ -10,7 +12,8 @@ export default class State {
   };
 
   // セッション確認の有効時間
-  static TTL = 10 * 60 * 1000;
+  // アラームの定期実行時間より少し長めにしておく
+  static TTL = (KeepAliveAlarm.periodInMinutes + 3) * 60 * 1000;
 
   static async retrieve() {
     try {
