@@ -2,7 +2,9 @@ import Credential from './credential.js';
 import Kinnosuke from './kinnosuke.js';
 import Notifier from './notifier.js';
 
-const saveOptions = async () => {
+const saveOptions = async (event) => {
+  event.preventDefault();
+
   const credential = new Credential(
     document.getElementById('companycd').value,
     document.getElementById('logincd').value,
@@ -27,4 +29,4 @@ const restoreOptions = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('save').addEventListener('click', saveOptions);
+document.getElementById('save').addEventListener('submit', saveOptions);
