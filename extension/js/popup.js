@@ -10,7 +10,7 @@ $(async () => {
   if (app.state.authorized()) {
     $('.stamp-block').css('display', 'table');
     renderStamp(app);
-    renderMenu(app);
+    renderMenus(app);
   }
 
   // 勤之助を開く
@@ -44,19 +44,19 @@ const renderStamp = (app) => {
 };
 
 // メニューの表示
-const renderMenu = (app) => {
+const renderMenus = (app) => {
   const linkTop = $('#link-top');
 
-  if (linkTop.parent().find('.menu').length === 0) {
+  if (linkTop.parent().find('.menus').length === 0) {
     for (const { title, module, action, icon } of app.menus.items()) {
-      $(`<li class="menu enabled" data-module="${ module }" data-action="${ action }"/>`)
+      $(`<li class="menus enabled" data-module="${ module }" data-action="${ action }"/>`)
         .append($(`<img src="${ Kinnosuke.SiteUrl }${ icon }"/>`))
         .append($(`<span>${ title }</span>`))
         .insertBefore(linkTop);
     }
 
     // jQuery から渡される this を受け取るため function が必要
-    $('.menu').click(function () {
+    $('.menus').click(function () {
       Kinnosuke.open(this.dataset);
     });
   }

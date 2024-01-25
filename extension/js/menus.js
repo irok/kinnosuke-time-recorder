@@ -17,14 +17,18 @@ export default class Menus {
 
   // @returns array
   items() {
-    return this.menus ?? [];
+    return this.menus;
   }
 
   // KinnosukeResponseを元にメニュー情報を設定する
   // 勤之助にログインした際に反映する
   // @returns this
   update(response) {
-    this.menus = response.authorized() ? response.menuList() : null;
+    if (!response.authorized()) {
+      return this.reset();
+    }
+
+    this.menus = response.menuList();
     return this;
   }
 
