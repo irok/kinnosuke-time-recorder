@@ -45,8 +45,9 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
+      this.state.setLastRemindDate(today); // saveはしない (keepAliveでされる)
+
       await this.keepAlive();
-      await this.state.setLastRemindDate(today).save();
       if (this.state.code() == State.Code.BEFORE) {
         await Notifier.remindStamp();
       }
