@@ -57,13 +57,17 @@ export default class Kinnosuke {
   async login() {
     const credential = await Credential.retrieve();
     if (credential.valid()) {
-      const response = await this.client.login(credential);
-      if (response.authorized()) {
-        await this.state.update(response).save();
-        await this.menus.update(response).save();
-        return true;
+      try {
+        const response = await this.client.login(credential);
+        if (response.authorized()) {
+          await this.state.update(response).save();
+          await this.menus.update(response).save();
+          return true;
+        }
+        await Notifier.loginFailed();
+      } catch (e) {
+        await Notifier.networkError(e.statusLine);
       }
-      await Notifier.loginFailed();
     }
     await this.state.reset().save();
     return false;
@@ -72,7 +76,8 @@ export default class Kinnosuke {
   // ログアウト
   async logout() {
     if (this.state.authorized()) {
-      await this.client.logout();
+      // 認証されていたらログアウトする (例外は握りつぶす)
+      await this.client.logout().catch(_ => void _);
     }
     await this.state.reset().save();
     await this.menus.reset().save();
@@ -82,8 +87,8 @@ export default class Kinnosuke {
   async keepAlive() {
     // 前回が認証済みだったなら
     if (this.state.authorized()) {
-      // 実際の状態を取得して更新する
-      const response = await this.client.getTop();
+      // 実際の状態を取得して更新する (通信エラー時は空のレスポンスを返す)
+      const response = await this.client.getTop().catch(e => e.emptyResponse);
       this.state.update(response);
 
       // 認証済みなら状態を保存して終了
@@ -129,17 +134,22 @@ export default class Kinnosuke {
   async stamp(stampingType, retry = false) {
     const token = this.state.csrfToken();
     if (token) {
-      const response = await this.client.stamp(stampingType, token);
-      if (response.authorized()) {
-        await this.state.update(response).save();
-        return response;
+      try {
+        const response = await this.client.stamp(stampingType, token);
+        if (response.authorized()) {
+          await this.state.update(response).save();
+          return response;
+        }
+      } catch (e) {
+        await Notifier.networkError(e.statusLine);
+        return;
       }
     }
 
     if (retry) {
       // リトライでも失敗したなら予期せぬ状態が発生している
       await Notifier.unexpectedError('打刻処理',
-        token ? '打刻リクエストが認証されませんでした。'
+        token ? 'リクエストが正常に受理されませんでした。'
               : 'トークンが見つかりませんでした。'
       );
     } else {
@@ -155,12 +165,17 @@ export default class Kinnosuke {
 /**
  * 勤之助との通信を行うクラス
  * 全てのメソッドがPromiseを通じてKinnosukeResponseを返す
+ * ステータスコードが200-299以外の場合は例外を投げる
  */
 class KinnosukeClient {
   async request(option) {
     const response = await fetch(Kinnosuke.SiteUrl, option);
-    if (!response.ok)
-      throw new Error(`Request failed. (${response.status} ${response.statusText})`);
+    if (!response.ok) {
+      throw {
+        statusLine: `${response.status} ${response.statusText}`,
+        emptyResponse: new KinnosukeResponse(''),
+      };
+    }
     return new KinnosukeResponse(await response.text());
   }
 
