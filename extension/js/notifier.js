@@ -3,9 +3,18 @@
  * メソッドの戻り値はすべてPromise
  */
 export default class Notifier {
-  static async notify(message, options = {}) {
+  constructor() {
+    this.notified = {};
+  }
+
+  async notify(message, options = {}) {
+    // 同じ通知は2度出さない
+    if (this.notified[message]) return;
+    this.notified[message] = true;
+
+    // 通知する
     const manifest = chrome.runtime.getManifest();
-    return await chrome.notifications.create({
+    return chrome.notifications.create({
       type: 'basic',
       iconUrl: manifest.icons['128'],
       title: manifest.name,
@@ -13,49 +22,49 @@ export default class Notifier {
     });
   }
 
-  static loginFailed() {
+  loginFailed() {
     return this.notify('ログインに失敗しました', {
       contextMessage: 'ログイン情報が正しくないか、勤之助がメンテナンス中の可能性があります。',
     });
   }
 
-  static startWork(time) {
+  startWork(time) {
     return this.notify('出社しました', {
       contextMessage: time,
     });
   }
 
-  static leaveWork(time) {
+  leaveWork(time) {
     return this.notify('退社しました', {
       contextMessage: time,
     });
   }
 
-  static stampFailed() {
+  stampFailed() {
     return this.notify('処理に失敗しました');
   }
 
-  static unexpectedError(title, detail) {
+  unexpectedError(title, detail) {
     return this.notify(`${ title }で想定外の状況が発生しました`, {
       contextMessage: `${ detail }\n時間をおいても改善しない場合は開発者にご連絡ください。`,
     });
   }
 
-  static networkError(detail) {
+  networkError(detail) {
     return this.notify('通信中にエラーが発生しました', {
       contextMessage: detail,
     });
   }
 
-  static saveCredential() {
+  saveCredential() {
     return this.notify('保存しました');
   }
 
-  static remindStamp() {
+  remindStamp() {
     return this.notify('今日はまだ打刻していません');
   }
 
-  static message(message, contextMessage) {
+  message(message, contextMessage) {
     return this.notify(message, { contextMessage });
   }
 }

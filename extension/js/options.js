@@ -1,19 +1,18 @@
 import Credential from './credential.js';
 import Kinnosuke from './kinnosuke.js';
-import Notifier from './notifier.js';
 
 const saveOptions = async (event) => {
   event.preventDefault();
 
+  const app = await Kinnosuke.create({ noRequest: true });
   const credential = new Credential(
     document.getElementById('companycd').value,
     document.getElementById('logincd').value,
     document.getElementById('password').value
   );
   await credential.save();
-  await Notifier.saveCredential();
+  await app.notifier.saveCredential();
 
-  const app = await Kinnosuke.create();
   if (credential.valid()) {
     await app.login();
   } else {

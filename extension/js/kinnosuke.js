@@ -32,12 +32,15 @@ export default class Kinnosuke {
   }
 
   // コンストラクタにasyncは使えないので生成メソッドを用意する
-  static async create() {
+  static async create({ noRequest = false } = {}) {
     const instance = new Kinnosuke();
     instance.client = new KinnosukeClient();
     instance.menus = await Menus.retrieve();
     instance.state = await State.retrieve();
-    await instance.remindStamp();
+    instance.notifier = new Notifier();
+    if (!noRequest) {
+      await instance.remindStamp();
+    }
     return instance;
   }
 
@@ -50,7 +53,7 @@ export default class Kinnosuke {
 
       await this.keepAlive();
       if (this.state.code() == State.Code.BEFORE) {
-        await Notifier.remindStamp();
+        await this.notifier.remindStamp();
       }
     }
   }
@@ -66,9 +69,9 @@ export default class Kinnosuke {
           await this.menus.update(response).save();
           return true;
         }
-        await Notifier.loginFailed();
+        await this.notifier.loginError();
       } catch (e) {
-        await Notifier.networkError(e.statusLine);
+        await this.notifier.networkError(e.statusLine);
       }
     }
     await this.state.reset().save();
@@ -110,10 +113,10 @@ export default class Kinnosuke {
     if (response) {
       const time = response.startTime();
       if (time) {
-        await Notifier.startWork(time);
+        await this.notifier.startWork(time);
         return true;
       }
-      await Notifier.stampFailed();
+      await this.notifier.stampFailed();
     }
     return false;
   }
@@ -124,10 +127,10 @@ export default class Kinnosuke {
     if (response) {
       const time = response.leaveTime();
       if (time) {
-        await Notifier.leaveWork(time);
+        await this.notifier.leaveWork(time);
         return true;
       }
-      await Notifier.stampFailed();
+      await this.notifier.stampFailed();
     }
     return false;
   }
@@ -143,14 +146,14 @@ export default class Kinnosuke {
           return response;
         }
       } catch (e) {
-        await Notifier.networkError(e.statusLine);
-        return;
+        await this.notifier.networkError(e.statusLine);
+        return null;
       }
     }
 
     if (retry) {
       // リトライでも失敗したなら予期せぬ状態が発生している
-      await Notifier.unexpectedError('打刻処理',
+      await this.notifier.unexpectedError('打刻処理',
         token ? 'リクエストが正常に受理されませんでした。'
               : 'トークンが見つかりませんでした。'
       );
