@@ -41,6 +41,12 @@ export default class Notifier {
     });
   }
 
+  static networkError(detail) {
+    return this.notify('通信中にエラーが発生しました', {
+      contextMessage: detail,
+    });
+  }
+
   static saveCredential() {
     return this.notify('保存しました');
   }
