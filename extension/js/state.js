@@ -66,19 +66,19 @@ export default class State {
   // lastRemindDateだけは維持
   // @returns this
   update(response) {
-    if (response.authorized()) {
-      const startTime = response.startTime();
-      const leaveTime = response.leaveTime();
-      this.data = {
-        code: State.Code[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
-        authorizedTime: Date.now(),
-        startTime, leaveTime,
-        csrfToken: response.csrfToken(),
-        lastRemindDate: this.data.lastRemindDate,
-      };
-    } else {
-      this.reset();
+    if (!response.authorized()) {
+      return this.reset();
     }
+
+    const startTime = response.startTime();
+    const leaveTime = response.leaveTime();
+    this.data = {
+      code: State.Code[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
+      authorizedTime: Date.now(),
+      startTime, leaveTime,
+      csrfToken: response.csrfToken(),
+      lastRemindDate: this.data.lastRemindDate,
+    };
     return this;
   }
 
