@@ -83,13 +83,11 @@ export default class State {
   }
 
   // 状態を初期化する
-  // lastRemindDateだけは維持
   // @returns this
   reset() {
     this.data = {
       code: State.Code.UNKNOWN,
       authorizedTime: 0,
-      lastRemindDate: this.data.lastRemindDate,
     };
     return this;
   }
