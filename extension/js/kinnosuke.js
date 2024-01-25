@@ -45,7 +45,8 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
-      this.state.setLastRemindDate(today); // saveはしない (keepAliveでされる)
+      // Chrom起動やタイマー、操作が被ると通知が重複し兼ねないのですぐに保存する
+      await this.state.setLastRemindDate(today).save();
 
       await this.keepAlive();
       if (this.state.code() == State.Code.BEFORE) {
