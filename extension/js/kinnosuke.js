@@ -250,7 +250,7 @@ class KinnosukeResponse {
     /.+?src="(?<icon>[^"]+)" alt="(?<title>[^"]+)"/
   ].map(_ => _.source).join(''), 's');
 
-  // @returns object or undefined
+  // @returns array or undefined
   menuList() {
     let pos, parts;
 

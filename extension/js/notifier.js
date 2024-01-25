@@ -35,7 +35,7 @@ export default class Notifier {
     return this.notify('処理に失敗しました');
   }
 
-  static unexpected(title, detail) {
+  static unexpectedError(title, detail) {
     return this.notify(`${ title }で想定外の状況が発生しました`, {
       contextMessage: `${ detail }\n時間をおいても改善しない場合は開発者にご連絡ください。`,
     });
