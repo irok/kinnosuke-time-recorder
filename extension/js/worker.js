@@ -21,20 +21,16 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       const app = await Kinnosuke.create();
       await app.keepAlive();
 
+      // ここから下に拡張機能をアップデートした際の更新処理を書く
+
       /**
-       * 拡張機能をアップデートした際の更新処理
+       * v4.0.2
+       * アラームを名前付きに変更する
        */
-      const { version } = chrome.runtime.getManifest();
-      switch (version) {
-        case '4.0.2': {
-          // 名前付きアラームに変更する
-          const { name, periodInMinutes } = KeepAliveAlarm;
-          if (!await chrome.alarms.get(name)) {
-            await chrome.alarms.create(name, { periodInMinutes });
-            await chrome.alarms.clear(); // 初期に登録していたアラームを削除
-          }
-          break;
-        }
+      const { name, periodInMinutes } = KeepAliveAlarm;
+      if (!await chrome.alarms.get(name)) {
+        await chrome.alarms.create(name, { periodInMinutes });
+        await chrome.alarms.clear(); // 初期に登録していたアラームを削除
       }
 
       break;
@@ -47,7 +43,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
  */
 chrome.runtime.onStartup.addListener(async () => {
   const app = await Kinnosuke.create();
-  await app.keepAlive();
+  await app.keepAlive(); // 閉じてすぐ開くこともあるので login ではなく keepAlive を使う
 });
 
 /**

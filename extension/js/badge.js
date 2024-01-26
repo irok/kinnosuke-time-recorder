@@ -13,10 +13,11 @@ export default class Badge {
 
   static update(code) {
     const { color, title } = Badge.Settings[code];
+    const text = code === WorkingStatus.UNKNOWN ? '' : ' ';
 
     return Promise.all([
       chrome.action.setBadgeBackgroundColor({ color }),
-      chrome.action.setBadgeText({ text: code === WorkingStatus.UNKNOWN ? '' : ' ' }),
+      chrome.action.setBadgeText({ text }),
       chrome.action.setTitle({ title }),
     ]);
   }

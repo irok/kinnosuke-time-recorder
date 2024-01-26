@@ -34,7 +34,7 @@ export default class Credential {
 
   password() {
     const { encrypted, secret } = this.data;
-    if (encrypted === '' || secret === null)
+    if (encrypted === '')
       return '';
     return CryptoJS.AES.decrypt(encrypted, secret).toString(CryptoJS.enc.Utf8);
   }
