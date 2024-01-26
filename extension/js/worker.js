@@ -1,8 +1,10 @@
 import { KeepAliveAlarm } from './constants.js';
 import Kinnosuke from './kinnosuke.js';
 
+const migrations = [];
+
 /**
- * 拡張機能自体の初期化処理
+ * 拡張機能のインストール／更新時の処理
  */
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   switch (reason) {
@@ -17,20 +19,13 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       break;
     }
     case chrome.runtime.OnInstalledReason.UPDATE: {
-      // 開発中の手動更新時に状態を反映する
+      // 開発中の手動更新の際に状態を反映する
       const app = await Kinnosuke.create();
       await app.keepAlive();
 
-      // ここから下に拡張機能をアップデートした際の更新処理を書く
-
-      /**
-       * v4.0.2
-       * アラームを名前付きに変更する
-       */
-      const { name, periodInMinutes } = KeepAliveAlarm;
-      if (!await chrome.alarms.get(name)) {
-        await chrome.alarms.create(name, { periodInMinutes });
-        await chrome.alarms.clear(); // 初期に登録していたアラームを削除
+      // 拡張機能をアップデートした際の更新処理
+      for (const migration of migrations) {
+        await migration();
       }
 
       break;
@@ -39,7 +34,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
 });
 
 /**
- * Chromeが起動したときの初期化処理
+ * Chromeが起動したときの処理
  */
 chrome.runtime.onStartup.addListener(async () => {
   const app = await Kinnosuke.create();
@@ -57,5 +52,17 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       await app.keepAlive();
       break;
     }
+  }
+});
+
+/**
+ * v4.0.2
+ * アラームを名前付きに変更する
+ */
+migrations.push(async () => {
+  const { name, periodInMinutes } = KeepAliveAlarm;
+  if (!await chrome.alarms.get(name)) {
+    await chrome.alarms.create(name, { periodInMinutes });
+    await chrome.alarms.clear(); // 4.0.2初期に登録していたアラームを削除
   }
 });
