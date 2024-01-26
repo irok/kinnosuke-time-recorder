@@ -32,15 +32,13 @@ export default class Kinnosuke {
   }
 
   // コンストラクタにasyncは使えないので生成メソッドを用意する
-  static async create({ noRequest = false } = {}) {
+  static async create() {
     const instance = new Kinnosuke();
     instance.client = new KinnosukeClient();
     instance.menus = await Menus.retrieve();
     instance.state = await State.retrieve();
     instance.notifier = new Notifier();
-    if (!noRequest) {
-      await instance.remindStamp();
-    }
+    await instance.remindStamp();
     return instance;
   }
 
@@ -48,12 +46,11 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
-      // Chrom起動やタイマー、操作が被ると通知が重複し兼ねないのですぐに保存する
-      await this.state.setLastRemindDate(today).save();
-
-      await this.keepAlive();
-      if (this.state.code() == State.Code.BEFORE) {
-        await this.notifier.remindStamp();
+      if (this.state.authorized()) {
+        if (this.state.code() == State.Code.BEFORE) {
+          await this.notifier.remindStamp();
+        }
+        await this.state.setLastRemindDate(today).save();
       }
     }
   }
