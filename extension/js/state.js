@@ -1,4 +1,5 @@
 import { KeepAliveAlarm, WorkingStatus } from './constants.js';
+import Badge from './badge.js';
 
 /**
  * 状態を記憶しておくクラス
@@ -95,25 +96,5 @@ export default class State {
 
     // 状態を保存した際にバッジを更新する
     await Badge.update(this.data.code);
-  }
-}
-
-/**
- * バッジを設定するクラス
- */
-class Badge {
-  static Color = [
-    '#fff', '#ffc800', '#60d880', '#46d'
-  ];
-  static Title = [
-    '設定してください', '未出社', '出社', '退社'
-  ];
-
-  static update(code) {
-    return Promise.all([
-      chrome.action.setBadgeBackgroundColor({ color: Badge.Color[code] }),
-      chrome.action.setBadgeText({ text: code === WorkingStatus.UNKNOWN ? '' : ' ' }),
-      chrome.action.setTitle({ title: Badge.Title[code] }),
-    ]);
   }
 }
