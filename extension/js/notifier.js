@@ -3,14 +3,35 @@
  * メソッドの戻り値はすべてPromise
  */
 export default class Notifier {
-  constructor() {
-    this.notified = {};
+  // 重複通知を避ける時間
+  static CooldownTime = 3 * 1000;
+
+  // 多重通知防止用
+  // 通知してはダメな場合に true が返る
+  static async isDuringCooldown(key) {
+    const now = Date.now();
+    const data = {};
+    try {
+      const { notifier } = await chrome.storage.session.get('notifier');
+      Object.assign(data, JSON.parse(notifier));
+
+      // 前回通知から一定時間の間ならクールダウンタイム
+      const time = data[key];
+      if (time && now < time + Notifier.CooldownTime) {
+        return true;
+      }
+    } catch {}
+
+    // 通知した時間を記録
+    const notifier = JSON.stringify({ ...data, [key]: now });
+    await chrome.storage.session.set({ notifier });
+
+    return false;
   }
 
-  async notify(message, options = {}) {
-    // 同じ通知は2度出さない
-    if (this.notified[message]) return;
-    this.notified[message] = true;
+  async notify(message, { contextMessage, cooldown = false } = {}) {
+    if (cooldown && await Notifier.isDuringCooldown(message))
+      return;
 
     // 通知する
     const manifest = chrome.runtime.getManifest();
@@ -18,13 +39,14 @@ export default class Notifier {
       type: 'basic',
       iconUrl: manifest.icons['128'],
       title: manifest.name,
-      message, ...options
+      message, contextMessage,
     });
   }
 
-  loginFailed() {
+  loginError() {
     return this.notify('ログインに失敗しました', {
       contextMessage: 'ログイン情報が正しくないか、勤之助がメンテナンス中の可能性があります。',
+      cooldown: true,
     });
   }
 
@@ -47,12 +69,14 @@ export default class Notifier {
   unexpectedError(title, detail) {
     return this.notify(`${ title }で想定外の状況が発生しました`, {
       contextMessage: `${ detail }\n時間をおいても改善しない場合は開発者にご連絡ください。`,
+      cooldown: true,
     });
   }
 
   networkError(detail) {
     return this.notify('通信中にエラーが発生しました', {
       contextMessage: detail,
+      cooldown: true,
     });
   }
 
