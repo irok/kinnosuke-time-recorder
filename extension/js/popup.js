@@ -1,3 +1,4 @@
+import { SiteUrl } from './constants.js';
 import Kinnosuke from './kinnosuke.js';
 
 // 初期化
@@ -50,7 +51,7 @@ const renderMenus = (app) => {
   if (linkTop.parent().find('.menus').length === 0) {
     for (const { title, module, action, icon } of app.menus.items()) {
       $(`<li class="menus enabled" data-module="${ module }" data-action="${ action }"/>`)
-        .append($(`<img src="${ Kinnosuke.SiteUrl }${ icon }"/>`))
+        .append($(`<img src="${ SiteUrl }${ icon }"/>`))
         .append($(`<span>${ title }</span>`))
         .insertBefore(linkTop);
     }

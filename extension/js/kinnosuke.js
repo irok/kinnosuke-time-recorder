@@ -1,3 +1,4 @@
+import { SiteUrl, StampingType, WorkingStatus } from './constants.js';
 import Credential from './credential.js';
 import Menus from './menus.js';
 import Notifier from './notifier.js';
@@ -7,12 +8,6 @@ import State from './state.js';
  * 勤之助を操作するクラス
  */
 export default class Kinnosuke {
-  static SiteUrl = 'https://www.e4628.jp/';
-  static StampingType = {
-    ON: 1,
-    OFF: 2,
-  };
-
   // AM5:00を1日の開始とする日付文字列を返す
   static today() {
     const now = new Date();
@@ -24,7 +19,7 @@ export default class Kinnosuke {
 
   // 勤之助を開く
   static open({ module, action } = {}) {
-    let url = Kinnosuke.SiteUrl;
+    let url = SiteUrl;
     if (module && action) {
       url += `?module=${ module }&action=${ action }`;
     }
@@ -47,7 +42,7 @@ export default class Kinnosuke {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
       if (this.state.authorized()) {
-        if (this.state.code() == State.Code.BEFORE) {
+        if (this.state.code() == WorkingStatus.BEFORE) {
           await this.notifier.remindStamp();
         }
         await this.state.setLastRemindDate(today).save();
@@ -106,7 +101,7 @@ export default class Kinnosuke {
 
   // 出社
   async startWork() {
-    const response = await this.stamp(Kinnosuke.StampingType.ON);
+    const response = await this.stamp(StampingType.ON);
     if (response) {
       const time = response.startTime();
       if (time) {
@@ -120,7 +115,7 @@ export default class Kinnosuke {
 
   // 退社
   async leaveWork() {
-    const response = await this.stamp(Kinnosuke.StampingType.OFF);
+    const response = await this.stamp(StampingType.OFF);
     if (response) {
       const time = response.leaveTime();
       if (time) {
@@ -171,7 +166,7 @@ export default class Kinnosuke {
  */
 class KinnosukeClient {
   async request(option) {
-    const response = await fetch(Kinnosuke.SiteUrl, option);
+    const response = await fetch(SiteUrl, option);
     if (!response.ok) {
       throw {
         statusLine: `${response.status} ${response.statusText}`,
