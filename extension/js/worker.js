@@ -1,4 +1,4 @@
-import { KeepAliveAlarm } from './alarm.js';
+import { KeepAliveAlarm } from './constants.js';
 import Kinnosuke from './kinnosuke.js';
 
 /**

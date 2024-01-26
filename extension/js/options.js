@@ -3,8 +3,8 @@ import Kinnosuke from './kinnosuke.js';
 
 const saveOptions = async (event) => {
   event.preventDefault();
+  const app = await Kinnosuke.create();
 
-  const app = await Kinnosuke.create({ noRequest: true });
   const credential = new Credential(
     document.getElementById('companycd').value,
     document.getElementById('logincd').value,
@@ -15,6 +15,7 @@ const saveOptions = async (event) => {
 
   if (credential.valid()) {
     await app.login();
+    await app.remindStamp();
   } else {
     await app.logout();
   }

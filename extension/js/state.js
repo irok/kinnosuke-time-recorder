@@ -1,16 +1,9 @@
-import { KeepAliveAlarm } from './alarm.js';
+import { KeepAliveAlarm, WorkingStatus } from './constants.js';
 
 /**
  * 状態を記憶しておくクラス
  */
 export default class State {
-  static Code = {
-    UNKNOWN: 0,
-    BEFORE: 1,
-    ON_THE_JOB: 2,
-    AFTER: 3,
-  };
-
   // セッション確認の有効時間
   // アラームの定期実行時間より少し長めにしておく
   static TTL = (KeepAliveAlarm.periodInMinutes + 3) * 60 * 1000;
@@ -24,7 +17,7 @@ export default class State {
     }
   }
 
-  constructor({ code = State.Code.UNKNOWN, authorizedTime = 0, ...rest } = {}) {
+  constructor({ code = WorkingStatus.UNKNOWN, authorizedTime = 0, ...rest } = {}) {
     this.data = { code, authorizedTime, ...rest };
   }
 
@@ -76,7 +69,7 @@ export default class State {
     const startTime = response.startTime();
     const leaveTime = response.leaveTime();
     this.data = {
-      code: State.Code[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
+      code: WorkingStatus[ leaveTime ? 'AFTER' : startTime ? 'ON_THE_JOB' : 'BEFORE' ],
       authorizedTime: Date.now(),
       startTime, leaveTime,
       csrfToken: response.csrfToken(),
@@ -89,7 +82,7 @@ export default class State {
   // @returns this
   reset() {
     this.data = {
-      code: State.Code.UNKNOWN,
+      code: WorkingStatus.UNKNOWN,
       authorizedTime: 0,
     };
     return this;
@@ -119,7 +112,7 @@ class Badge {
   static update(code) {
     return Promise.all([
       chrome.action.setBadgeBackgroundColor({ color: Badge.Color[code] }),
-      chrome.action.setBadgeText({ text: code === State.Code.UNKNOWN ? '' : ' ' }),
+      chrome.action.setBadgeText({ text: code === WorkingStatus.UNKNOWN ? '' : ' ' }),
       chrome.action.setTitle({ title: Badge.Title[code] }),
     ]);
   }
