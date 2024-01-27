@@ -20,6 +20,7 @@ export default class State {
 
   constructor({ code = WorkingStatus.UNKNOWN, authorizedTime = 0, ...rest } = {}) {
     this.data = { code, authorizedTime, ...rest };
+    this.response = null;
   }
 
   // @returns enum
@@ -58,6 +59,11 @@ export default class State {
     return this;
   }
 
+  // @returns KinnosukeResponse or null
+  recentResponse() {
+    return this.response;
+  }
+
   // KinnosukeResponseを元に状態を設定する (lastRemindDateだけは維持する)
   // 勤之助にアクセスする度に反映する
   // @returns this
@@ -75,6 +81,7 @@ export default class State {
       csrfToken: response.csrfToken(),
       lastRemindDate: this.lastRemindDate(),
     };
+    this.response = response;
     return this;
   }
 
@@ -85,6 +92,7 @@ export default class State {
       code: WorkingStatus.UNKNOWN,
       authorizedTime: 0,
     };
+    this.response = null;
     return this;
   }
 

@@ -42,9 +42,12 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
-      if (await this.keepAlive() && this.state.code() === WorkingStatus.BEFORE) {
-        await this.notifier.remindStamp();
-        await this.state.setLastRemindDate(today).save();
+      // 実際の状態を確認する
+      if (this.state.recentResponse() || await this.keepAlive()) {
+        if (this.state.code() === WorkingStatus.BEFORE) {
+          await this.notifier.remindStamp();
+          await this.state.setLastRemindDate(today).save();
+        }
       }
     }
   }
@@ -74,7 +77,7 @@ export default class Kinnosuke {
   async logout() {
     if (this.state.authorized()) {
       // 認証されていたらログアウトする (例外は握りつぶす)
-      await this.client.logout().catch(_ => void _);
+      await this.client.logout().catch(_ => void 0);
     }
     await this.state.reset().save();
     await this.menus.reset().save();
