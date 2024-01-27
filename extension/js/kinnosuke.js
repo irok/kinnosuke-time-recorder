@@ -31,9 +31,9 @@ export default class Kinnosuke {
   static async create() {
     const instance = new Kinnosuke();
     instance.client = new KinnosukeClient();
-    instance.menus = await Menus.retrieve();
-    instance.state = await State.retrieve();
     instance.notifier = new Notifier();
+    instance.state = await State.retrieve();
+    instance.menus = await Menus.retrieve();
     await instance.remindStamp();
     return instance;
   }
