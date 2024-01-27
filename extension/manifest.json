@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "勤之助タイムレコーダー",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "万屋一家シリーズのクラウド型勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome拡張です。",
   "icons": {
     "48":  "/images/icon48.png",
