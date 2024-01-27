@@ -74,7 +74,7 @@ export default class State {
       authorizedTime: Date.now(),
       startTime, leaveTime,
       csrfToken: response.csrfToken(),
-      lastRemindDate: this.data.lastRemindDate,
+      lastRemindDate: this.lastRemindDate(),
     };
     return this;
   }
@@ -95,6 +95,6 @@ export default class State {
     await chrome.storage.local.set({ state });
 
     // 状態を保存した際にバッジを更新する
-    await Badge.update(this.data.code);
+    await Badge.update(this.code());
   }
 }
