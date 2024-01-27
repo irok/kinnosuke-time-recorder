@@ -58,9 +58,8 @@ export default class State {
     return this;
   }
 
-  // KinnosukeResponseを元に状態を設定する
+  // KinnosukeResponseを元に状態を設定する (lastRemindDateだけは維持する)
   // 勤之助にアクセスする度に反映する
-  // lastRemindDateだけは維持
   // @returns this
   update(response) {
     if (!response.authorized()) {

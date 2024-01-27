@@ -21,7 +21,7 @@ export default class Menus {
   }
 
   // KinnosukeResponseを元にメニュー情報を設定する
-  // 勤之助にログインした際に反映する
+  // 勤之助にログイン試行した際に反映する
   // @returns this
   update(response) {
     if (!response.authorized()) {

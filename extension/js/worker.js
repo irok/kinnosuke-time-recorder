@@ -12,22 +12,18 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       // セッション維持のためのアラームをセットする
       const { name, periodInMinutes } = KeepAliveAlarm;
       await chrome.alarms.create(name, { periodInMinutes });
-
       // オプションページを開く
       await chrome.runtime.openOptionsPage()
-
       break;
     }
     case chrome.runtime.OnInstalledReason.UPDATE: {
       // 開発中の手動更新の際に状態を反映する
       const app = await Kinnosuke.create();
       await app.keepAlive();
-
       // 拡張機能をアップデートした際の更新処理
       for (const migration of migrations) {
         await migration();
       }
-
       break;
     }
   }
@@ -37,8 +33,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
  * Chromeが起動したときの処理
  */
 chrome.runtime.onStartup.addListener(async () => {
+  // 閉じてすぐ開くこともあるので login ではなく keepAlive を使う
   const app = await Kinnosuke.create();
-  await app.keepAlive(); // 閉じてすぐ開くこともあるので login ではなく keepAlive を使う
+  await app.keepAlive();
 });
 
 /**
@@ -63,6 +60,6 @@ migrations.push(async () => {
   const { name, periodInMinutes } = KeepAliveAlarm;
   if (!await chrome.alarms.get(name)) {
     await chrome.alarms.create(name, { periodInMinutes });
-    await chrome.alarms.clear(); // 4.0.2初期に登録していたアラームを削除
+    await chrome.alarms.clear(); // 以前のアラームを削除
   }
 });
