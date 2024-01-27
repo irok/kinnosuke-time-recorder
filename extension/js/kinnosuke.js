@@ -3,6 +3,7 @@ import Credential from './credential.js';
 import KinnosukeClient from './kinnosuke-client.js'
 import Menus from './menus.js';
 import Notifier from './notifier.js';
+import Remind from './remind.js';
 import State from './state.js';
 
 /**
@@ -34,22 +35,8 @@ export default class Kinnosuke {
     instance.notifier = new Notifier();
     instance.state = await State.retrieve();
     instance.menus = await Menus.retrieve();
-    await instance.remindStamp();
+    instance.remind = await Remind.retrieve();
     return instance;
-  }
-
-  // まだ出社してなければリマインドする
-  async remindStamp() {
-    const today = Kinnosuke.today();
-    if (this.state.lastRemindDate() != today) {
-      // 実際の状態を確認する
-      if (this.state.recentResponse() || await this.keepAlive()) {
-        if (this.state.code() === WorkingStatus.BEFORE) {
-          await this.notifier.remindStamp();
-          await this.state.setLastRemindDate(today).save();
-        }
-      }
-    }
   }
 
   // ログイン
@@ -62,6 +49,7 @@ export default class Kinnosuke {
         if (response.authorized()) {
           await this.state.update(response).save();
           await this.menus.update(response).save();
+          await this.remindStamp();
           return true;
         }
         await this.notifier.loginError();
@@ -81,6 +69,7 @@ export default class Kinnosuke {
     }
     await this.state.reset().save();
     await this.menus.reset().save();
+    await this.remind.reset().save();
   }
 
   // セッションを維持する (alarmで定期実行される)
@@ -95,12 +84,27 @@ export default class Kinnosuke {
       // 認証済みなら状態を保存して終了
       if (this.state.authorized()) {
         await this.state.save();
+        await this.remindStamp();
         return true;
       }
     }
 
     // 認証されていなければログインする
     return await this.login();
+  }
+
+  // まだ出社してなければリマインドする
+  async remindStamp() {
+    const today = Kinnosuke.today();
+    if (this.remind.lastDate() != today) {
+      // 実際の状態を確認する
+      if (this.state.recentResponse() || await this.keepAlive()) {
+        if (this.state.code() === WorkingStatus.BEFORE) {
+          await this.notifier.remindStamp();
+          await this.remind.setLastDate(today).save();
+        }
+      }
+    }
   }
 
   // 出社

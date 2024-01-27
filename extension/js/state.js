@@ -5,8 +5,7 @@ import Badge from './badge.js';
  * 状態を記憶しておくクラス
  */
 export default class State {
-  // セッション確認の有効時間
-  // アラームの定期実行時間より少し長めにしておく
+  // セッション確認の有効時間 (アラームの定期実行時間より少し長めにしておく)
   static TTL = (KeepAliveAlarm.periodInMinutes + 3) * 60 * 1000;
 
   static async retrieve() {
@@ -48,23 +47,12 @@ export default class State {
     return this.data.csrfToken;
   }
 
-  // @returns string
-  lastRemindDate() {
-    return this.data.lastRemindDate ?? '';
-  }
-
-  // @returns this
-  setLastRemindDate(date) {
-    this.data.lastRemindDate = date;
-    return this;
-  }
-
   // @returns KinnosukeResponse or null
   recentResponse() {
     return this.response;
   }
 
-  // KinnosukeResponseを元に状態を設定する (lastRemindDateだけは維持する)
+  // KinnosukeResponseを元に状態を設定する
   // 勤之助にアクセスする度に反映する
   // @returns this
   update(response) {
@@ -79,7 +67,6 @@ export default class State {
       authorizedTime: Date.now(),
       startTime, leaveTime,
       csrfToken: response.csrfToken(),
-      lastRemindDate: this.lastRemindDate(),
     };
     this.response = response;
     return this;

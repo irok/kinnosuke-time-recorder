@@ -15,7 +15,6 @@ const saveOptions = async (event) => {
 
   if (credential.valid()) {
     await app.login();
-    await app.remindStamp();
   } else {
     await app.logout();
   }
