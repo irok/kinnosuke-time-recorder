@@ -30,8 +30,9 @@ export default class Notifier {
   }
 
   async notify(message, { contextMessage, cooldown = false } = {}) {
-    if (cooldown && await Notifier.isDuringCooldown(message))
+    if (cooldown && await Notifier.isDuringCooldown(message)) {
       return;
+    }
 
     // 通知する
     const manifest = chrome.runtime.getManifest();
@@ -85,7 +86,7 @@ export default class Notifier {
   }
 
   remindStamp() {
-    return this.notify('今日はまだ打刻していません');
+    return this.notify('今日はまだ出社していません');
   }
 
   message(message, contextMessage) {

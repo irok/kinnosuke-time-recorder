@@ -42,16 +42,15 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.state.lastRemindDate() != today) {
-      if (this.state.authorized()) {
-        if (this.state.code() == WorkingStatus.BEFORE) {
-          await this.notifier.remindStamp();
-        }
+      if (await this.keepAlive() && this.state.code() === WorkingStatus.BEFORE) {
+        await this.notifier.remindStamp();
         await this.state.setLastRemindDate(today).save();
       }
     }
   }
 
   // ログイン
+  // @returns boolean
   async login() {
     const credential = await Credential.retrieve();
     if (credential.valid()) {
@@ -82,6 +81,7 @@ export default class Kinnosuke {
   }
 
   // セッションを維持する (alarmで定期実行される)
+  // @returns boolean
   async keepAlive() {
     // 前回が認証済みだったなら
     if (this.state.authorized()) {
@@ -92,12 +92,12 @@ export default class Kinnosuke {
       // 認証済みなら状態を保存して終了
       if (this.state.authorized()) {
         await this.state.save();
-        return;
+        return true;
       }
     }
 
     // 認証されていなければログインする
-    await this.login();
+    return await this.login();
   }
 
   // 出社
