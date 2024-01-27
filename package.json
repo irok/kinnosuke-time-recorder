@@ -1,7 +1,7 @@
 {
   "name": "kinnosuke-time-recorder",
   "description": "万屋一家シリーズのクラウド型勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome拡張です。",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "author": "irok",
   "bugs": {
     "url": "https://github.com/irok/kinnosuke-time-recorder/issues"
