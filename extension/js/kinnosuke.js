@@ -96,14 +96,9 @@ export default class Kinnosuke {
   // まだ出社してなければリマインドする
   async remindStamp() {
     const today = Kinnosuke.today();
-    if (this.remind.lastDate() != today) {
-      // 実際の状態を確認する
-      if (this.state.recentResponse() || await this.keepAlive()) {
-        if (this.state.code() === WorkingStatus.BEFORE) {
-          await this.notifier.remindStamp();
-          await this.remind.setLastDate(today).save();
-        }
-      }
+    if (this.remind.lastDate() != today && this.state.code() === WorkingStatus.BEFORE) {
+      await this.notifier.remindStamp();
+      await this.remind.setLastDate(today).save();
     }
   }
 
