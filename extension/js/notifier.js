@@ -3,11 +3,10 @@
  * メソッドの戻り値はすべてPromise
  */
 export default class Notifier {
-  // 重複通知を避ける時間
+  // 多重通知を避ける時間
   static CooldownTime = 3 * 1000;
 
-  // 多重通知防止用
-  // 通知してはダメな場合に true が返る
+  // 多重通知防止判定 (通知してはダメな場合に true が返る)
   static async isDuringCooldown(key) {
     const now = Date.now();
     const data = {};
@@ -29,6 +28,7 @@ export default class Notifier {
     return false;
   }
 
+  // 通知を出す
   async notify(message, { contextMessage, cooldown = false } = {}) {
     if (cooldown && await Notifier.isDuringCooldown(message)) {
       return;
@@ -44,9 +44,12 @@ export default class Notifier {
     });
   }
 
-  loginError() {
-    return this.notify('ログインに失敗しました', {
-      contextMessage: 'ログイン情報が正しくないか、勤之助がメンテナンス中の可能性があります。',
+  saveCredential() {
+    return this.notify('保存しました');
+  }
+
+  remindStamp() {
+    return this.notify('今日はまだ出社していません', {
       cooldown: true,
     });
   }
@@ -63,15 +66,15 @@ export default class Notifier {
     });
   }
 
-  stampFailed() {
-    return this.notify('処理に失敗しました');
-  }
-
-  unexpectedError(title, detail) {
-    return this.notify(`${ title }で想定外の状況が発生しました`, {
-      contextMessage: `${ detail }\n時間をおいても改善しない場合は開発者にご連絡ください。`,
+  loginFailed() {
+    return this.notify('ログインに失敗しました', {
+      contextMessage: 'ログイン情報が正しくないか、勤之助がメンテナンス中の可能性があります。',
       cooldown: true,
     });
+  }
+
+  stampFailed() {
+    return this.notify('勤怠処理に失敗しました');
   }
 
   networkError(detail) {
@@ -81,15 +84,10 @@ export default class Notifier {
     });
   }
 
-  saveCredential() {
-    return this.notify('保存しました');
-  }
-
-  remindStamp() {
-    return this.notify('今日はまだ出社していません');
-  }
-
-  message(message, contextMessage) {
-    return this.notify(message, { contextMessage });
+  unexpectedError(title, detail) {
+    return this.notify(`${ title }で想定外の状況が発生しました`, {
+      contextMessage: `${ detail }\n時間をおいても改善しない場合は開発者にご連絡ください。`,
+      cooldown: true,
+    });
   }
 }

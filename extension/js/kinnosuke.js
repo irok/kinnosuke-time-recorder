@@ -52,7 +52,7 @@ export default class Kinnosuke {
           await this.remindStamp();
           return true;
         }
-        await this.notifier.loginError();
+        await this.notifier.loginFailed();
       } catch (e) {
         await this.notifier.networkError(e.statusLine);
       }
