@@ -3,7 +3,7 @@ import Kinnosuke from './kinnosuke.js';
 
 // 初期化
 $(async () => {
-  const app = await Kinnosuke.create();
+  const app = await Kinnosuke.create('popup');
   if (!app.state.authorized()) {
     await app.login();
   }

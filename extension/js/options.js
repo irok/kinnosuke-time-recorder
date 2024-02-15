@@ -3,7 +3,7 @@ import Kinnosuke from './kinnosuke.js';
 
 const saveOptions = async (event) => {
   event.preventDefault();
-  const app = await Kinnosuke.create();
+  const app = await Kinnosuke.create('options');
 
   const credential = new Credential(
     document.getElementById('companycd').value,

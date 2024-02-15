@@ -29,8 +29,9 @@ export default class Kinnosuke {
   }
 
   // コンストラクタにasyncは使えないので生成メソッドを用意する
-  static async create() {
+  static async create(source = '') {
     const instance = new Kinnosuke();
+    instance.source = source;
     instance.client = new KinnosukeClient();
     instance.notifier = new Notifier();
     instance.state = await State.retrieve();
@@ -97,8 +98,8 @@ export default class Kinnosuke {
   async remindStamp() {
     const today = Kinnosuke.today();
     if (this.remind.lastDate() != today && this.state.code() === WorkingStatus.BEFORE) {
-      await this.notifier.remindStamp();
-      await this.remind.setLastDate(today).save();
+      await this.notifier.remindStamp(this.source);
+      await this.remind.setLastDate(today, this.source).save();
     }
   }
 

@@ -11,8 +11,8 @@ export default class Remind {
     }
   }
 
-  constructor({ lastDate } = {}) {
-    this.data = { lastDate };
+  constructor(data = {}) {
+    this.data = data;
   }
 
   // @returns string
@@ -21,14 +21,20 @@ export default class Remind {
   }
 
   // @returns this
-  setLastDate(date) {
-    this.data.lastDate = date;
+  setLastDate(lastDate, source) {
+    this.data = {
+      lastDate, source,
+      timeStamp: (new Date()).toLocaleString('ja-JP', {
+        timeZone: 'JST',
+        timeZoneName: 'short'
+      }),
+    };
     return this;
   }
 
   // @returns this
   reset() {
-    delete this.data.lastDate;
+    this.data = {};
     return this;
   }
 
