@@ -75,17 +75,17 @@ const confirmDialog = (message) => {
   // 閉じる処理
   const close = () => container.hide(50, () => container.empty().remove());
 
-  return new Promise((resolve) => {
-    container
-      .append(modal)
-      .append(dialog
-        .append($(`<p>${ message }</p>`))
-        .append(btn1.text(' はい ').click(() => { close(); resolve(true); }))
-        .append(btn2.text('いいえ').click(() => { close(); resolve(false); }))
-      )
-      .appendTo(target)
-      .show(150, () => {
-        dialog.css('top', (modal.innerHeight() - dialog.innerHeight()) / 2);
-      });
-  });
+  const { promise, resolve } = Promise.withResolvers()
+  container
+    .append(modal)
+    .append(dialog
+      .append($(`<p>${ message }</p>`))
+      .append(btn1.text(' はい ').click(() => { close(); resolve(true); }))
+      .append(btn2.text('いいえ').click(() => { close(); resolve(false); }))
+    )
+    .appendTo(target)
+    .show(150, () => {
+      dialog.css('top', (modal.innerHeight() - dialog.innerHeight()) / 2);
+    });
+  return promise;
 };
