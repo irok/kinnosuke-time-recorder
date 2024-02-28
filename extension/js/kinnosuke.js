@@ -36,7 +36,6 @@ export default class Kinnosuke {
     instance.notifier = new Notifier();
     instance.state = await State.retrieve();
     instance.menus = await Menus.retrieve();
-    instance.remind = await Remind.retrieve();
     return instance;
   }
 
@@ -70,7 +69,7 @@ export default class Kinnosuke {
     }
     await this.state.reset().save();
     await this.menus.reset().save();
-    await this.remind.reset().save();
+    await new Remind().save();
   }
 
   // セッションを維持する (alarmで定期実行される)
@@ -97,9 +96,10 @@ export default class Kinnosuke {
   // まだ出社してなければリマインドする
   async remindStamp() {
     const today = Kinnosuke.today();
-    if (this.remind.lastDate() != today && this.state.code() === WorkingStatus.BEFORE) {
+    const remind = await Remind.retrieve();
+    if (remind.lastDate() != today && this.state.code() === WorkingStatus.BEFORE) {
+      await remind.setLastDate(today, this.source).save();
       await this.notifier.remindStamp(this.source);
-      await this.remind.setLastDate(today, this.source).save();
     }
   }
 
