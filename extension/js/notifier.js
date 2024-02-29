@@ -50,8 +50,7 @@ export default class Notifier {
 
   remindStamp(debug) {
     return this.notify('今日はまだ出社していません', {
-      contextMessage: debug,
-      // cooldown: true,
+      cooldown: true,
     });
   }
 
