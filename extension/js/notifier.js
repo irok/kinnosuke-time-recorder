@@ -48,7 +48,7 @@ export default class Notifier {
     return this.notify('保存しました');
   }
 
-  remindStamp(debug) {
+  remindStamp() {
     return this.notify('今日はまだ出社していません', {
       cooldown: true,
     });
