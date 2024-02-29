@@ -1,7 +1,7 @@
 {
   "name": "kinnosuke-time-recorder",
   "description": "万屋一家シリーズのクラウド型勤怠管理システム「勤之助」のタイムレコーダーを押すためのChrome拡張です。",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "author": "irok",
   "bugs": {
     "url": "https://github.com/irok/kinnosuke-time-recorder/issues"
@@ -11,18 +11,18 @@
     "jquery": "3.5.0"
   },
   "devDependencies": {
+    "cpx": "1.5.0",
     "cross-zip-cli": "1.0.0"
   },
   "homepage": "https://github.com/irok/kinnosuke-time-recorder",
-  "keywords": [],
   "license": "MIT",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/irok/kinnosuke-time-recorder.git"
   },
   "scripts": {
     "build": "cross-zip extension extension.zip",
+    "postinstall": "cpx ./node_modules/jquery/dist/jquery.js ./extension/js/vendor/",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
