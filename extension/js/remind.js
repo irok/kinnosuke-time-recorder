@@ -21,6 +21,7 @@ export default class Remind {
   }
 
   // @returns this
+  // sourceとtimeStampはデバッグ用
   setLastDate(lastDate, source) {
     this.data = {
       lastDate, source,
